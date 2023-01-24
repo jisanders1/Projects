@@ -39,8 +39,9 @@ private:
             i++;
         }
     }
-    
-    void merge(N a[], N a1[], N a2[], int n) { //recursive helper function for regular arrays
+
+    //recursive helper function for regular arrays
+    void merge(N a[], N a1[], N a2[], int n) { 
         int n1 = n/2, n2 = n-n/2, i = 0;
         int p1 = 0, p2 = 0;
         while (p1 < n1 && p2 < n2) 
@@ -48,7 +49,9 @@ private:
         while (p1 < n1) a[i++] = a1[p1++];
         while (p2 < n2) a[i++] = a2[p2++];
     }
-    void mergeSort(N a[], int n) { //recursive mergeSort call for regular arrays
+
+    //recursive mergeSort call for regular arrays
+    void mergeSort(N a[], int n) { 
         if (n <= 1) return;
         N a1[n / 2];
         N a2[n - (n / 2)];
@@ -60,6 +63,7 @@ private:
         mergeSort(a2, n-n/2);
         merge(a, a1, a2, n);
     }
+
     N quickSelect(vector<N> A, int k) {
         N pivot = A.at(rand() % A.size()); //generates a random number between 0 and the size of the array
         vector<N> L, E, G;
@@ -73,6 +77,7 @@ private:
         else if (k <= L.size() + E.size()) return pivot;
         else return quickSelect(G, k - L.size() - E.size());
     }
+
     N select(vector<N> A, int k) {
         N pivot = medianOfMedians(A);
         vector<N> L, E, G;
@@ -86,6 +91,7 @@ private:
         else if (k <= L.size() + E.size()) return pivot;
         else return select(G, k - L.size() - E.size());
     }
+
     N medianOfMedians (vector<N> A) {
         vector<int> partitions;
         for (int i = 0; i < A.size(); i += 5) {
@@ -120,17 +126,26 @@ private:
         if (medians.size() == 1) return medians.at(0);
         else return medianOfMedians(medians);
     }
-    void InsertionSort(N arr[], int l, int h) {  //version of InsertionSort for the base array
-        if (l == h) return; //returns if both l and h are the same, which only happens when calling insertion sort on an array of size 1
-        for (int i = l + 1; i < h; i++){ //outer loop starts at 1, assumes index 0 is already sorted
+
+    //version of InsertionSort for the base array
+    void InsertionSort(N arr[], int l, int h) {  
+        //returns if both l and h are the same, which only happens when calling insertion sort on an array of size 1
+        if (l == h) return;
+
+        //outer loop starts at 1, assumes index 0 is already sorted
+        for (int i = l + 1; i < h; i++){ 
             int j = i;
-            while (j > l && arr[(front + j - 1) % MAX] > arr[(front + j) % MAX]) { //starts at i and goes backwards, performing a swap if need be until the element gets to the right spot
+
+            //starts at i and goes backwards, performing a swap if need be until the element gets to the right spot
+            while (j > l && arr[(front + j - 1) % MAX] > arr[(front + j) % MAX]) { 
                 swap(arr[(front + j - 1) % MAX], arr[(front + j) % MAX]);
                 j--;
             }
         } 
     }
-    void InsertionSort2(vector<N> &vect, int l, int h) { //version of Insertion sort for the vectors
+
+    //version of Insertion sort for the vectors
+    void InsertionSort2(vector<N> &vect, int l, int h) { 
         if (l == h) return;
         for (int i = l + 1; i < h; i++){ 
             int j = i;
@@ -140,8 +155,12 @@ private:
             }
         } 
     }
-    int binRecur(N a[], N x, int l, int r) { //recursive call of binary search
-        if (r < l) return -1; //returns -1 if not found
+
+    //recursive call of binary search
+    int binRecur(N a[], N x, int l, int r) {
+        //returns -1 if not found
+        if (r < l) return -1; 
+
         int mid = (l + r) / 2;
         int index = (front + mid) % MAX;
         if (x == a[index]) { //if x is found
@@ -154,7 +173,9 @@ private:
             return binRecur(a, x, mid + 1, r);
         }
     }
-    void deepCopy(const CircularDynamicArray &src) { //copies the array from front to back
+
+    //copies the array from front to back
+    void deepCopy(const CircularDynamicArray &src) { 
         array = new N[src.MAX];
         for(int i = src.front; i < src.front + src.size; i++) {
             array[i % src.MAX] = src.array[i % src.MAX];
@@ -166,13 +187,16 @@ private:
         MAX = src.MAX;
     }
 public:
-    CircularDynamicArray() { //default constructor, makes an array of MAX 2 and size 0
+    //default constructor, makes an array of MAX 2 and size 0
+    CircularDynamicArray() { 
         MAX = 2;
         size = 0;
         array = new N[MAX];
         front = 0;
-    } 
-    CircularDynamicArray(int s) { //constructor, array of MAX and size s
+    }
+
+    //constructor, array of MAX and size s
+    CircularDynamicArray(int s) { 
         MAX = s;
         size = s;
         array = new N[MAX];
@@ -192,7 +216,8 @@ public:
         return *this;
     }
 
-    N &operator[](int index) { //returns the value from the array relative to the front
+    //returns the value from the array relative to the front
+    N &operator[](int index) { 
         if (index < 0 || index >= MAX) return dummyElement;
         return array[(front + index) % MAX];
     }
@@ -214,7 +239,7 @@ public:
             front = 0;
             array = newArray;
 
-            //inserting into the back of the array
+            //inserting v into the back of the array
             array[front + size] = v;
             size++;
         }
@@ -223,6 +248,7 @@ public:
             size++;
         }
     }
+
     void addFront(N v) {
         if (size == 0) { //empty array
             array[0] = v;
@@ -240,7 +266,7 @@ public:
             front = MAX - 1;
             array = newArray;
 
-            //inserting into the front of the array
+            //inserting v into the front of the array
             array[front] = v;
             size++;
         }
@@ -250,6 +276,7 @@ public:
             size++;
         }
     }
+
     void delEnd() {
         if (size == 0) return; //if the array is empty, there is nothing to delete
         else if (size == (MAX / 4)) { //if the array is less than 1/4th the capacity, resize to a smaller array
@@ -268,7 +295,8 @@ public:
         else { //arrray is neither empty nor at 1/4th capacity
             size = (size - 1 + MAX) % MAX; //decrement the size pointer to "delete" from back
         }
-    }  
+    }
+
     void delFront() {
         if (size == 0) return; //if the array is empty, there is nothing to delete
         else if (size == (MAX / 4)) { //if the array is less than 1/4th the capacity, resize to a smaller array
@@ -296,19 +324,29 @@ public:
     int capacity() {
         return MAX;
     }
-    void clear() { //resets the array to be "empty"
+
+    //resets the array to be "empty"
+    void clear() { 
         delete[] array;
         MAX = 2;
         size = 0;
         front = 0;
         array = new N[MAX];
     }
+
     N QuickSelect(int k) {
-        if (k < 1 || k > size) return -1; //error checking for k values
-        int randIndex = rand() % size; //a random number between 0 and the size of the array
-        N pivot = array[(front + randIndex) % MAX]; //accesses this pivot with an offset from the front
+        //error checking for k values
+        if (k < 1 || k > size) return -1; 
+
+        //a random number between 0 and the size of the array
+        int randIndex = rand() % size; 
+
+        //accesses this pivot with an offset from the front
+        N pivot = array[(front + randIndex) % MAX]; 
         vector<N> L, E, G;
-        for (int i = front; i < front + size; i++) { //start adding elements to the less than/equal to/greater than lists
+
+        //start adding elements to the less than/equal to/greater than lists
+        for (int i = front; i < front + size; i++) { 
             N element = array[i % MAX];
             if (element < pivot) L.push_back(element);
             else if (element == pivot) E.push_back(element);
@@ -318,15 +356,19 @@ public:
         else if (k <= L.size() + E.size()) return pivot;
         else return quickSelect(G, k - L.size() - E.size());
     } 
-    N WCSelect(int k) { //performs the select algorithm in the worse case with medians of medians
+
+    //performs the select algorithm in worst case O(n) time using medians of medians
+    N WCSelect(int k) { 
         if (k < 1 || k > size) return -1;
-        //partition into groups of size 5 each START OF MY PSEUDOCODE
-        vector<int> partitions; //stores a collection of partitions, the size of this collection is used to determine when to stop
+
+        //stores a collection of partitions, the size of this collection is used to determine when to stop 
+        vector<int> partitions; 
         for (int i = 0; i < size; i += 5) {
             partitions.push_back(i);
         }
 
         vector<N> medians;
+
         //for each group of 5, run insertion sort on it 
         int i;
         for (i = 0; i < partitions.size(); i++) {
@@ -338,8 +380,9 @@ public:
             //select median of each group
             medians.push_back(array[(( (front + high - 1) + (front + low) ) / 2) % MAX]);
         }
-
-        if (size % 5 != 0) { //if the size is not divisible by size, one more insertionSort call needs to be performed on the last bit of the array
+        
+        //if the size is not divisible by 5, one more insertionSort call needs to be performed on the last bit of the array
+        if (size % 5 != 0) { 
             int low = partitions.at(i);
             int high = size;
             InsertionSort(array, low, high);
@@ -365,7 +408,8 @@ public:
         else return select(G, k - L.size() - E.size());
     } 
     
-    void stableSort() { //contains first call of mergeSort, serves as a bridge between circular array and regular arrays
+    //contains first call of mergeSort, serves as a bridge between circular array and regular arrays
+    void stableSort() { 
         N a1[size / 2];
         N a2[size - (size / 2)];
         for (int i = 0; i < size / 2; i++)
@@ -376,8 +420,11 @@ public:
         mergeSort(a2, size-size/2);
         mergeIntoParent(array, a1, a2, size); 
     }
-    int linearSearch(N e) { //performs a linear search starting at the front; returns the index
-        int userIndex = 0; //used to track index in reference to the distance from front
+
+    //performs a linear search starting at the front; returns the index
+    int linearSearch(N e) { 
+        //used to track index in reference to the distance from front
+        int userIndex = 0; 
         for(int i = front; i < front + size; i++) {
             if (array[i % MAX] == e) return userIndex;
             userIndex++;
