@@ -12,26 +12,34 @@ private:
     N dummyElement;
     N *array;
 
-    void mergeIntoParent(N a[], N a1[], N a2[], int n) { //merges between the regular arrays and the circular array
-        int n1 = n/2, n2 = n-n/2, i = 0; //n1 = midway point, n2 = back
+    //merges between the regular arrays and the circular array
+    void mergeIntoParent(N a[], N a1[], N a2[], int n) { 
+        //n1 = midway point, n2 = back
+        int n1 = n/2, n2 = n-n/2, i = 0; 
         int p1 = 0, p2 = 0;
 
-        while (p1 < n1 && p2 < n2) { //compares sub-arrays and inserts correct value into parent array
+        //compares sub-arrays and inserts correct value into parent array
+        while (p1 < n1 && p2 < n2) {
             int index = (front + i) % MAX;
             a[index] = a1[p1]<a2[p2] ? a1[p1++] : a2[p2++];
             i++;
         }
-        while (p1 < n1) { //slides up any leftover numbers ie if this array ends up still full after the first while loop
+
+        //slides up any leftover numbers ie if this array ends up still full after the first while loop
+        while (p1 < n1) {
             int index = (front + i) % MAX;
             a[index] = a1[p1++];
             i++;
         } 
-        while (p2 < n2) { //slides up any leftover numbers ie if this array ends up still full after the first while loop
+
+        //slides up any leftover numbers ie if this array ends up still full after the first while loop
+        while (p2 < n2) {
             int index = (front + i) % MAX;
             a[index] = a2[p2++];
             i++;
         }
     }
+    
     void merge(N a[], N a1[], N a2[], int n) { //recursive helper function for regular arrays
         int n1 = n/2, n2 = n-n/2, i = 0;
         int p1 = 0, p2 = 0;
