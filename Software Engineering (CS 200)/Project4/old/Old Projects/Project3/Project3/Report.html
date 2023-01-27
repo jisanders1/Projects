@@ -1,0 +1,161 @@
+<html>
+	<head>
+		<meta charset = "utf-8">
+		<title>Team 18 Project 3 Report</title>  
+	</head>
+
+	<body>
+
+
+        <h1>Team 18 Project 3 Report</h1>
+		<h2>Header table</h2>
+
+<style>
+  table, th, td {
+    border: 1px solid black;
+    padding: 10px;
+  }
+</style>
+
+<table>
+  <tr>
+    <th>Names</th>
+    <th>Email</th>
+    <th>CWID</th>
+    <th>Hours</th>
+  </tr>
+    
+  <tr>
+    <td>Cindy Qiu</td>
+    <td>cqiu3@crimson.ua.edu</td>
+    <td>12122895</td>
+    <td>5</td>
+  </tr>
+    
+  <tr>
+    <td>Sandy Zheng</td>
+    <td>szheng8@crimson.ua.edu</td>
+    <td>12132695</td>
+    <td>5</td>
+  </tr> 
+
+    <tr>
+    <td>Zach Michaels</td>
+    <td>zemichaels@crimson.ua.edu</td>
+    <td>12135259</td>
+    <td>5</td>
+  </tr>
+    
+    <tr>
+    <td>Quinncy Gunnerson</td>
+    <td>qrgunnerson@crimson.ua.edu</td>
+    <td>12061176</td>
+    <td>5</td>
+  </tr>
+    
+    <tr>
+    <td>Jaylon Sanders</td>
+    <td>jisanders1@crimson.ua.edu</td>
+    <td>12123042</td>
+    <td>5</td>
+  </tr>
+    
+    <tr>
+    <td>Tyler Coleman</td>
+    <td>tfcoleman2@crimson.ua.edu</td>
+    <td>11852207</td>
+    <td>5</td>
+  </tr>
+    
+    
+</table>
+        
+<br>
+<br>
+        
+
+<style>
+  table, th, td {
+    border: 1px solid black;
+    padding: 20px;
+  }
+</style>
+
+
+<h2>Task Distribution Table</h2>
+
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Task Performed</th>
+    <th>Percent Contribution</th>
+  </tr>
+  <tr>
+    <td>Cindy Qiu</td>
+    <td>Class Diagram, Sequence Diagrams, Corrections</td>
+    <td>16.66%</td>
+  </tr>
+  <tr>
+    <td>Sandy Zheng</td>
+    <td>Class Diagram, Sequence Diagrams, Corrections</td>
+    <td>16.66%</td>
+  </tr>
+  <tr>
+    <td>Zachary Michaels</td>
+    <td><b>Submitter</b>, Sequence Diagrams, Report.html</td>
+    <td>16.66%</td>
+  </tr>
+  <tr>
+    <td>Jaylon Sanders</td>
+    <td>Class Diagram, Corrections, Sequence Diagrams</td>
+    <td>16.66%</td>
+  </tr>
+  <tr>
+    <td>Quincy Gunnerson</td>
+    <td>Cass Diagram, Sequence Diagrams</td>
+    <td>16.66%</td>
+  </tr>
+  <tr>
+    <td>Tyler Coleman</td>
+    <td>Class Diagram, Sequence Diagrams</td>
+    <td>16.66%</td>
+  </tr>
+</table>
+
+<br>
+<br>
+<h1>Class Diagram<h1>
+<img src="classDiagramJS.png">
+<br>
+<br>
+<h1>Sequence Diagrams<h1>
+<h2>Member Validation</h2>
+<img src="ZMvalidateMemberSequenceDiagram.png">
+<h2>Bill ChocAn</h2>
+<img src="QG_BillChocAnSeq.png">
+<h2>Request Provider Directory</h2>
+<img src="ZMRequestProviderDirectorySequenceDiagram.png">
+<h2>Run Main Accounting Procedure</h2>
+<img src="CQ_runAccountingProcedure.png">
+<h2>Request Report</h2>
+<img src="CQ_requestReportsSEQ.png">
+<h2>Update Member Records</h2>
+<img src="SZ_P3_SeqD_UpdateMember.png">
+<h2>Update Provider Records</h2>
+<img src="SZ_P3_SeqD_UpdateProvider.png">
+<h2>Verify Operator</h2>
+<img src="TCVerifyOperatorSequenceDiagram.png">
+<h2>Verify Manager</h2>
+<img src="TCVerifyManagerSequenceDiagram.png">
+<h2>Verify Provider</h2>
+<img src="TCVerifyProviderSequenceDiagram.png">
+<br>
+<br>
+<h1>Discussion of our design</h1>
+<p>In our class design, we use cohesion and coupling for an effective and logical class. We use cohesion as needed, like with our provider, operator, and manager terminals as their classes contain unique functions that only they can access. This will help us avoid errors of users trying to access data they don’t have. But, we also use coupling to reduce complexity of our class for shared functions. For example, the service records class is used by the provider directory, member records and provider records classes but it’s functions/data storage are all supportive of said classes without bugs. Because of this coupling, the report controller can pull data straight from service records instead of pulling data from multiple classes. So our design is “good” by keeping data that is unique by itself in its own class(cohesion) to avoid data errors while sharing data(coupling) to reduce complexity. </p>
+<br>
+<h1>BitBucket Stats</h1>
+<img src="Project3TeamStats1.png">
+<br>
+<img src="Project3TeamStats2.png">
+<br>

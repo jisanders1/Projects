@@ -1,0 +1,10 @@
+This is Cindy's work for project 1. 
+
+
+change prospective to GIT ONLY when using bitbucket 
+
+ANY changes with  file/folder - change prospective on java 
+-change prospective to java when working with java code
+--this file is on java prospective
+
+go to Java perspective (top right icon next to GIT) choose folder and right click -> new -> choose what you want to add.

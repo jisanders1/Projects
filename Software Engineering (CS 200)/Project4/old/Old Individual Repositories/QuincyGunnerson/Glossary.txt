@@ -1,0 +1,68 @@
+Glossary of Terms for CS200 Project 1--Quincy Gunnerson
+
+Background: "Chocoholics Anonymous (ChocAn) is an organization dedicated to helping people addicted to chocolate. Members pay a monthly fee to ChocAn. For this fee
+they are entitled to unlimited consultations and treatments with health care professionals"
+
+
+
+
+Glossary
+1. Provider: A health care professional who provides services to ChocAn members. i.e. dietitians, internists and exercise experts.
+	
+2. Provider Terminal: A specially designed computer terminal (similar to POS systems) that each provider needs to use in order to serve members of ChocAn.
+
+3. ChocAn ID Card: A plastic card that has the member's name and a nine-digit member number
+
+4. Member member number: nine-digit unique number to identify member. Used by member to validate membership in ChocAn.
+
+5. Provider number: unique identifying number assigned to each provider.
+
+6. ChocAn Data Center: Data center that verifies member number. Communicates with provider terminals.
+
+7. Provider Directory: Alphabetically ordered list of service names and corresponding service codes and fees. Sent to provider as an e-mail attachment
+
+8. Service Code: six digit code that corresponds to the type of service provided. For example, 598470 is the code associated with a dietitian.
+
+9. End of Week Report(sent to Member):
+
+10. End of Week Report(sent to Provider):
+
+11. Electronic Funds Transfer(EFT) record(sent to bank): 
+
+12. Summary Report(for manager of accounts payable): The report lists every
+provider to be paid that week, the number of consultations each had, and his or her total
+fee for that week. Finally, the total number of providers who provided services, the total
+number of consultations, and the overall fee total are printed.
+
+13. Interactive Mode: Configuration of the ChocAn data center that allows operators to add new members, delete members and update records. Also allows operators to do the same for provider. ChocAn data center is run in this mode during the day.
+
+14. Acme Accounting Services: Third party organization that handles the processing of payments of ChocAn membership fees. Responsible for financial procedures such as recording payments of membership fees, suspending members whose fees are overdue, and reinstating suspended members who have now paid what is owing.
+
+
+
+Scope
+Only the ChocAn data processing software. Another organization will cover communications software, design of the ChocAn provider’s terminal, the software needed by Acme Accounting Services, and the implementation of the EFT component.
+
+
+
+
+
+Processes
+A) Validation Process at Provider Terminal: (Before services are given to ChocAn member)
+	1. Provider slides the member's card through the provider terminal.
+
+	2. The terminal communicates with the ChocAn Data Center which verifies the member number. The result of the verification is sent back to provider terminal for it to display for the user of the provider terminal to interpret.
+
+	3. If valid, provider terminal says "Validated". If invalid, provider terminal gives reason why(Invalid number of Member suspended)
+
+
+
+B) Billing Process: (After services are giving to member)
+	1. Provider slides the member's card at the provider terminal (or enters number manually).
+
+	2. Assuming number is validated, provider enters the date the service was provided in format MM-DD-YYYY
+
+
+C) Main Accounting Procedure: Reads the week's file of services provided and prints a number of reports for use at ChocAn Data Center. 
+
+D) Report formatting

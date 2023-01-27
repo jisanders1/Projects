@@ -1,0 +1,28 @@
+Glossary Terms
+
+1. Member - users who pay a monthly fee to ChocoAn and are entitled to unlimited consultations and treatments 
+			with health care professionals
+			
+2. Provider - the health care professionals who provides services to ChocoAn members
+
+3. Manager - can request to run reports individually at any time during the week, and a summary report is given 
+			 to the manager for accounts payable
+			 
+4. Operator - can add new members to ChocAn, delete members who have resigned, and update member records. Provider 
+			  records can also be added, deleted, and updated by the operator. 
+			  
+5. Member Record - a record that includes all ChocAn members that can be edited by the operator
+
+6. Provider Record - a record that includes all ChocAn providers that can be edited by the operator
+
+7. Provider Directory - an alphabetically ordered list of service names and corresponding service codes and fees
+
+8. Member Report - each member who has consulted a ChocAn provider during that week receives a list of services 
+				   provided to that member, sorted in order of service date
+
+9. Provider Report - a weekly report sent as an email attachment containing the list of services he or she provided 
+					 to ChocAn members.
+					 
+10. Summary Report - The report lists every provider to be paid that week, the number of consultations each had, and 
+					his or her total fee for that week. Finally, the total number of providers who provided services, 
+					the total number of consultations, and the overall fee total are printed. 

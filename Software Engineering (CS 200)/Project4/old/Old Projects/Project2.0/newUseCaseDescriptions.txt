@@ -1,0 +1,43 @@
+Title: Verify Operator
+	Context: When an operator’s terminal is booted up, they must verify that they are a valid operator before they can complete any of their actions.
+	Actors: Operator
+	Main Success Scenario:
+		1. Assuming it is daytime, an operator terminal is booted up and prompts an operator to enter their operator number.
+		2. Their number is a valid number.
+		3. They are now able to choose the actions they wish to complete.
+	Extensions:
+		1. It is not daytime.
+			a. The operator terminal is turned off.
+		2. The number entered is an invalid number.
+			a. Notify the operator that their number is incorrect.
+			b. Prompt the operator for re-entry.
+			c. If they fail to enter a valid number three times, they are not allowed to choose an action.
+			d. They exit the system.
+
+Title: Verify Manager
+	Context:  When a manager’s terminal is booted up, they must verify that they are a valid manager before they can complete any of their actions.
+	Actors: Manager
+	Main Success Scenario:
+		1. A manager terminal is booted up and prompts a manager to enter their manager number.
+		2. Their number is a valid number.
+		3. They are now able to choose the actions they wish to complete.
+	Extensions:
+		2. The number entered is an invalid number.
+			a. Notify the manager that their number is incorrect.
+			b. Prompt the operator for re-entry.
+			c. If they fail to enter a valid number three times, they are not allowed to choose an action.
+			d. They exit the system.
+
+Title: Verify Provider
+	Context: When a provider’s terminal is booted up, they must verify that they are a valid provider before they can complete any of their actions.
+	Actors: Provider
+	Main Success Scenario:
+		1. A provider terminal is booted up and prompts a provider to enter their provider number.
+		2. Their number is a valid number.
+		3. They are now able to choose the actions they wish to complete.
+	Extensions:
+		2. The number entered is an invalid number.
+			a. Notify the manager that their number is incorrect.
+			b. Prompt the operator for re-entry.
+			c. If they fail to enter a valid number three times, they are not allowed to choose an action.
+			d. They exit the system.
