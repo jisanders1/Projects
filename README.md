@@ -19,3 +19,5 @@ My main contributions to this project include the controllers (from the MVC mode
 Although persistence and a GUI were not requirements of the project, I am looking forward to implementing these features during the summer of 2023, so keep an eye out for it! I would also like to thank my team members for helping to complete the project with a grade of 123 out of 120, inclusive of 6 bonus points!
 
 This project can be run by compiling and running the MainMenu.java file.
+
+Additonally, I am also open to constructive criticism and suggestions for improvement! I enjoy learning new things and taking the time to work and better myself as a programmer!
