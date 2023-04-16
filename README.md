@@ -24,4 +24,4 @@ This project can be run by compiling and running the MainMenu.java file. Additon
 
 With these numbers, you should be able to add or delete providers as necessary.
 
-Additonally, I am also open to constructive criticism and suggestions for improvement! I enjoy learning new things and taking the time to work and better myself as a programmer!
+Additonally, I am also open to constructive criticism and suggestions for improvement! I enjoy learning new things and taking the time to work and better myself as a programmer! Feel free to email me at: jisanders132@gmail.com or jisanders1@crimson.ua.edu.
