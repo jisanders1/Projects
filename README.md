@@ -18,6 +18,9 @@ My main contributions to this project include the controllers (from the MVC mode
 
 Although persistence and a GUI were not requirements of the project, I am looking forward to implementing these features during the summer of 2023, so keep an eye out for it! I would also like to thank my team members for helping to complete the project with a grade of 123 out of 120, inclusive of 6 bonus points!
 
-This project can be run by compiling and running the MainMenu.java file.
+This project can be run by compiling and running the MainMenu.java file. Additonally, some of the operations require entering a identification number and these numbers are currently hardcoded in as follows:
+- Operator Identification Numbers: 300000, 300001, 300002
+- Manager Identification Numbers: 400000, 400001, 400002, 400003, 400004
+With these numbers, you should be able to add or delete providers as necessary.
 
 Additonally, I am also open to constructive criticism and suggestions for improvement! I enjoy learning new things and taking the time to work and better myself as a programmer!
