@@ -1,2 +1,0 @@
-[LocalizedFileNames]
-ChocAn_Description.pdf=@ChocAn_Description,0
