@@ -22,6 +22,6 @@ This project can be run by compiling and running the MainMenu.java file. Additon
 - Operator Identification Numbers: 300000, 300001, 300002
 - Manager Identification Numbers: 400000, 400001, 400002, 400003, 400004
 
-With these numbers, you should be able to add or delete providers as necessary.
+With these numbers, you should be able to add or delete providers as necessary. Additionally the program runs assuming valid input! Some areas (adding/updating/removing a member/provider for example) do account for errors, but others do not and I will be working to patch these problems.
 
 Additonally, I am also open to constructive criticism and suggestions for improvement! I enjoy learning new things and taking the time to work and better myself as a programmer! Feel free to email me at: jisanders132@gmail.com or jisanders1@crimson.ua.edu.
