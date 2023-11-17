@@ -1,0 +1,10 @@
+var language = "Spanish";
+// this variable is just here
+
+for(int i = 0; i < 10; i = i + 1) {
+	print "Hello World!";
+}
+
+if(language == "Spanish" or !true) {
+	print "I'm fine. I'm totally fine";
+} 
