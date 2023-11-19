@@ -9,7 +9,7 @@ namespace Lox_Interpreter.Lox
     /// Represents the entry point to the Jlox interepreter. 
     /// It is responsible for reading and running Lox files/lines of code and reporting errors.
     /// </summary>
-    public class Lox
+    internal class Lox
     {
         //this variable is used to indicate when an error has been encountered
         public static bool hadError = false;
@@ -66,7 +66,7 @@ namespace Lox_Interpreter.Lox
         }
 
         /// <summary>
-        /// Runs the source code by using a scanner to scan in tokens and then execute it.
+        /// Runs the source code by using a scanner to scan in tokens and parsing the tokens into expressions.
         /// </summary>
         /// <param name="source">The file contents or line of code to be executed.</param>
         private static void Run(string source)
@@ -74,11 +74,13 @@ namespace Lox_Interpreter.Lox
             Scanner scanner = new(source);
             List<Token> tokens = scanner.ScanTokens();
 
-            // For now, just print the tokens.
-            foreach (Token token in tokens)
-            {
-                Console.WriteLine(token);
-            }
+            Parser parser = new(tokens);
+            Expr? expression = parser.Parse(); // if Parse returns null, an error will be raised and the Print statement below will never execute.
+
+            // Stop if there was a syntax error.
+            if (hadError) return;
+
+            Console.WriteLine(new AstPrinter().Print(expression));
 
         }
 
@@ -90,6 +92,23 @@ namespace Lox_Interpreter.Lox
         public static void Error(int line, String message)
         {
             Report(line, "", message);
+        }
+
+        /// <summary>
+        /// Calls <see cref="Report(int, string, string)"/> to report an error.
+        /// </summary>
+        /// <param name="token">Token that causes the error.</param>
+        /// <param name="message">Error message to be printed</param>
+        public static void Error(Token token, String message)
+        {
+            if (token.type == TokenType.EOF)
+            {
+                Report(token.line, " at end", message);
+            }
+            else
+            {
+                Report(token.line, " at '" + token.lexeme + "'", message);
+            }
         }
 
         /// <summary>

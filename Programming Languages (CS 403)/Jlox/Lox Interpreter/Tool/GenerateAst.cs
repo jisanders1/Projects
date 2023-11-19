@@ -8,13 +8,13 @@ namespace Lox_Interpreter.Tool
     /// <summary>
     /// Represents the generation expression classes for Lox syntax trees.
     /// </summary>
-    public class GenerateAst
+    internal class GenerateAst
     {
         /// <summary>
         /// Creates a new class that represents the grammar of Lox. Comment out when running main Lox class.
         /// </summary>
         /// <param name="args">Path oc new class.</param>
-        public static void Main(String[] args)
+        /*public static void Main(String[] args)
         {
             if (args.Length != 1)
             {
@@ -30,7 +30,7 @@ namespace Lox_Interpreter.Tool
                 "Unary    : Token oper, Expr right"};
 
             DefineAst(outputDir, "Expr", array.ToList());
-        }
+        }*/
 
         /// <summary>
         /// Generates the script that represents an automatic syntax tree for the grammar of Lox.
@@ -46,7 +46,7 @@ namespace Lox_Interpreter.Tool
             writer.WriteLine("namespace Lox_Interpreter.Lox");
             writer.WriteLine("{");
 
-            writer.WriteLine("\tpublic abstract class " + baseName);
+            writer.WriteLine("\tinternal abstract class " + baseName);
             writer.WriteLine("\t{");
             DefineVisitor(writer, baseName, types);
             foreach (String type in types)

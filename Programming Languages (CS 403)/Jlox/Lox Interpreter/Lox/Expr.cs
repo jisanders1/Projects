@@ -1,6 +1,6 @@
 namespace Lox_Interpreter.Lox
 {
-	public abstract class Expr
+	internal abstract class Expr
 	{
 		public interface IVisitor<R>
 		{

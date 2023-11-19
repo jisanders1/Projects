@@ -9,7 +9,7 @@ namespace Lox_Interpreter.Lox
     /// <summary>
     /// Represents the scanning of source code into tokens.
     /// </summary>
-    public class Scanner
+    internal class Scanner
     {
         private readonly String source; // Source code
         private readonly List<Token> tokens = new(); //List of tokens

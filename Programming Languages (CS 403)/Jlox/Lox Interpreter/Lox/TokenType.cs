@@ -3,9 +3,9 @@
 namespace Lox_Interpreter.Lox
 {
     /// <summary>
-    /// Enum <c>TokenType</c> represents all the possible types of tokens there can be in Lox.
+    /// Represents all the possible types of tokens there can be in Lox.
     /// </summary>
-    public enum TokenType
+    internal enum TokenType
     {
         // Single-character tokens.
         LEFT_PAREN, RIGHT_PAREN, LEFT_BRACE, RIGHT_BRACE,
