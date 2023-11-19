@@ -5,7 +5,7 @@ In order to run it, you should verify that you have C# installed on your compute
 csc.exe GenerateAst.cs
 GenerateAst.exe ../Lox
 ```
-This will generate a script that allows the languge to be properly converted into a syntax tree. Afterwards, you should comment out the Main methods in both [AstPrinter.cs] (https://github.com/jisanders1/Projects/blob/main/Programming%20Languages%20(CS%20403)/Jlox/Lox%20Interpreter/Lox/AstPrinter.cs) and [GenerateAst.cs] (https://github.com/jisanders1/Projects/blob/main/Programming%20Languages%20(CS%20403)/Jlox/Lox%20Interpreter/Tool/GenerateAst.cs) in order to properly run the file. I'm aware that this solution isn't the most eloquent but I'm not having much luck with typical compiling and running. Next, navigate to Jlox/Lox Interpreter and use the following commands to start the interpreter:
+This will generate a script that allows the languge to be properly converted into a syntax tree. Afterwards, you should comment out the Main methods in both [AstPrinter.cs](https://github.com/jisanders1/Projects/blob/main/Programming%20Languages%20(CS%20403)/Jlox/Lox%20Interpreter/Lox/AstPrinter.cs) and [GenerateAst.cs](https://github.com/jisanders1/Projects/blob/main/Programming%20Languages%20(CS%20403)/Jlox/Lox%20Interpreter/Tool/GenerateAst.cs) in order to properly run the file. I'm aware that this solution isn't the most eloquent but I'm not having much luck with typical compiling and running. Next, navigate to Jlox/Lox Interpreter and use the following commands to start the interpreter:
 ```
 dotnet run
 ```
@@ -15,7 +15,7 @@ dotnet run <filename>.txt
 ```
 This runs code from a file within the Lox Interpreter/Lox directory. Currently, the tokens are just being spit back out into the terminal. But they will be parsed and interpreted later on.
 
-In order to see the syntax tree in action, you should utilize the main in [AstPrinter.cs] (https://github.com/jisanders1/Projects/blob/main/Programming%20Languages%20(CS%20403)/Jlox/Lox%20Interpreter/Lox/AstPrinter.cs) with:
+In order to see the syntax tree in action, you should utilize the main in [AstPrinter.cs](https://github.com/jisanders1/Projects/blob/main/Programming%20Languages%20(CS%20403)/Jlox/Lox%20Interpreter/Lox/AstPrinter.cs) with:
 ```
 dotnet run
 ```
@@ -23,7 +23,7 @@ The output of this should be:
 ```
 (* (- 123) (group 45.67))
 ```
-This represents the following in a Lisp-like structure, allowing us to view what the syntax tree should look like and whether or not the script [Expr.cs] (https://github.com/jisanders1/Projects/blob/main/Programming%20Languages%20(CS%20403)/Jlox/Lox%20Interpreter/Lox/Expr.cs) works as inteded.
+This represents the following in a Lisp-like structure, allowing us to view what the syntax tree should look like and whether or not the script [Expr.cs](https://github.com/jisanders1/Projects/blob/main/Programming%20Languages%20(CS%20403)/Jlox/Lox%20Interpreter/Lox/Expr.cs) works as inteded.
 ```
 -123 * (45.67)
 ```
