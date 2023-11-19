@@ -1,4 +1,6 @@
-﻿namespace Lox_Interpreter
+﻿using System;
+
+namespace Lox_Interpreter.Lox
 {
     /// <summary>
     /// Enum <c>TokenType</c> represents all the possible types of tokens there can be in Lox.

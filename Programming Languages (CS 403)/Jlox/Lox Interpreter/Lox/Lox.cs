@@ -1,6 +1,9 @@
-﻿using System.Text;
+﻿using System;
+using System.IO;
+using System.Collections.Generic;
+using System.Text;
 
-namespace Lox_Interpreter
+namespace Lox_Interpreter.Lox
 {
     /// <summary>
     /// Represents the entry point to the Jlox interepreter. 
@@ -20,7 +23,7 @@ namespace Lox_Interpreter
             if (args.Length > 1)
             {
                 Console.WriteLine("Usage: jlox [script]");
-                System.Environment.Exit(64);
+                Environment.Exit(64);
             }
             else if (args.Length == 1) // represents the case "jlox [filePath]"
             {
@@ -42,7 +45,7 @@ namespace Lox_Interpreter
             Encoding utf8 = new UTF8Encoding(true);
             byte[] bytes = File.ReadAllBytes(Path.GetFullPath(path));
             Run(new string(utf8.GetString(bytes)));
-            if (hadError) System.Environment.Exit(65);
+            if (hadError) Environment.Exit(65);
         }
 
         /// <summary>
@@ -66,7 +69,7 @@ namespace Lox_Interpreter
         /// Runs the source code by using a scanner to scan in tokens and then execute it.
         /// </summary>
         /// <param name="source">The file contents or line of code to be executed.</param>
-        private static void Run(String source)
+        private static void Run(string source)
         {
             Scanner scanner = new(source);
             List<Token> tokens = scanner.ScanTokens();

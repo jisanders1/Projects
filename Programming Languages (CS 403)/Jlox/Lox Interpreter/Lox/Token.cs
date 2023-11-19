@@ -1,14 +1,16 @@
-﻿namespace Lox_Interpreter
+﻿using System;
+
+namespace Lox_Interpreter.Lox
 {
     /// <summary>
     /// Represents a token that has a type, lexeme, a literal, and the line it is on.
     /// </summary>
     public class Token
     {
-        readonly TokenType type;
-        readonly String lexeme; // these are the blobs of raw source code
-        readonly Object? literal; // can be null, represents acutal values that the code needs/uses
-        readonly int line;
+        public readonly TokenType type;
+        public readonly String lexeme; // these are the blobs of raw source code
+        public readonly Object? literal; // can be null, represents acutal values that the code needs/uses
+        public readonly int line;
 
         /// <summary>
         /// Initializes an instace of the <see cref="Token"/> class.

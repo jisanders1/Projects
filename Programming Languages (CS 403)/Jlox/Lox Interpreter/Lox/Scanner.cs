@@ -1,9 +1,10 @@
 ﻿using Microsoft.VisualBasic;
 using System;
 using System.Linq;
-using static Lox_Interpreter.TokenType;
+using System.Collections.Generic;
+using static Lox_Interpreter.Lox.TokenType;
 
-namespace Lox_Interpreter
+namespace Lox_Interpreter.Lox
 {
     /// <summary>
     /// Represents the scanning of source code into tokens.
@@ -107,7 +108,11 @@ namespace Lox_Interpreter
                         // A comment goes until the end of the line.
                         while (Peek() != '\n' && !IsAtEnd()) Advance();
                     }
-                    else //CONSIDER ADDING SUPPORT FOR MULTI-LINE COMMENTS WITH /* */ SYNTAX, remember to handle new lines in these type of comments.
+                    else if (Match('*'))
+                    {
+                        MultiLineComment();
+                    }
+                    else
                     {
                         AddToken(SLASH);
                     }
@@ -140,6 +145,32 @@ namespace Lox_Interpreter
                         Lox.Error(line, "Unexpected character.");
                     }
                     break;
+            }
+        }
+
+        /// <summary>
+        /// Identifies the end of a multi-line comment and reports an error if the end is never reached.
+        /// </summary>
+        private void MultiLineComment()
+        {
+            while (!IsAtEnd())
+            {
+                char peek = Peek();
+                if (peek == '*')
+                {
+                    current++;
+                    if (Match('/')) return;
+                }
+                else if (peek == '\n')
+                {
+                    line++;
+                }
+                Advance();
+            }
+
+            if (IsAtEnd())
+            {
+                Lox.Error(line, "Unterminated comment.");
             }
         }
 
