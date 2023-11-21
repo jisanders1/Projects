@@ -11,8 +11,12 @@ namespace Lox_Interpreter.Lox
     /// </summary>
     internal class Lox
     {
-        //this variable is used to indicate when an error has been encountered
+        // The actual interpreter
+        private static readonly Interpreter interpreter = new();
+        // This variable is used to indicate when an error has been encountered
         public static bool hadError = false;
+        // This variable indicates if a runtime error has occured
+        public static bool hadRuntimeError = false;
 
         /// <summary>
         /// Handles when and how to run jlox, either in line-by-line in the terminal or runnning a file specified by path.
@@ -46,6 +50,7 @@ namespace Lox_Interpreter.Lox
             byte[] bytes = File.ReadAllBytes(Path.GetFullPath(path));
             Run(new string(utf8.GetString(bytes)));
             if (hadError) Environment.Exit(65);
+            if (hadRuntimeError) Environment.Exit(70);
         }
 
         /// <summary>
@@ -80,7 +85,7 @@ namespace Lox_Interpreter.Lox
             // Stop if there was a syntax error.
             if (hadError) return;
 
-            Console.WriteLine(new AstPrinter().Print(expression));
+            interpreter.Interpret(expression);
 
         }
 
@@ -109,6 +114,16 @@ namespace Lox_Interpreter.Lox
             {
                 Report(token.line, " at '" + token.lexeme + "'", message);
             }
+        }
+
+        /// <summary>
+        /// Reports a runtime error and indicates to the <see cref="Lox"/> class that an error has occured.
+        /// </summary>
+        /// <param name="error">Error thrown by interpreter.</param>
+        public static void RuntimeError(RuntimeError error)
+        {
+            Console.Error.WriteLine(error.Message + "\n[line " + error.token.line + "]");
+            hadRuntimeError = true;
         }
 
         /// <summary>
