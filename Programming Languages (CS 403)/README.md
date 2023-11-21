@@ -15,10 +15,14 @@ dotnet run <filename>.txt
 ```
 This runs code from a file within the Lox Interpreter/Lox directory. Currently, the tokens are just being spit back out into the terminal. But they will be parsed and interpreted later on.
 
+Challenges currently implemented:
+- Multi-line comments without nesting of more multi-line comments are allowed.
+- Divide by 0 is not allowed and an error will be thrown.
+
 Current Issues to Note:
 - Needing to comment out different Main methods in order to execute the program properly. This is extremely tedious and leaves a bit of room for error.
 - A makefile in order to run the program as intended. "dotnet run" should be "jlox" in order to make what's occuring more clear.
 - There are a couple of warnings warning that certain strings could possibly be null. However, for the purposes of the interpreter and fromm my testing thus far, these do not wreck the program.
 - I should probably start making test cases with unit testing to ensure everything is running smoothly. This could probably be handled as soon as I figure out the multiple main problems. However, I do not think this is extremely urgent given the fact that I am refactoring code from a book, and there code is most likely well tested.
 - There is no "throws IOException" equivalent in C# and this may affect how the program works.
-- Parse currently allows a ")" when there is no opening parenthesis. I'm not sure if this is intended or not but I will continue to monitor it as time goes on.
+- Parse currently allows a ")" when there is no opening parenthesis. I'm not sure if this is intended or not but I will continue to monitor it as time goes on. For now, anything after it is simply not evaluated at all.
