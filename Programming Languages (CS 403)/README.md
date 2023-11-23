@@ -7,6 +7,11 @@ Chapter 8:
 - Used the book's test case to test scope and variable assignment.
 - Successfully build the project and an [XML file](https://github.com/jisanders1/Projects/blob/main/Programming%20Languages%20(CS%20403)/Jlox/Lox%20Documentation.xml) where documentation for the classes and methods can be viewed. Formatting is needed to make it more readable. I may be able to generate a makefile with this executable.
 
+Chapter 9:
+- Added the ability to evaluate if-else statements and for/while loops.
+- Moved GenerateAst.cs to it's own project to fix the Main comment problems.
+- Used the books test case to test for loop.
+
 In order to run it, you should verify that you have C# installed on your computer. I would also suggest installing Visual Studio since this is the IDE that I created this project with. Then you should naviagate to Jlox/Lox Interpreter/Tool in your terminal and enter the following commands:
 ```
 csc.exe GenerateAst.cs
