@@ -85,7 +85,7 @@ namespace Lox_Interpreter.Lox
             return expr.Accept(this);
         }
 
-        // Below 4 methods implement the Visitor paradigm for Statements.
+        // Below 6 methods implement the Visitor paradigm for Statements.
         // Since void is not allowed as a generic type in C#, the return type is Object and null is simply returned.
         public Object? VisitVarStmt(Var stmt)
         {
@@ -114,8 +114,28 @@ namespace Lox_Interpreter.Lox
             Console.WriteLine(Stringify(value));
             return null;
         }
+        public Object? VisitIfStmt(Stmt.If stmt)
+        {
+            if (IsTruthy(Evaluate(stmt.condition)))
+            {
+                Execute(stmt.thenBranch);
+            }
+            else if (stmt.elseBranch != null)
+            {
+                Execute(stmt.elseBranch);
+            }
+            return null;
+        }
+        public Object? VisitWhileStmt(Stmt.While stmt)
+        {
+            while (IsTruthy(Evaluate(stmt.condition)))
+            {
+                Execute(stmt.body);
+            }
+            return null;
+        }
 
-        // Below 6 methods implement the Visitor paradigm through treating different expression ttypes differently.
+        // Below 7 methods implement the Visitor paradigm through treating different expression ttypes differently.
         // Each method recursively calls Evaluate() except the Literal method, with simply returns it's value.
         // Otherwise, these do the actual evaluating.
         public Object? VisitAssignExpr(Assign expr)
@@ -138,9 +158,9 @@ namespace Lox_Interpreter.Lox
 
             switch (expr.oper.type) 
             {
-                case BANG:
+                case BANG: // Negation of boolean values.
                     return !IsTruthy(right);
-                case MINUS:
+                case MINUS: // Negation
                     CheckNumberOperand(expr.oper, right);
                     return -(double)right;
             }
@@ -200,6 +220,19 @@ namespace Lox_Interpreter.Lox
         public Object? VisitVariableExpr(Expr.Variable expr)
         {
             return environment.Get(expr.name);
+        }
+        public Object? VisitLogicalExpr(Expr.Logical expr)
+        {
+            Object? left = Evaluate(expr.left);
+
+            if (expr.oper.type == TokenType.OR) { // Allows for short-circuiting with the and/or operator
+                if (IsTruthy(left)) return left;
+            } else
+            {
+                if (!IsTruthy(left)) return left;
+            }
+
+            return Evaluate(expr.right);
         }
 
         /// <summary>

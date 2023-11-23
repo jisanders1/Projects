@@ -3,7 +3,8 @@ using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Lox_Interpreter.Tool
+// Directory of Lox Files is ../../../../"Lox Interpreter"/Lox
+namespace Ast_Generator
 {
     /// <summary>
     /// Represents the generation expression classes for Lox syntax trees.
@@ -14,7 +15,7 @@ namespace Lox_Interpreter.Tool
         /// Creates a new class that represents the grammar of Lox. Comment out when running main Lox class.
         /// </summary>
         /// <param name="args">Path oc new class.</param>
-        /*public static void Main(String[] args)
+        public static void Main(String[] args)
         {
             if (args.Length != 1)
             {
@@ -28,6 +29,7 @@ namespace Lox_Interpreter.Tool
                 "Binary   : Expr left, Token oper, Expr right",
                 "Grouping : Expr expression",
                 "Literal  : Object? value",
+                "Logical  : Expr left, Token oper, Expr right",
                 "Unary    : Token oper, Expr right",
                 "Variable : Token name"};
 
@@ -36,11 +38,12 @@ namespace Lox_Interpreter.Tool
             array = new string[] {
                 "Block      : List<Stmt?> statements",
                 "Expression : Expr expression",
+                "If         : Expr condition, Stmt thenBranch, Stmt? elseBranch",
                 "Print      : Expr expression",
-                "Var        : Token name, Expr? initializer"};
+                "Var        : Token name, Expr? initializer",
+                "While      : Expr condition, Stmt body"};
             DefineAst(outputDir, "Stmt", array.ToList());
-        }*/
-
+        }
         /// <summary>
         /// Generates the script that represents an automatic syntax tree for the grammar of Lox.
         /// </summary>
@@ -85,7 +88,7 @@ namespace Lox_Interpreter.Tool
             foreach (String type in types)
             {
                 String typeName = type.Split(':')[0].Trim();
-                writer.WriteLine("\t\t\tR Visit" + typeName + baseName + "(" +typeName + " " + baseName.ToLower() + ");");
+                writer.WriteLine("\t\t\tR Visit" + typeName + baseName + "(" + typeName + " " + baseName.ToLower() + ");");
             }
             writer.WriteLine("\t\t}");
         }

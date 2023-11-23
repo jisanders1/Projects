@@ -239,6 +239,24 @@
             </summary>
             <returns>A valid expression statement.</returns>
         </member>
+        <member name="M:Lox_Interpreter.Lox.Parser.IfStatement">
+            <summary>
+            Rerpresents the syntax of a valid if statement, similar to the C language.
+            </summary>
+            <returns>A valid if statement.</returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Parser.WhileStatement">
+            <summary>
+            Represents the sytanx of a valid while loop, similar to the C language.
+            </summary>
+            <returns>A valid while loop.</returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Parser.ForStatement">
+            <summary>
+            Reresents the syntax of a valid for loop, similar to the C language.
+            </summary>
+            <returns>A valid for loop.</returns>
+        </member>
         <member name="M:Lox_Interpreter.Lox.Parser.Block">
             <summary>
             Repreents the syntax of a block statement, which could be an empty block or a block of declarations enclosed by {}.
@@ -257,8 +275,30 @@
             </summary>
             <returns>A valid expression or assignment expression if appropriate.</returns>
         </member>
-        <!-- Badly formed XML comment ignored for member "M:Lox_Interpreter.Lox.Parser.Equality" -->
-        <!-- Badly formed XML comment ignored for member "M:Lox_Interpreter.Lox.Parser.Comparison" -->
+        <member name="M:Lox_Interpreter.Lox.Parser.Or">
+            <summary>
+            Reresents the syntax to an or opertor, which is similar to a binary operator with special condiitions.
+            </summary>
+            <returns>A valid or operator, or a valid and operator.</returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Parser.And">
+            <summary>
+            Represents the syntax to an and operator, which is similar to a binary operator with special conditions.
+            </summary>
+            <returns>A valid or operator, or an equality expression.</returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Parser.Equality">
+            <summary>
+            Represents the equality rule and checks for the equality operators within an expression.
+            </summary>
+            <returns>A valid equality expression.</returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Parser.Comparison">
+            <summary>
+            Represents the comparison rule and checks for comparison operators within an expression.
+            </summary>
+            <returns>A valid comparison expression.</returns>
+        </member>
         <member name="M:Lox_Interpreter.Lox.Parser.Term">
             <summary>
             Represents the term rule, which checks for adding/subtracting.
@@ -491,36 +531,6 @@
             <summary>
             Represents all the possible types of tokens there can be in Lox.
             </summary>
-        </member>
-        <member name="T:Lox_Interpreter.Tool.GenerateAst">
-            <summary>
-            Represents the generation expression classes for Lox syntax trees.
-            </summary>
-        </member>
-        <member name="M:Lox_Interpreter.Tool.GenerateAst.DefineAst(System.String,System.String,System.Collections.Generic.List{System.String})">
-            <summary>
-            Generates the script that represents an automatic syntax tree for the grammar of Lox.
-            </summary>
-            <param name="outputDir">Path of class relative to the current location.</param>
-            <param name="baseName">Name of class/filename</param>
-            <param name="types">List containing information about the types of </param>
-        </member>
-        <member name="M:Lox_Interpreter.Tool.GenerateAst.DefineVisitor(System.IO.StreamWriter,System.String,System.Collections.Generic.List{System.String})">
-            <summary>
-            Generates interface for the Visitor pattern.
-            </summary>
-            <param name="writer">Writes text to the new class file.</param>
-            <param name="baseName">Name that becomes part of interface methods.</param>
-            <param name="types">List containing names of different expression types.</param>
-        </member>
-        <member name="M:Lox_Interpreter.Tool.GenerateAst.DefineType(System.IO.StreamWriter,System.String,System.String,System.String)">
-            <summary>
-            Generates subclasses of the syntax tree while implementing interface methods.
-            </summary>
-            <param name="writer">Writes text to the new class file.</param>
-            <param name="baseName">Name that becomes the superclass for inheritance.</param>
-            <param name="className">Name of the subclass.</param>
-            <param name="fieldList">List of the fields for each subclass.</param>
         </member>
     </members>
 </doc>

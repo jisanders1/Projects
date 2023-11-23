@@ -6,15 +6,15 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v6.0": {
-      "Lox Interpreter/1.0.0": {
+      "Ast Generator/1.0.0": {
         "runtime": {
-          "Lox Interpreter.dll": {}
+          "Ast Generator.dll": {}
         }
       }
     }
   },
   "libraries": {
-    "Lox Interpreter/1.0.0": {
+    "Ast Generator/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

@@ -47,6 +47,11 @@ namespace Lox_Interpreter.Lox
             return returnText;
         }
 
+        public string VisitLogicalExpr(Logical expr)
+        {
+            return "Nah";
+        }
+
         public string VisitUnaryExpr(Unary expr)
         {
             return Parenthesize(expr.oper.lexeme, expr.right);

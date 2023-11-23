@@ -86,7 +86,10 @@ namespace Lox_Interpreter.Lox
         /// <returns>A valid print, block, or expression statement.</returns>
         private Stmt Statement()
         {
+            if (Match(FOR)) return ForStatement();
+            if (Match(IF)) return IfStatement();
             if (Match(PRINT)) return PrintStatement();
+            if (Match(WHILE)) return WhileStatement();
             if (Match(LEFT_BRACE)) return new Stmt.Block(Block());
 
             return ExpressionStatement();
@@ -112,6 +115,96 @@ namespace Lox_Interpreter.Lox
             Expr expr = Expression();
             Consume(SEMICOLON, "Expect ';' after expression.");
             return new Expression(expr);
+        }
+
+        /// <summary>
+        /// Rerpresents the syntax of a valid if statement, similar to the C language.
+        /// </summary>
+        /// <returns>A valid if statement.</returns>
+        private Stmt IfStatement()
+        {
+            Consume(LEFT_PAREN, "Expect '(' after 'if'.");
+            Expr condition = Expression();
+            Consume(RIGHT_PAREN, "Expect ')' after if condition.");
+
+            Stmt thenBranch = Statement();
+            Stmt? elseBranch = null;
+            if (Match(ELSE))
+            {
+                elseBranch = Statement();
+            }
+
+            return new If(condition, thenBranch, elseBranch);
+        }
+
+        /// <summary>
+        /// Represents the sytanx of a valid while loop, similar to the C language.
+        /// </summary>
+        /// <returns>A valid while loop.</returns>
+        private Stmt WhileStatement()
+        {
+            Consume(LEFT_PAREN, "Expect '(' after 'while'.");
+            Expr condition = Expression();
+            Consume(RIGHT_PAREN, "Expect ')' after condition.");
+            Stmt body = Statement();
+
+            return new Stmt.While(condition, body);
+        }
+
+        /// <summary>
+        /// Reresents the syntax of a valid for loop, similar to the C language.
+        /// </summary>
+        /// <returns>A valid for loop.</returns>
+        private Stmt ForStatement()
+        {
+            Consume(LEFT_PAREN, "Expect '(' after 'for'.");
+
+            // Initializer portion of loop
+            Stmt? initializer;
+            if (Match(SEMICOLON))
+            {
+                initializer = null;
+            }
+            else if (Match(VAR))
+            {
+                initializer = VarDeclaration();
+            }
+            else
+            {
+                initializer = ExpressionStatement();
+            }
+
+            // Condition portion of loop
+            Expr? condition = null;
+            if (!Check(SEMICOLON))
+            {
+                condition = Expression();
+            }
+            Consume(SEMICOLON, "Expect ';' after loop condition.");
+
+            // Increment portion of loop
+            Expr? increment = null;
+            if (!Check(RIGHT_PAREN))
+            {
+                increment = Expression();
+            }
+            Consume(RIGHT_PAREN, "Expect ')' after for clauses.");
+            Stmt body = Statement();
+
+            // Representing a for loop with a while loop in order to avoid additional methods/class changes.
+            if (increment != null)
+            {
+                body = new Block(new List<Stmt?> { body, new Expression(increment) });
+            }
+
+            if (condition == null) condition = new Literal(true); // Default to true if no condition is provided.
+            body = new While(condition, body);
+
+            if (initializer != null) // Ran only once before the body executes.
+            {
+                body = new Block(new List<Stmt?> { initializer, body });
+            }
+            return body;
         }
 
         /// <summary>
@@ -146,7 +239,7 @@ namespace Lox_Interpreter.Lox
         /// <returns>A valid expression or assignment expression if appropriate.</returns>
         private Expr Assignment()
         {
-            Expr expr = Equality();
+            Expr expr = Or();
 
             if (Match(EQUAL))
             {
@@ -159,6 +252,42 @@ namespace Lox_Interpreter.Lox
                 }
 
                 Error(equals, "Invalid assignment target.");
+            }
+
+            return expr;
+        }
+
+        /// <summary>
+        /// Reresents the syntax to an or opertor, which is similar to a binary operator with special condiitions.
+        /// </summary>
+        /// <returns>A valid or operator, or a valid and operator.</returns>
+        private Expr Or()
+        {
+            Expr expr = And();
+
+            while (Match(OR))
+            {
+                Token oper = Previous();
+                Expr right = And();
+                expr = new Logical(expr, oper, right);
+            }
+
+            return expr;
+        }
+
+        /// <summary>
+        /// Represents the syntax to an and operator, which is similar to a binary operator with special conditions.
+        /// </summary>
+        /// <returns>A valid or operator, or an equality expression.</returns>
+        private Expr And()
+        {
+            Expr expr = Equality();
+
+            while (Match(AND))
+            {
+                Token oper = Previous();
+                Expr right = Equality();
+                expr = new Logical(expr, oper, right);
             }
 
             return expr;
