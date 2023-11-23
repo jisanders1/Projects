@@ -1,5 +1,6 @@
 This repository currently contains the workings of a Lox interpreter. I am currently using the book "Crafting Interpreters" and translating from Java to C#.
 Notes on each chapter:
+
 Chapter 8:
 - Added the ability to evauate statements with scope.
 - Handled the copious null errors. This involved the use of '?' with return types/variable types and also the null-coalescent operator '??'.
