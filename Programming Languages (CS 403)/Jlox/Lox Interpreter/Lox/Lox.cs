@@ -27,7 +27,7 @@ namespace Lox_Interpreter.Lox
             if (args.Length > 1)
             {
                 Console.WriteLine("Usage: jlox [script]");
-                Environment.Exit(64);
+                System.Environment.Exit(64);
             }
             else if (args.Length == 1) // represents the case "jlox [filePath]"
             {
@@ -49,8 +49,8 @@ namespace Lox_Interpreter.Lox
             Encoding utf8 = new UTF8Encoding(true);
             byte[] bytes = File.ReadAllBytes(Path.GetFullPath(path));
             Run(new string(utf8.GetString(bytes)));
-            if (hadError) Environment.Exit(65);
-            if (hadRuntimeError) Environment.Exit(70);
+            if (hadError) System.Environment.Exit(65);
+            if (hadRuntimeError) System.Environment.Exit(70);
         }
 
         /// <summary>
@@ -80,12 +80,12 @@ namespace Lox_Interpreter.Lox
             List<Token> tokens = scanner.ScanTokens();
 
             Parser parser = new(tokens);
-            Expr? expression = parser.Parse(); // if Parse returns null, an error will be raised and the Print statement below will never execute.
+            List<Stmt?> statements = parser.Parse();// if Parse returns null, an error will be raised and the Print statement below will never execute.
 
             // Stop if there was a syntax error.
             if (hadError) return;
 
-            interpreter.Interpret(expression);
+            interpreter.Interpret(statements);
 
         }
 

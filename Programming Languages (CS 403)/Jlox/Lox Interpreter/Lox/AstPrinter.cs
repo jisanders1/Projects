@@ -23,27 +23,38 @@ namespace Lox_Interpreter.Lox
             return expr.Accept(this);
         }
 
+        public string VisitAssignExpr(Assign expr)
+        {
+            return "eh";
+        }
+
         //The four functions below call the Parenthesize() function differently depending on the type of expression (binary, grouping, literal, unary).
         //These are called in the Expr class.
-        public String VisitBinaryExpr(Binary expr)
+        public string VisitBinaryExpr(Binary expr)
         {
             return Parenthesize(expr.oper.lexeme, expr.left, expr.right);
         }
 
-        public String VisitGroupingExpr(Grouping expr)
+        public string VisitGroupingExpr(Grouping expr)
         {
             return Parenthesize("group", expr.expression);
         }
 
-        public String VisitLiteralExpr(Literal expr)
+        public string VisitLiteralExpr(Literal expr)
         {
             if (expr.value == null) return "nil";
-            return expr.value.ToString();
+            string returnText = expr.value.ToString() ?? "nil";
+            return returnText;
         }
 
-        public String VisitUnaryExpr(Unary expr)
+        public string VisitUnaryExpr(Unary expr)
         {
             return Parenthesize(expr.oper.lexeme, expr.right);
+        }
+
+        public string VisitVariableExpr(Variable expr)
+        {
+            return "not dealing with this.";
         }
 
         /// <summary>
@@ -52,7 +63,7 @@ namespace Lox_Interpreter.Lox
         /// <param name="name">The lexeme of the expression</param>
         /// <param name="exprs">Expression(s) to convert to strings.</param>
         /// <returns>A new string representation of the expression(s).</returns>
-        private String Parenthesize(String name, params Expr[] exprs)
+        private string Parenthesize(String name, params Expr[] exprs)
         {
             StringBuilder builder = new();
 

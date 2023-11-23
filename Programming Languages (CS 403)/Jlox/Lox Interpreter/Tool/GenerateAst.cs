@@ -24,12 +24,21 @@ namespace Lox_Interpreter.Tool
             String outputDir = args[0];
             // Used to implement subclass information
             String[] array = new string[] {
+                "Assign   : Token name, Expr value",
                 "Binary   : Expr left, Token oper, Expr right",
                 "Grouping : Expr expression",
-                "Literal  : Object value",
-                "Unary    : Token oper, Expr right"};
+                "Literal  : Object? value",
+                "Unary    : Token oper, Expr right",
+                "Variable : Token name"};
 
             DefineAst(outputDir, "Expr", array.ToList());
+
+            array = new string[] {
+                "Block      : List<Stmt?> statements",
+                "Expression : Expr expression",
+                "Print      : Expr expression",
+                "Var        : Token name, Expr? initializer"};
+            DefineAst(outputDir, "Stmt", array.ToList());
         }*/
 
         /// <summary>

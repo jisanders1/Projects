@@ -1,0 +1,526 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Lox Interpreter</name>
+    </assembly>
+    <members>
+        <member name="T:Lox_Interpreter.Lox.AstPrinter">
+            <summary>
+            Represents the printing of a syntax tree to the console.
+            </summary>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.AstPrinter.Print(Lox_Interpreter.Lox.Expr)">
+            <summary>
+            Serves as a gateway for printing expressions. Exactly what is printed depends on the type of expression.
+            </summary>
+            <param name="expr">The expression needing to be printed.</param>
+            <returns>String representation of the expression in the syntax tree.</returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.AstPrinter.Parenthesize(System.String,Lox_Interpreter.Lox.Expr[])">
+            <summary>
+            Builds a new string to represent an expression(s) as an element of a syntax tree.
+            </summary>
+            <param name="name">The lexeme of the expression</param>
+            <param name="exprs">Expression(s) to convert to strings.</param>
+            <returns>A new string representation of the expression(s).</returns>
+        </member>
+        <member name="T:Lox_Interpreter.Lox.Environment">
+            <summary>
+            Rerpresents the environment of a program, which includes variable's and their values.
+            </summary>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Environment.#ctor">
+            <summary>
+            Initializes an instance of the <see cref="T:Lox_Interpreter.Lox.Environment"/> class with no parent.
+            </summary>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Environment.#ctor(Lox_Interpreter.Lox.Environment)">
+            <summary>
+            Initializes an instance of the <see cref="T:Lox_Interpreter.Lox.Environment"/> class with a parent environment.
+            </summary>
+            <param name="enclosing">The parent of the current environment.</param>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Environment.Get(Lox_Interpreter.Lox.Token)">
+            <summary>
+            Searches current and parent environment for given token (variable) and returns it if found; otherwise, an exception is thrown.
+            </summary>
+            <param name="name">Token being searched for</param>
+            <returns>The value of the token stored in the environment.</returns>
+            <exception cref="T:Lox_Interpreter.Lox.RuntimeError"></exception>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Environment.Define(System.String,System.Object)">
+            <summary>
+            Defines a new variable with the givem name and value in the current environment.
+            </summary>
+            <param name="name">Name of new variable.</param>
+            <param name="value">Value of new variable.</param>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Environment.Assign(Lox_Interpreter.Lox.Token,System.Object)">
+            <summary>
+            Assigns a value to an existing variable. If the variable does not exist, an exception is thrown.
+            </summary>
+            <param name="name">Name of existing variable.</param>
+            <param name="value">New value to be assigned to existing variable.</param>
+            <exception cref="T:Lox_Interpreter.Lox.RuntimeError"></exception>
+        </member>
+        <member name="T:Lox_Interpreter.Lox.Interpreter">
+            <summary>
+            Represents an interpreter that takes in a syntax tree and evaluates it.
+            </summary>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Interpreter.Interpret(System.Collections.Generic.List{Lox_Interpreter.Lox.Stmt})">
+            <summary>
+            Entry point to interpreter, catches and reports an runtime error if one is thrown.
+            </summary>
+            <param name="statements">Syntax tree to be interpreted.</param>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Interpreter.Execute(Lox_Interpreter.Lox.Stmt)">
+            <summary>
+            Base call that executes a statement.
+            </summary>
+            <param name="stmt">Statement to be executed.</param>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Interpreter.ExecuteBlock(System.Collections.Generic.List{Lox_Interpreter.Lox.Stmt},Lox_Interpreter.Lox.Environment)">
+            <summary>
+            Executes a block of statements with their own <see cref="T:Lox_Interpreter.Lox.Environment"/>. After it is finished executing, it restores the base environment.
+            </summary>
+            <param name="statements">List of statements to execute.</param>
+            <param name="environment">Environment for the scope of the block of statements.</param>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Interpreter.Evaluate(Lox_Interpreter.Lox.Expr)">
+            <summary>
+            Evaluates an expression through the Visior paradigm.
+            </summary>
+            <param name="expr">Expression to be evaluated.</param>
+            <returns>An object containing the result of the evaluation.</returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Interpreter.CheckNumberOperand(Lox_Interpreter.Lox.Token,System.Object)">
+            <summary>
+            Verifies that a singular operand is a number. An exception is thrown when the operand is not a number.
+            </summary>
+            <param name="oper">Operator token of the expression.</param>
+            <param name="operand">Operand being evaluated.</param>
+            <exception cref="T:Lox_Interpreter.Lox.RuntimeError"></exception>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Interpreter.CheckNumberOperands(Lox_Interpreter.Lox.Token,System.Object,System.Object)">
+            <summary>
+            Verifies that both the left and right operands are both numbers. Throws exception if either are not a number.
+            </summary>
+            <param name="oper">Operator token of the expression.</param> 
+            <param name="left">Left operand of expression.</param>
+            <param name="right">Right operand of expression.</param>
+            <exception cref="T:Lox_Interpreter.Lox.RuntimeError"></exception>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Interpreter.IsTruthy(System.Object)">
+            <summary>
+            Handles how boolean values are treated in Lox.
+            </summary>
+            <param name="obj">Value to check for truthy-ness.</param>
+            <returns><see langword="true"/> if the input is True or is a non-null value; otherwise, <see langword="false"/> if False or <see langword="null"/>.</returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Interpreter.IsEqual(System.Object,System.Object)">
+            <summary>
+            Handles what is treated as equal.
+            </summary>
+            <param name="a">Left operand.</param>
+            <param name="b">Right operand</param>
+            <returns><see langword="true"/> if a and b are equivalent objects or if a and b are null, otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Interpreter.Stringify(System.Object)">
+            <summary>
+            Converts an object to a string. All integers are treated as doubles in Lox, so the decimal is removed.
+            </summary>
+            <param name="obj">Object to be converted into a string.</param>
+            <returns>A string equivalent of the object.</returns>
+        </member>
+        <member name="T:Lox_Interpreter.Lox.Lox">
+            <summary>
+            Represents the entry point to the Jlox interepreter. 
+            It is responsible for reading and running Lox files/lines of code and reporting errors.
+            </summary>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Lox.Main(System.String[])">
+            <summary>
+            Handles when and how to run jlox, either in line-by-line in the terminal or runnning a file specified by path.
+            </summary>
+            <param name="args">The command line arguments on which to run jlox. Optional specification of file name or path is allowed.</param>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Lox.RunFile(System.String)">
+            <summary>
+            Takes a file name or path and executes the contents of that file. 
+            If an error occurs in running the code, the code will stop being executed.
+            </summary>
+            <param name="path">File name or path of file that is being interpreted.</param>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Lox.RunPrompt">
+            <summary>
+            Allows the user to enter jlox code line by line in a terminal and have their code be executed line by line until EOF.
+            To end a file, type CTRL+Z+ENTER.
+            </summary>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Lox.Run(System.String)">
+            <summary>
+            Runs the source code by using a scanner to scan in tokens and parsing the tokens into expressions.
+            </summary>
+            <param name="source">The file contents or line of code to be executed.</param>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Lox.Error(System.Int32,System.String)">
+            <summary>
+            Calls <see cref="M:Lox_Interpreter.Lox.Lox.Report(System.Int32,System.String,System.String)"/> to report an error.
+            </summary>
+            <param name="line">Line where the error was found.</param>
+            <param name="message">Error message to be printed.</param>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Lox.Error(Lox_Interpreter.Lox.Token,System.String)">
+            <summary>
+            Calls <see cref="M:Lox_Interpreter.Lox.Lox.Report(System.Int32,System.String,System.String)"/> to report an error.
+            </summary>
+            <param name="token">Token that causes the error.</param>
+            <param name="message">Error message to be printed</param>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Lox.RuntimeError(Lox_Interpreter.Lox.RuntimeError)">
+            <summary>
+            Reports a runtime error and indicates to the <see cref="T:Lox_Interpreter.Lox.Lox"/> class that an error has occured.
+            </summary>
+            <param name="error">Error thrown by interpreter.</param>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Lox.Report(System.Int32,System.String,System.String)">
+            <summary>
+            Prints an error message to the terminal and changes the Lox class to be in an error state.
+            </summary>
+            <param name="line">Line where the error was found.</param>
+            <param name="where">Location in line where error occurs.</param>
+            <param name="message">Error message to be printed.</param>
+        </member>
+        <member name="T:Lox_Interpreter.Lox.Parser.ParseError">
+            <summary>
+            Inherits from the <see cref="T:System.Exception"/> class in order to throw and report errors.
+            </summary>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Parser.#ctor(System.Collections.Generic.List{Lox_Interpreter.Lox.Token})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Lox_Interpreter.Lox.Parser"/> class with a list of tokens.
+            </summary>
+            <param name="tokens">List of tokents to populate class's token field</param>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Parser.Parse">
+            <summary>
+            Serves as an entry point to parsing the Lox language into executable statement with recursive descent. 
+            </summary>
+            <returns>A valid list of statements or expressions. This list may contain null values for errors.</returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Parser.Declaration">
+            <summary>
+            Represents the rule for a declaration, which could be either an variable declaration or a statement. Catches a parsing error if one is thrown.
+            </summary>
+            <returns>A valid statement, variable declaration statement, or <see langword="null"/> if an error is caught.</returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Parser.VarDeclaration">
+            <summary>
+            Represents the syntax of a variable declaration.
+            </summary>
+            <returns>A variable statement with its own name and value.</returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Parser.Statement">
+            <summary>
+            Represents the statement rule, which could be a print statement, a block, or an expression.
+            </summary>
+            <returns>A valid print, block, or expression statement.</returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Parser.PrintStatement">
+            <summary>
+            Represents the syntax of a print statement. Checks for a valid expression and a semicolon.
+            </summary>
+            <returns>A valid print statement.</returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Parser.ExpressionStatement">
+            <summary>
+            Represents the syntax of a valid expression statement (one that requires a semicolon at the end).
+            </summary>
+            <returns>A valid expression statement.</returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Parser.Block">
+            <summary>
+            Repreents the syntax of a block statement, which could be an empty block or a block of declarations enclosed by {}.
+            </summary>
+            <returns>A list of valid declaration statements.</returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Parser.Expression">
+            <summary>
+            Represents the expression rule that consists of an assignment.
+            </summary>
+            <returns>A valid expression.</returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Parser.Assignment">
+            <summary>
+            Represents the rule for assignment. Treats the left-hand side as its own expression.
+            </summary>
+            <returns>A valid expression or assignment expression if appropriate.</returns>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:Lox_Interpreter.Lox.Parser.Equality" -->
+        <!-- Badly formed XML comment ignored for member "M:Lox_Interpreter.Lox.Parser.Comparison" -->
+        <member name="M:Lox_Interpreter.Lox.Parser.Term">
+            <summary>
+            Represents the term rule, which checks for adding/subtracting.
+            </summary>
+            <returns>A valid term expression.</returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Parser.Factor">
+            <summary>
+            Represents the factor rule, which checks for multiplication/division
+            </summary>
+            <returns>A valid factor expression.</returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Parser.Unary">
+            <summary>
+            Represents the unary rule, which checks for the operators ! and negation.
+            </summary>
+            <returns>A valid unary expression.</returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Parser.Primary">
+            <summary>
+            Represents the primary rule, which checks for literals and other terminals (such as nil). Will throw errors in cases of bad grouping use.
+            </summary>
+            <returns>A valid literal, or will throw an exception if problems in syntax are present.</returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Parser.Match(Lox_Interpreter.Lox.TokenType[])">
+            <summary>
+            Checks if a number of types mach the current token.
+            </summary>
+            <param name="types"><see cref="T:Lox_Interpreter.Lox.TokenType"/>(s) to be checked for matches.</param>
+            <returns><see langword="true"/> if the type(s) match the currenty token's type and advances to the next token; otherwise; <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Parser.Consume(Lox_Interpreter.Lox.TokenType,System.String)">
+            <summary>
+            Consumes tokens until the type matching the input type is found. Throws an exception if the input type is not found.
+            </summary>
+            <param name="type">Type to search for.</param>
+            <param name="message">Error message to print in case the input type is not found.</param>
+            <returns>The token matching the input's type if an exception is not thrown.'</returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Parser.Check(Lox_Interpreter.Lox.TokenType)">
+            <summary>
+            Checks if the input's type is the same as the current token's type.
+            </summary>
+            <param name="type">The type to be checked.</param>
+            <returns><see langword="true"/> if the input's type matches the current token's type; <see langword="false"/> if at the end of the token list or the types do not match.</returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Parser.Advance">
+            <summary>
+            Advances to the next token if not at the end of the token list.
+            </summary>
+            <returns>The original token before advancement.</returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Parser.IsAtEnd">
+            <summary>
+            Checks current position in token list.
+            </summary>
+            <returns><see langword="true"/> if at the end of the list (indicated by EOF <see cref="T:Lox_Interpreter.Lox.TokenType"/>); otherwise <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Parser.Peek">
+            <summary>
+            Returns the current token without advancing to the next token.
+            </summary>
+            <returns>The current token.</returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Parser.Previous">
+            <summary>
+            Returns the previous token without advancing to the next toke.
+            </summary>
+            <returns>The previous token.</returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Parser.Error(Lox_Interpreter.Lox.Token,System.String)">
+            <summary>
+            Reports to the <see cref="T:Lox_Interpreter.Lox.Lox"/> class that an error has occured.
+            </summary>
+            <param name="token">Token that caused the error.</param>
+            <param name="message">Error message to be printed.</param>
+            <returns>A <see cref="T:Lox_Interpreter.Lox.Parser.ParseError"/> exception.</returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Parser.Synchronize">
+            <summary>
+            Continues advancing until the start of the nextstatement in order to restore a parser's state.
+            </summary>
+        </member>
+        <member name="T:Lox_Interpreter.Lox.RuntimeError">
+            <summary>
+            Represents a runtime error within the Lox Interpreter, inherits from the <see cref="T:System.Exception"/> class.
+            </summary>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.RuntimeError.#ctor(Lox_Interpreter.Lox.Token,System.String)">
+            <summary>
+            Constructor, calls <see cref="M:System.Exception.#ctor"/> as well to initiate error message.
+            </summary>
+            <param name="token">Token that caused the runtime error.</param>
+            <param name="message">Error message to be instantiated.</param>
+        </member>
+        <member name="T:Lox_Interpreter.Lox.Scanner">
+            <summary>
+            Represents the scanning of source code into tokens.
+            </summary>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Scanner.#cctor">
+            <summary>
+            Generates a dictionary of reserved words for the Lox language.
+            </summary>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Scanner.#ctor(System.String)">
+            <summary>
+            Initializes an instance of the <see cref="T:Lox_Interpreter.Lox.Scanner"/> class with the specified source.
+            </summary>
+            <param name="source">Source code to scan tokens from.</param>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Scanner.ScanTokens">
+            <summary>
+            Calls <see cref="M:Lox_Interpreter.Lox.Scanner.ScanToken"/> while not at the end of the file in order to handle scnaning. Adds an EOF token at the end of the token list.
+            </summary>
+            <returns>A list of <see cref="T:Lox_Interpreter.Lox.Token"/>s with an EOF token at the end of the list.</returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Scanner.ScanToken">
+            <summary>
+            Iterates through each character to determine the lexemes and tokens of the source code. Reports an error when an unrecognize character is read.
+            </summary>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Scanner.MultiLineComment">
+            <summary>
+            Identifies the end of a multi-line comment and reports an error if the end is never reached.
+            </summary>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Scanner.Identifier">
+            <summary>
+            Determines if a lexeme is an identifier or a reserved word of the language. 
+            Once identified, it calls <see cref="M:Lox_Interpreter.Lox.Scanner.AddToken(Lox_Interpreter.Lox.TokenType)"/> to add the lexeme to the token list.
+            </summary>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Scanner.Number">
+            <summary>
+            Identifies a lexeme as a number and adds it as a token. All numbers are handled as floating-point decimals.
+            </summary>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Scanner.StringMethod">
+            <summary>
+            Identifies a lexeme as a string and adds it as a token. Reports an error if the string is unterminated.
+            </summary>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Scanner.Match(System.Char)">
+            <summary>
+            Takes a character and compares it to the source at the current character. Iterates current if the character matches
+            </summary>
+            <param name="expected"></param>
+            <returns><see langword="true"/> if the characters match; otherwise, <see langword="false"/> if at the end of the source or if the characters do not match.</returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Scanner.Peek">
+            <summary>
+            Takes a peek at the current character and returns it.
+            </summary>
+            <returns>The null terminator if at the end of the list; otherwise, returns the current character in source.</returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Scanner.PeekNext">
+            <summary>
+            Takes a peek at the next character and returns it.
+            </summary>
+            <returns>The null terminator if at the end of the list; otherwise, returns the next character in source.</returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Scanner.IsDigit(System.Char)">
+            <summary>
+            Checks if a character is a digit between 0 and 9, inclusive.
+            </summary>
+            <param name="c">The character to check.</param>
+            <returns><see langword="true"/> if the character is a digit between 0 and 9; otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Scanner.IsAlpha(System.Char)">
+            <summary>
+            Checks if a character is a letter (A-Z or a-z) or underscore.
+            </summary>
+            <param name="c">The character to check.</param>
+            <returns><see langword="true"/> if the character is a letter or underscore; otherwise <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Scanner.IsAlphaNumeric(System.Char)">
+            <summary>
+            Checks if a character is an alphanumeric character or an underscore.
+            </summary>
+            <param name="c">The character to check.</param>
+            <returns><see langword="true"/> if the character is an alphanumeric charcter or an underscore; otherwise <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Scanner.IsAtEnd">
+            <summary>
+            Checks if the <see cref="F:Lox_Interpreter.Lox.Scanner.current"/> position is at the end of source.
+            </summary>
+            <returns><see langword="true"/> if <see cref="F:Lox_Interpreter.Lox.Scanner.current"/> position is at the end of the source; otherwise <see langword="true"/>.</returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Scanner.Advance">
+            <summary>
+            Advances the <see cref="F:Lox_Interpreter.Lox.Scanner.current"/> index pointer to the next index of the <see cref="F:Lox_Interpreter.Lox.Scanner.source"/>.
+            </summary>
+            <returns>Original character that <see cref="F:Lox_Interpreter.Lox.Scanner.current"/> pointed to before advancement.</returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Scanner.AddToken(Lox_Interpreter.Lox.TokenType)">
+            <summary>
+            Calls <see cref="M:Lox_Interpreter.Lox.Scanner.AddToken(Lox_Interpreter.Lox.TokenType,System.Object)"/> with null as the second argument to add a token to the <see cref="F:Lox_Interpreter.Lox.Scanner.tokens"/> list.
+            </summary>
+            <param name="type">Type of token being added.</param>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Scanner.AddToken(Lox_Interpreter.Lox.TokenType,System.Object)">
+            <summary>
+            Adds a token to the <see cref="F:Lox_Interpreter.Lox.Scanner.tokens"/> list with a type, the lexeme itself, literal, and line number.
+            </summary>
+            <param name="type">Type of token being added.</param>
+            <param name="literal">Actual value of lexeme if applicable.</param>
+        </member>
+        <member name="T:Lox_Interpreter.Lox.Token">
+            <summary>
+            Represents a token that has a type, lexeme, a literal, and the line it is on.
+            </summary>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Token.#ctor(Lox_Interpreter.Lox.TokenType,System.String,System.Object,System.Int32)">
+            <summary>
+            Initializes an instace of the <see cref="T:Lox_Interpreter.Lox.Token"/> class.
+            </summary>
+            <param name="type">Specifies the type of token.</param>
+            <param name="lexeme">The raw representation of the code from the source.</param>
+            <param name="literal">Literal value of the token if it is a string or a number.</param>
+            <param name="line">Line number the token is present on.</param>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Token.ToString">
+            <summary>
+            Generates a string representation of a token.
+            </summary>
+            <returns>A string with a token's type, lexeme, and literal value if applicable.</returns>
+        </member>
+        <member name="T:Lox_Interpreter.Lox.TokenType">
+            <summary>
+            Represents all the possible types of tokens there can be in Lox.
+            </summary>
+        </member>
+        <member name="T:Lox_Interpreter.Tool.GenerateAst">
+            <summary>
+            Represents the generation expression classes for Lox syntax trees.
+            </summary>
+        </member>
+        <member name="M:Lox_Interpreter.Tool.GenerateAst.DefineAst(System.String,System.String,System.Collections.Generic.List{System.String})">
+            <summary>
+            Generates the script that represents an automatic syntax tree for the grammar of Lox.
+            </summary>
+            <param name="outputDir">Path of class relative to the current location.</param>
+            <param name="baseName">Name of class/filename</param>
+            <param name="types">List containing information about the types of </param>
+        </member>
+        <member name="M:Lox_Interpreter.Tool.GenerateAst.DefineVisitor(System.IO.StreamWriter,System.String,System.Collections.Generic.List{System.String})">
+            <summary>
+            Generates interface for the Visitor pattern.
+            </summary>
+            <param name="writer">Writes text to the new class file.</param>
+            <param name="baseName">Name that becomes part of interface methods.</param>
+            <param name="types">List containing names of different expression types.</param>
+        </member>
+        <member name="M:Lox_Interpreter.Tool.GenerateAst.DefineType(System.IO.StreamWriter,System.String,System.String,System.String)">
+            <summary>
+            Generates subclasses of the syntax tree while implementing interface methods.
+            </summary>
+            <param name="writer">Writes text to the new class file.</param>
+            <param name="baseName">Name that becomes the superclass for inheritance.</param>
+            <param name="className">Name of the subclass.</param>
+            <param name="fieldList">List of the fields for each subclass.</param>
+        </member>
+    </members>
+</doc>

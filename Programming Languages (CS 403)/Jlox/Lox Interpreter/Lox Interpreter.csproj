@@ -6,6 +6,9 @@
     <RootNamespace>Lox_Interpreter</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <DocumentationFile>../Lox Documentation.xml</DocumentationFile>
+    <BaseOutputPath>C:\Users\jaylo\OneDrive\Documents\GitHub\Projects\Programming Languages (CS 403)\Jlox\Lox Interpreter\bin\Debug\net6.0</BaseOutputPath>
   </PropertyGroup>
 
 </Project>

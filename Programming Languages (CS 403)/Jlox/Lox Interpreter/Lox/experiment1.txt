@@ -1,3 +1,5 @@
+// LINES 1 - 15 WHERE PRIOR EXPERIMENTS
+
 //var language = "Spanish";
 // this variable is just here
 
@@ -8,6 +10,40 @@
    multi-line* comment
    with extra extra / extra text. */
 
-if (language == "Spanish" or !true) {
+/* if (language == "Spanish" or !true) {
 	print "I'm fine. I'm totally fine";
-} 
+} */
+
+// Chapter 7 Experiments
+/*print "Shampoo";
+print true;
+print 2 + 1;*/
+
+// Chapter 8 Experiments
+/*var a = 1;
+var b = 3;
+print a + b;
+
+a = 3;
+print a + b;*/
+
+// Testing Scope
+var a = "global a";
+var b = "global b";
+var c = "global c";
+{
+  var a = "outer a";
+  var b = "outer b";
+  {
+    var a = "inner a";
+    print a;
+    print b;
+    print c;
+  }
+  print a;
+  print b;
+  print c;
+}
+print a;
+print b;
+print c;

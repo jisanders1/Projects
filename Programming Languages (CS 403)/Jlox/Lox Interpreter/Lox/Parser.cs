@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static Lox_Interpreter.Lox.TokenType;
+using static Lox_Interpreter.Lox.Expr;
+using static Lox_Interpreter.Lox.Stmt;
 
 namespace Lox_Interpreter.Lox
 {
@@ -17,40 +19,156 @@ namespace Lox_Interpreter.Lox
         private int current = 0; // Index representing the current token
 
         // Constructor
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Parser"/> class with a list of tokens.
+        /// </summary>
+        /// <param name="tokens">List of tokents to populate class's token field</param>
         public Parser(List<Token> tokens)
         {
             this.tokens = tokens;
         }
 
         /// <summary>
-        /// Serves as an entry point to parsing expressions. Parses using recursive descent. 
+        /// Serves as an entry point to parsing the Lox language into executable statement with recursive descent. 
         /// </summary>
-        /// <returns>A valid expression, or null if there is a parsing error.</returns>
-        public Expr? Parse()
+        /// <returns>A valid list of statements or expressions. This list may contain null values for errors.</returns>
+        public List<Stmt?> Parse()
+        {
+            List<Stmt?> statements = new();
+            while (!IsAtEnd())
+            {
+                statements.Add(Declaration());
+            }
+
+            return statements;
+        }
+        // Real parsing starts here
+        /// <summary>
+        /// Represents the rule for a declaration, which could be either an variable declaration or a statement. Catches a parsing error if one is thrown.
+        /// </summary>
+        /// <returns>A valid statement, variable declaration statement, or <see langword="null"/> if an error is caught.</returns>
+        private Stmt? Declaration()
         {
             try
             {
-                return Expression();
+                if (Match(VAR)) return VarDeclaration();
+
+                return Statement();
             }
             catch (ParseError)
             {
+                Synchronize();
                 return null;
             }
         }
 
         /// <summary>
-        /// Represents the expression rule. All other rules have higher precedence, so it calls <see cref="Expression"/>, the next highest in precedence.
+        /// Represents the syntax of a variable declaration.
         /// </summary>
-        /// <returns>A valid expression, or an exception is thrown if a problem is found.</returns>
-        private Expr Expression()
+        /// <returns>A variable statement with its own name and value.</returns>
+        private Stmt VarDeclaration()
         {
-            return Equality();
+            Token name = Consume(IDENTIFIER, "Expect variable name.");
+
+            Expr? initializer = null;
+            if (Match(EQUAL))
+            {
+                initializer = Expression();
+            }
+
+            Consume(SEMICOLON, "Expect ';' after variable declaration.");
+            return new Var(name, initializer);
         }
 
         /// <summary>
-        /// Represents the equality rule and checks for the equality operators. Calls <see cref="Comparison"/>, the next highest in precedence.
+        /// Represents the statement rule, which could be a print statement, a block, or an expression.
         /// </summary>
-        /// <returns>A valid expression, or an exception is thrown if a problem is found.</returns>
+        /// <returns>A valid print, block, or expression statement.</returns>
+        private Stmt Statement()
+        {
+            if (Match(PRINT)) return PrintStatement();
+            if (Match(LEFT_BRACE)) return new Stmt.Block(Block());
+
+            return ExpressionStatement();
+        }
+
+        /// <summary>
+        /// Represents the syntax of a print statement. Checks for a valid expression and a semicolon.
+        /// </summary>
+        /// <returns>A valid print statement.</returns>
+        private Stmt PrintStatement()
+        {
+            Expr value = Expression();
+            Consume(SEMICOLON, "Expect ';' after value.");
+            return new Print(value);
+        }
+
+        /// <summary>
+        /// Represents the syntax of a valid expression statement (one that requires a semicolon at the end).
+        /// </summary>
+        /// <returns>A valid expression statement.</returns>
+        private Stmt ExpressionStatement()
+        {
+            Expr expr = Expression();
+            Consume(SEMICOLON, "Expect ';' after expression.");
+            return new Expression(expr);
+        }
+
+        /// <summary>
+        /// Repreents the syntax of a block statement, which could be an empty block or a block of declarations enclosed by {}.
+        /// </summary>
+        /// <returns>A list of valid declaration statements.</returns>
+        private List<Stmt?> Block()
+        {
+            List<Stmt?> statements = new();
+
+            while (!Check(RIGHT_BRACE) && !IsAtEnd())
+            {
+                statements.Add(Declaration());
+            }
+
+            Consume(RIGHT_BRACE, "Expect '}' after block.");
+            return statements;
+        }
+
+        /// <summary>
+        /// Represents the expression rule that consists of an assignment.
+        /// </summary>
+        /// <returns>A valid expression.</returns>
+        private Expr Expression()
+        {
+            return Assignment();
+        }
+
+        /// <summary>
+        /// Represents the rule for assignment. Treats the left-hand side as its own expression.
+        /// </summary>
+        /// <returns>A valid expression or assignment expression if appropriate.</returns>
+        private Expr Assignment()
+        {
+            Expr expr = Equality();
+
+            if (Match(EQUAL))
+            {
+                Token equals = Previous();
+                Expr value = Assignment();
+
+                if (expr is Variable) { //looks to see if the left-hand side of the expression is a variable, if so, it's assignment we do
+                    Token name = ((Variable)expr).name;
+                    return new Assign(name, value);
+                }
+
+                Error(equals, "Invalid assignment target.");
+            }
+
+            return expr;
+        }
+
+
+        /// <summary>
+        /// Represents the equality rule and checks for the equality operators within an expression.
+        /// </summary>
+        /// <returns>A valid equality expression.</returns>
         private Expr Equality()
         {
             Expr expr = Comparison();
@@ -59,16 +177,16 @@ namespace Lox_Interpreter.Lox
             {
                 Token oper = Previous();
                 Expr right = Comparison();
-                expr = new Expr.Binary(expr, oper, right);
+                expr = new Binary(expr, oper, right);
             }
 
             return expr;
         }
 
         /// <summary>
-        /// Represents the comparison rule and checks for comparison operators (>, >=, <, <=). Calls <see cref="Term"/>, the next highest in precedence. 
+        /// Represents the comparison rule and checks for comparison operators within an expression.
         /// </summary>
-        /// <returns>A valid expression, or an exception is thrown if a problem is found.</returns>
+        /// <returns>A valid comparison expression.</returns>
         private Expr Comparison()
         {
             Expr expr = Term();
@@ -77,16 +195,16 @@ namespace Lox_Interpreter.Lox
             {
                 Token oper = Previous();
                 Expr right = Term();
-                expr = new Expr.Binary(expr, oper, right);
+                expr = new Binary(expr, oper, right);
             }
 
             return expr;
         }
 
         /// <summary>
-        /// Represents the term rule, which checks for adding/subtracting. Calls <see cref="Factor"/>, the next highest in precedence.
+        /// Represents the term rule, which checks for adding/subtracting.
         /// </summary>
-        /// <returns>A valid expression, or an exception is thrown if a problem is found.</returns>
+        /// <returns>A valid term expression.</returns>
         private Expr Term()
         {
             Expr expr = Factor();
@@ -95,16 +213,16 @@ namespace Lox_Interpreter.Lox
             {
                 Token oper = Previous();
                 Expr right = Factor();
-                expr = new Expr.Binary(expr, oper, right);
+                expr = new Binary(expr, oper, right);
             }
 
             return expr;
         }
 
         /// <summary>
-        /// Represents the factor rule, which checks for multiplication/division. Calls <see cref="Unary"/>, the next highest in precedence. 
+        /// Represents the factor rule, which checks for multiplication/division
         /// </summary>
-        /// <returns>A valid expression, or an exception is thrown if a problem is found.</returns>
+        /// <returns>A valid factor expression.</returns>
         private Expr Factor()
         {
             Expr expr = Unary();
@@ -113,23 +231,23 @@ namespace Lox_Interpreter.Lox
             {
                 Token oper = Previous();
                 Expr right = Unary();
-                expr = new Expr.Binary(expr, oper, right);
+                expr = new Binary(expr, oper, right);
             }
 
             return expr;
         }
 
         /// <summary>
-        /// Represents the unary rule, which checks for the operators ! and negation. Calls <see cref="Primary"/>, the next highest in precedence. 
+        /// Represents the unary rule, which checks for the operators ! and negation.
         /// </summary>
-        /// <returns>A valid unary operator, or will throw an exception in case of errors.</returns>
+        /// <returns>A valid unary expression.</returns>
         private Expr Unary()
         {
             if (Match(BANG, MINUS))
             {
                 Token oper = Previous();
                 Expr right = Unary();
-                return new Expr.Unary(oper, right);
+                return new Unary(oper, right);
             }
 
             return Primary();
@@ -141,20 +259,25 @@ namespace Lox_Interpreter.Lox
         /// <returns>A valid literal, or will throw an exception if problems in syntax are present.</returns>
         private Expr Primary()
         {
-            if (Match(FALSE)) return new Expr.Literal(false);
-            if (Match(TRUE)) return new Expr.Literal(true);
-            if (Match(NIL)) return new Expr.Literal(null);
+            if (Match(FALSE)) return new Literal(false);
+            if (Match(TRUE)) return new Literal(true);
+            if (Match(NIL)) return new Literal(null);
 
             if (Match(NUMBER, STRING))
             {
-                return new Expr.Literal(Previous().literal);
+                return new Literal(Previous().literal);
             }
 
             if (Match(LEFT_PAREN))
             {
                 Expr expr = Expression();
                 Consume(RIGHT_PAREN, "Expect ')' after expression.");
-                return new Expr.Grouping(expr);
+                return new Grouping(expr);
+            }
+
+            if (Match(IDENTIFIER))
+            {
+                return new Variable(Previous());
             }
 
             throw Error(Peek(), "Expect expression.");
@@ -253,7 +376,7 @@ namespace Lox_Interpreter.Lox
         }
 
         /// <summary>
-        /// Continues advancing until the end of a statement in order to restore a parser's state.
+        /// Continues advancing until the start of the nextstatement in order to restore a parser's state.
         /// </summary>
         private void Synchronize()
         {
