@@ -28,7 +28,7 @@ Challenges currently implemented:
 
 Current Issues to Note:
 - Needing to comment out different Main methods in order to execute the program properly. This is extremely tedious and leaves a bit of room for error.
-- A makefile in order to run the program as intended. "dotnet run" should be "jlox" in order to make what's occuring more clear. [UPDATE] I have successfully build
+- A makefile in order to run the program as intended. "dotnet run" should be "jlox" in order to make what's occuring more clear. [UPDATE] I have successfully built the project into an executable, from which I may be able to make a makefile.
 - There are a couple of warnings warning that certain strings could possibly be null. However, for the purposes of the interpreter and fromm my testing thus far, these do not wreck the program. [FIXED] Through some intensive '?' usage for variable/return types and the null-coalescing operator.
 - I should probably start making test cases with unit testing to ensure everything is running smoothly. This could probably be handled as soon as I figure out the multiple main problems. However, I do not think this is extremely urgent given the fact that I am refactoring code from a book, and there code is most likely well tested.
 - There is no "throws IOException" equivalent in C# and this may affect how the program works. As of chapter 8, everything appears to be working as normal.
