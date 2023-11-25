@@ -8,6 +8,7 @@
     <Nullable>enable</Nullable>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <DocumentationFile>C:\Users\jaylo\OneDrive\Documents\GitHub\Projects\Programming Languages (CS 403)\Jlox\Ast Generator.xml</DocumentationFile>
+    <AssemblyName>generate_ast</AssemblyName>
   </PropertyGroup>
 
 </Project>

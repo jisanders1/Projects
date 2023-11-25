@@ -44,13 +44,14 @@ namespace Lox_Interpreter.Lox
         }
         // Real parsing starts here
         /// <summary>
-        /// Represents the rule for a declaration, which could be either an variable declaration or a statement. Catches a parsing error if one is thrown.
+        /// Represents the rule for a declaration, which could be either an variable/function declaration or a statement. Catches a parsing error if one is thrown.
         /// </summary>
         /// <returns>A valid statement, variable declaration statement, or <see langword="null"/> if an error is caught.</returns>
         private Stmt? Declaration()
         {
             try
             {
+                if (Match(FUN)) return Function("function");
                 if (Match(VAR)) return VarDeclaration();
 
                 return Statement();
@@ -63,34 +64,62 @@ namespace Lox_Interpreter.Lox
         }
 
         /// <summary>
+        /// Represents the syntax of a functino declaration (i.e. fun foo(x,y) { statements }).
+        /// </summary>
+        /// <param name="kind">Type of name expected, can be "function" or "method" for classes.</param>
+        /// <returns>A valid function statement.</returns>
+        private Function Function(String kind)
+        {
+            Token name = Consume(IDENTIFIER, "Expect " + kind + " name."); // Throws an error if no name is present after "fun"
+            Consume(LEFT_PAREN, "Expect '(' after " + kind + " name."); // Throws an error if there is no '(' before the parameters
+            List<Token> parameters = new();
+            if (!Check(RIGHT_PAREN))
+            {
+                do
+                {
+                    if (parameters.Count >= 255) // Limits number of paramters to 255
+                    {
+                        Error(Peek(), "Can't have more than 255 parameters.");
+                    }
+
+                    parameters.Add(Consume(IDENTIFIER, "Expect parameter name."));
+                } while (Match(COMMA)); // Keeps adding parameters while there are commas present.
+            }
+            Consume(RIGHT_PAREN, "Expect ')' after parameters."); // Throws error is there is no ')' present after the parameters.
+            Consume(LEFT_BRACE, "Expect '{' before " + kind + " body."); // Throws error if there is no '{' for the body of the function
+            List<Stmt?> body = Block();
+            return new Function(name, parameters, body);
+        }
+        /// <summary>
         /// Represents the syntax of a variable declaration.
         /// </summary>
         /// <returns>A variable statement with its own name and value.</returns>
         private Stmt VarDeclaration()
         {
-            Token name = Consume(IDENTIFIER, "Expect variable name.");
+            Token name = Consume(IDENTIFIER, "Expect variable name."); // Throws error if variable is not given a name
 
             Expr? initializer = null;
-            if (Match(EQUAL))
+            if (Match(EQUAL)) // Allows for a simple declaration with no initializer if necessary.
             {
                 initializer = Expression();
             }
 
-            Consume(SEMICOLON, "Expect ';' after variable declaration.");
+            Consume(SEMICOLON, "Expect ';' after variable declaration."); // Throws error if there is no trailing semicolon.
             return new Var(name, initializer);
         }
 
         /// <summary>
-        /// Represents the statement rule, which could be a print statement, a block, or an expression.
+        /// Represents the statement rule, which could be a print, a block, an expression, a for, a while, an if, or a return statement.
         /// </summary>
-        /// <returns>A valid print, block, or expression statement.</returns>
+        /// <returns>A valid print, block, expression, for, while, if, or return statement.</returns>
         private Stmt Statement()
         {
             if (Match(FOR)) return ForStatement();
             if (Match(IF)) return IfStatement();
             if (Match(PRINT)) return PrintStatement();
+            if (Match(RETURN)) return ReturnStatement();
             if (Match(WHILE)) return WhileStatement();
-            if (Match(LEFT_BRACE)) return new Stmt.Block(Block());
+            if (Match(LEFT_BRACE)) return new Block(Block());
 
             return ExpressionStatement();
         }
@@ -205,6 +234,23 @@ namespace Lox_Interpreter.Lox
                 body = new Block(new List<Stmt?> { initializer, body });
             }
             return body;
+        }
+
+        /// <summary>
+        /// Represents the syntax of a return statement.
+        /// </summary>
+        /// <returns>A valid return statement with the expression parsed if there is one.</returns>
+        private Stmt ReturnStatement()
+        {
+            Token keyword = Previous(); // consumes the "return" keyword
+            Expr? value = null;
+            if (!Check(SEMICOLON)) // Evaluates the expression if there is one before the semicolon.
+            {
+                value = Expression();
+            }
+
+            Consume(SEMICOLON, "Expect ';' after return value."); // Throws an error if there is no semicolon at the end of the statement.
+            return new Stmt.Return(keyword, value);
         }
 
         /// <summary>
@@ -379,8 +425,57 @@ namespace Lox_Interpreter.Lox
                 return new Unary(oper, right);
             }
 
-            return Primary();
+            return Call();
         }
+
+        /// <summary>
+        /// Represents the syntax of a function call.
+        /// </summary>
+        /// <returns>A valid function call expression.</returns>
+        private Expr Call()
+        {
+            Expr expr = Primary(); // evaluates the function name
+
+            while (true)
+            {
+                if (Match(LEFT_PAREN)) // parses the arguments of the function
+                {
+                    expr = FinishCall(expr);
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            return expr;
+        }
+
+        /// <summary>
+        /// Helper function to <see cref="Call"/>, parses up to 255 arguments of a function call.
+        /// </summary>
+        /// <param name="callee">Function whose arguments we are parsing.</param>
+        /// <returns>A valid function call expression with arguments.</returns>
+        private Expr FinishCall(Expr callee)
+        {
+            List<Expr> arguments = new();
+            if (!Check(RIGHT_PAREN))
+            {
+                do
+                {
+                    if (arguments.Count >= 255)
+                    {
+                        Error(Peek(), "Can't have more than 255 arguments."); // Throws an exception if there are more than 255 arguments.
+                    }
+                    arguments.Add(Expression());
+                } while (Match(COMMA)); // Loops while there are still commas.
+            }
+
+            Token paren = Consume(RIGHT_PAREN, "Expect ')' after arguments."); // Throws an expetion if there is no closing ')'.
+
+            return new Call(callee, paren, arguments);
+        }
+
 
         /// <summary>
         /// Represents the primary rule, which checks for literals and other terminals (such as nil). Will throw errors in cases of bad grouping use.
@@ -397,26 +492,26 @@ namespace Lox_Interpreter.Lox
                 return new Literal(Previous().literal);
             }
 
-            if (Match(LEFT_PAREN))
+            if (Match(LEFT_PAREN)) // Parses grouped expressions (those that have parenthesis)
             {
                 Expr expr = Expression();
-                Consume(RIGHT_PAREN, "Expect ')' after expression.");
+                Consume(RIGHT_PAREN, "Expect ')' after expression."); // Throws an excption if there is no closing ')'
                 return new Grouping(expr);
             }
 
-            if (Match(IDENTIFIER))
+            if (Match(IDENTIFIER)) // Parses variables and function names.
             {
                 return new Variable(Previous());
             }
 
-            throw Error(Peek(), "Expect expression.");
+            throw Error(Peek(), "Expect expression."); // Throws an exception if an invalid expression is present.
         }
 
         /// <summary>
         /// Checks if a number of types mach the current token.
         /// </summary>
         /// <param name="types"><see cref="TokenType"/>(s) to be checked for matches.</param>
-        /// <returns><see langword="true"/> if the type(s) match the currenty token's type and advances to the next token; otherwise; <see langword="false"/>.</returns>
+        /// <returns><see langword="true"/> if the type(s) match the currents token's type and advances to the next token; otherwise; <see langword="false"/>.</returns>
         private bool Match(params TokenType[] types)
         {
             foreach (TokenType type in types)
@@ -505,15 +600,15 @@ namespace Lox_Interpreter.Lox
         }
 
         /// <summary>
-        /// Continues advancing until the start of the nextstatement in order to restore a parser's state.
+        /// Continues advancing until the start of the next statement in order to restore a parser's state.
         /// </summary>
         private void Synchronize()
         {
             Advance();
 
-            while (!IsAtEnd())
+            while (!IsAtEnd()) // advances while not at the en of the token list.
             {
-                if (Previous().type == SEMICOLON) return;
+                if (Previous().type == SEMICOLON) return; // returns after the end of a statement
 
                 switch (Peek().type)
                 {
@@ -525,7 +620,7 @@ namespace Lox_Interpreter.Lox
                     case WHILE:
                     case PRINT:
                     case RETURN:
-                        return;
+                        return; // returns if current type is a Lox keyword.
                 }
 
                 Advance();

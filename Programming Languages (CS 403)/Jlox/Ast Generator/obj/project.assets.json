@@ -15,7 +15,7 @@
     "version": "1.0.0",
     "restore": {
       "projectUniqueName": "C:\\Users\\jaylo\\OneDrive\\Documents\\GitHub\\Projects\\Programming Languages (CS 403)\\Jlox\\Ast Generator\\Ast Generator.csproj",
-      "projectName": "Ast Generator",
+      "projectName": "generate_ast",
       "projectPath": "C:\\Users\\jaylo\\OneDrive\\Documents\\GitHub\\Projects\\Programming Languages (CS 403)\\Jlox\\Ast Generator\\Ast Generator.csproj",
       "packagesPath": "C:\\Users\\jaylo\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\jaylo\\OneDrive\\Documents\\GitHub\\Projects\\Programming Languages (CS 403)\\Jlox\\Ast Generator\\obj\\",

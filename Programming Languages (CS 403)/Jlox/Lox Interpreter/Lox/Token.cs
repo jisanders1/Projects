@@ -7,7 +7,7 @@ namespace Lox_Interpreter.Lox
     /// </summary>
     internal class Token
     {
-        public readonly TokenType type;
+        public readonly TokenType type; // Type of token
         public readonly String lexeme; // these are the blobs of raw source code
         public readonly Object? literal; // can be null, represents acutal values that the code needs/uses
         public readonly int line;

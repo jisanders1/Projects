@@ -142,7 +142,7 @@ namespace Lox_Interpreter.Lox
                     }
                     else
                     {
-                        Lox.Error(line, "Unexpected character.");
+                        Lox.Error(line, "Unexpected character."); // Reports an error if the character is not alphanumeric.
                     }
                     break;
             }
@@ -182,15 +182,15 @@ namespace Lox_Interpreter.Lox
         {
             while (IsAlphaNumeric(Peek())) Advance(); //advacing to the end of the lexeme
 
-            String text = source[start..current];
+            String text = source[start..current]; // Captures the full lexeme
             TokenType type;
-            if (!keywords.ContainsKey(text))
+            if (!keywords.ContainsKey(text)) // Checks if the lexeme is a keyword or not.
             {
-                type = IDENTIFIER;
+                type = IDENTIFIER; // Lexeme is not a keyword.
             }
             else
             {
-                type = keywords[text];
+                type = keywords[text]; // Lexeme is a keyword.
             }
             AddToken(type);
         }
@@ -200,7 +200,7 @@ namespace Lox_Interpreter.Lox
         /// </summary>
         private void Number()
         {
-            while (IsDigit(Peek())) Advance();
+            while (IsDigit(Peek())) Advance(); // advances to the end of the number or to the decimal in a number
 
             // Look for a fractional part.
             if (Peek() == '.' && IsDigit(PeekNext()))

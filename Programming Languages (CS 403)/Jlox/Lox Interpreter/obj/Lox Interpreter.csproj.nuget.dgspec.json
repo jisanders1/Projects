@@ -8,7 +8,7 @@
       "version": "1.0.0",
       "restore": {
         "projectUniqueName": "C:\\Users\\jaylo\\OneDrive\\Documents\\GitHub\\Projects\\Programming Languages (CS 403)\\Jlox\\Lox Interpreter\\Lox Interpreter.csproj",
-        "projectName": "Lox Interpreter",
+        "projectName": "jlox",
         "projectPath": "C:\\Users\\jaylo\\OneDrive\\Documents\\GitHub\\Projects\\Programming Languages (CS 403)\\Jlox\\Lox Interpreter\\Lox Interpreter.csproj",
         "packagesPath": "C:\\Users\\jaylo\\.nuget\\packages\\",
         "outputPath": "C:\\Users\\jaylo\\OneDrive\\Documents\\GitHub\\Projects\\Programming Languages (CS 403)\\Jlox\\Lox Interpreter\\obj\\",

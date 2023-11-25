@@ -9,6 +9,7 @@
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <DocumentationFile>../Lox Documentation.xml</DocumentationFile>
     <BaseOutputPath></BaseOutputPath>
+    <AssemblyName>jlox</AssemblyName>
   </PropertyGroup>
 
 </Project>

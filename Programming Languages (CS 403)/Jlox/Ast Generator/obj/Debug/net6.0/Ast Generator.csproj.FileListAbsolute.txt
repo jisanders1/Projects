@@ -1,16 +1,15 @@
-C:\Users\jaylo\OneDrive\Documents\GitHub\Projects\Programming Languages (CS 403)\Jlox\Ast Generator\bin\Debug\net6.0\Ast Generator.exe
-C:\Users\jaylo\OneDrive\Documents\GitHub\Projects\Programming Languages (CS 403)\Jlox\Ast Generator\bin\Debug\net6.0\Ast Generator.deps.json
-C:\Users\jaylo\OneDrive\Documents\GitHub\Projects\Programming Languages (CS 403)\Jlox\Ast Generator\bin\Debug\net6.0\Ast Generator.runtimeconfig.json
-C:\Users\jaylo\OneDrive\Documents\GitHub\Projects\Programming Languages (CS 403)\Jlox\Ast Generator\bin\Debug\net6.0\Ast Generator.dll
-C:\Users\jaylo\OneDrive\Documents\GitHub\Projects\Programming Languages (CS 403)\Jlox\Ast Generator\bin\Debug\net6.0\Ast Generator.pdb
 C:\Users\jaylo\OneDrive\Documents\GitHub\Projects\Programming Languages (CS 403)\Jlox\Ast Generator\bin\Debug\net6.0\Ast Generator.xml
 C:\Users\jaylo\OneDrive\Documents\GitHub\Projects\Programming Languages (CS 403)\Jlox\Ast Generator\obj\Debug\net6.0\Ast Generator.GeneratedMSBuildEditorConfig.editorconfig
 C:\Users\jaylo\OneDrive\Documents\GitHub\Projects\Programming Languages (CS 403)\Jlox\Ast Generator\obj\Debug\net6.0\Ast Generator.AssemblyInfoInputs.cache
 C:\Users\jaylo\OneDrive\Documents\GitHub\Projects\Programming Languages (CS 403)\Jlox\Ast Generator\obj\Debug\net6.0\Ast Generator.AssemblyInfo.cs
 C:\Users\jaylo\OneDrive\Documents\GitHub\Projects\Programming Languages (CS 403)\Jlox\Ast Generator\obj\Debug\net6.0\Ast Generator.csproj.CoreCompileInputs.cache
-C:\Users\jaylo\OneDrive\Documents\GitHub\Projects\Programming Languages (CS 403)\Jlox\Ast Generator\obj\Debug\net6.0\Ast Generator.dll
-C:\Users\jaylo\OneDrive\Documents\GitHub\Projects\Programming Languages (CS 403)\Jlox\Ast Generator\obj\Debug\net6.0\refint\Ast Generator.dll
-C:\Users\jaylo\OneDrive\Documents\GitHub\Projects\Programming Languages (CS 403)\Jlox\Ast Generator\obj\Debug\net6.0\Ast Generator.xml
-C:\Users\jaylo\OneDrive\Documents\GitHub\Projects\Programming Languages (CS 403)\Jlox\Ast Generator\obj\Debug\net6.0\Ast Generator.pdb
 C:\Users\jaylo\OneDrive\Documents\GitHub\Projects\Programming Languages (CS 403)\Jlox\Ast Generator\obj\Debug\net6.0\Ast Generator.genruntimeconfig.cache
-C:\Users\jaylo\OneDrive\Documents\GitHub\Projects\Programming Languages (CS 403)\Jlox\Ast Generator\obj\Debug\net6.0\ref\Ast Generator.dll
+C:\Users\jaylo\OneDrive\Documents\GitHub\Projects\Programming Languages (CS 403)\Jlox\Ast Generator\bin\Debug\net6.0\generate_ast.exe
+C:\Users\jaylo\OneDrive\Documents\GitHub\Projects\Programming Languages (CS 403)\Jlox\Ast Generator\bin\Debug\net6.0\generate_ast.deps.json
+C:\Users\jaylo\OneDrive\Documents\GitHub\Projects\Programming Languages (CS 403)\Jlox\Ast Generator\bin\Debug\net6.0\generate_ast.runtimeconfig.json
+C:\Users\jaylo\OneDrive\Documents\GitHub\Projects\Programming Languages (CS 403)\Jlox\Ast Generator\bin\Debug\net6.0\generate_ast.dll
+C:\Users\jaylo\OneDrive\Documents\GitHub\Projects\Programming Languages (CS 403)\Jlox\Ast Generator\bin\Debug\net6.0\generate_ast.pdb
+C:\Users\jaylo\OneDrive\Documents\GitHub\Projects\Programming Languages (CS 403)\Jlox\Ast Generator\obj\Debug\net6.0\generate_ast.dll
+C:\Users\jaylo\OneDrive\Documents\GitHub\Projects\Programming Languages (CS 403)\Jlox\Ast Generator\obj\Debug\net6.0\refint\generate_ast.dll
+C:\Users\jaylo\OneDrive\Documents\GitHub\Projects\Programming Languages (CS 403)\Jlox\Ast Generator\obj\Debug\net6.0\generate_ast.pdb
+C:\Users\jaylo\OneDrive\Documents\GitHub\Projects\Programming Languages (CS 403)\Jlox\Ast Generator\obj\Debug\net6.0\ref\generate_ast.dll

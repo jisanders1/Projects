@@ -7,12 +7,12 @@ using System.Linq;
 namespace Ast_Generator
 {
     /// <summary>
-    /// Represents the generation expression classes for Lox syntax trees.
+    /// Represents the generation of expression and statement classes for Lox syntax trees.
     /// </summary>
     internal class GenerateAst
     {
         /// <summary>
-        /// Creates a new class that represents the grammar of Lox. Comment out when running main Lox class.
+        /// Creates 2 new classes that represents the grammar of Lox. One for expressions and another for statements.
         /// </summary>
         /// <param name="args">Path oc new class.</param>
         public static void Main(String[] args)
@@ -27,6 +27,7 @@ namespace Ast_Generator
             String[] array = new string[] {
                 "Assign   : Token name, Expr value",
                 "Binary   : Expr left, Token oper, Expr right",
+                "Call     : Expr callee, Token paren, List<Expr> arguments",
                 "Grouping : Expr expression",
                 "Literal  : Object? value",
                 "Logical  : Expr left, Token oper, Expr right",
@@ -38,8 +39,10 @@ namespace Ast_Generator
             array = new string[] {
                 "Block      : List<Stmt?> statements",
                 "Expression : Expr expression",
+                "Function   : Token name, List<Token> parameters, List<Stmt?> body",
                 "If         : Expr condition, Stmt thenBranch, Stmt? elseBranch",
                 "Print      : Expr expression",
+                "Return     : Token keyword, Expr? value",
                 "Var        : Token name, Expr? initializer",
                 "While      : Expr condition, Stmt body"};
             DefineAst(outputDir, "Stmt", array.ToList());

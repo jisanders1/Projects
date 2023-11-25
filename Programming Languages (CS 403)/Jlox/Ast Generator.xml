@@ -1,17 +1,17 @@
 <?xml version="1.0"?>
 <doc>
     <assembly>
-        <name>Ast Generator</name>
+        <name>generate_ast</name>
     </assembly>
     <members>
         <member name="T:Ast_Generator.GenerateAst">
             <summary>
-            Represents the generation expression classes for Lox syntax trees.
+            Represents the generation of expression and statement classes for Lox syntax trees.
             </summary>
         </member>
         <member name="M:Ast_Generator.GenerateAst.Main(System.String[])">
             <summary>
-            Creates a new class that represents the grammar of Lox. Comment out when running main Lox class.
+            Creates 2 new classes that represents the grammar of Lox. One for expressions and another for statements.
             </summary>
             <param name="args">Path oc new class.</param>
         </member>

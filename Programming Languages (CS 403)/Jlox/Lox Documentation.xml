@@ -1,29 +1,9 @@
 <?xml version="1.0"?>
 <doc>
     <assembly>
-        <name>Lox Interpreter</name>
+        <name>jlox</name>
     </assembly>
     <members>
-        <member name="T:Lox_Interpreter.Lox.AstPrinter">
-            <summary>
-            Represents the printing of a syntax tree to the console.
-            </summary>
-        </member>
-        <member name="M:Lox_Interpreter.Lox.AstPrinter.Print(Lox_Interpreter.Lox.Expr)">
-            <summary>
-            Serves as a gateway for printing expressions. Exactly what is printed depends on the type of expression.
-            </summary>
-            <param name="expr">The expression needing to be printed.</param>
-            <returns>String representation of the expression in the syntax tree.</returns>
-        </member>
-        <member name="M:Lox_Interpreter.Lox.AstPrinter.Parenthesize(System.String,Lox_Interpreter.Lox.Expr[])">
-            <summary>
-            Builds a new string to represent an expression(s) as an element of a syntax tree.
-            </summary>
-            <param name="name">The lexeme of the expression</param>
-            <param name="exprs">Expression(s) to convert to strings.</param>
-            <returns>A new string representation of the expression(s).</returns>
-        </member>
         <member name="T:Lox_Interpreter.Lox.Environment">
             <summary>
             Rerpresents the environment of a program, which includes variable's and their values.
@@ -63,9 +43,38 @@
             <param name="value">New value to be assigned to existing variable.</param>
             <exception cref="T:Lox_Interpreter.Lox.RuntimeError"></exception>
         </member>
+        <member name="T:Lox_Interpreter.Lox.ILoxCallable">
+            <summary>
+            Represents the ability to call a Lox function.
+            </summary>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.ILoxCallable.Arity">
+            <summary>
+            Gets the arity of a function and returns it.
+            </summary>
+            <returns>The number of the function's paraneters/arguments.</returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.ILoxCallable.Call(Lox_Interpreter.Lox.Interpreter,System.Collections.Generic.List{System.Object})">
+            <summary>
+            Declares the argument of the function in it's own environment and executes it's body.
+            </summary>
+            <param name="interpreter">Interpreter used to interpret and execute the body.</param>
+            <param name="arguments">Arguments of the function</param>
+            <returns>A value if the "return" keyword is used, otherwise; returns <see langword="null"/>.</returns>
+        </member>
         <member name="T:Lox_Interpreter.Lox.Interpreter">
             <summary>
             Represents an interpreter that takes in a syntax tree and evaluates it.
+            </summary>
+        </member>
+        <member name="T:Lox_Interpreter.Lox.Interpreter.ClockFunction">
+            <summary>
+            Represents the native Lox function "clock()", which returns the current time in seconds.
+            </summary>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Interpreter.#ctor">
+            <summary>
+            Initializes an instance of the <see cref="T:Lox_Interpreter.Lox.Interpreter"/> class with a global and base environment and a native <see cref="T:Lox_Interpreter.Lox.Interpreter.ClockFunction"/>.
             </summary>
         </member>
         <member name="M:Lox_Interpreter.Lox.Interpreter.Interpret(System.Collections.Generic.List{Lox_Interpreter.Lox.Stmt})">
@@ -211,9 +220,16 @@
         </member>
         <member name="M:Lox_Interpreter.Lox.Parser.Declaration">
             <summary>
-            Represents the rule for a declaration, which could be either an variable declaration or a statement. Catches a parsing error if one is thrown.
+            Represents the rule for a declaration, which could be either an variable/function declaration or a statement. Catches a parsing error if one is thrown.
             </summary>
             <returns>A valid statement, variable declaration statement, or <see langword="null"/> if an error is caught.</returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Parser.Function(System.String)">
+            <summary>
+            Represents the syntax of a functino declaration (i.e. fun foo(x,y) { statements }).
+            </summary>
+            <param name="kind">Type of name expected, can be "function" or "method" for classes.</param>
+            <returns>A valid function statement.</returns>
         </member>
         <member name="M:Lox_Interpreter.Lox.Parser.VarDeclaration">
             <summary>
@@ -223,9 +239,9 @@
         </member>
         <member name="M:Lox_Interpreter.Lox.Parser.Statement">
             <summary>
-            Represents the statement rule, which could be a print statement, a block, or an expression.
+            Represents the statement rule, which could be a print, a block, an expression, a for, a while, an if, or a return statement.
             </summary>
-            <returns>A valid print, block, or expression statement.</returns>
+            <returns>A valid print, block, expression, for, while, if, or return statement.</returns>
         </member>
         <member name="M:Lox_Interpreter.Lox.Parser.PrintStatement">
             <summary>
@@ -256,6 +272,12 @@
             Reresents the syntax of a valid for loop, similar to the C language.
             </summary>
             <returns>A valid for loop.</returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Parser.ReturnStatement">
+            <summary>
+            Represents the syntax of a return statement.
+            </summary>
+            <returns>A valid return statement with the expression parsed if there is one.</returns>
         </member>
         <member name="M:Lox_Interpreter.Lox.Parser.Block">
             <summary>
@@ -317,6 +339,19 @@
             </summary>
             <returns>A valid unary expression.</returns>
         </member>
+        <member name="M:Lox_Interpreter.Lox.Parser.Call">
+            <summary>
+            Represents the syntax of a function call.
+            </summary>
+            <returns>A valid function call expression.</returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Parser.FinishCall(Lox_Interpreter.Lox.Expr)">
+            <summary>
+            Helper function to <see cref="M:Lox_Interpreter.Lox.Parser.Call"/>, parses up to 255 arguments of a function call.
+            </summary>
+            <param name="callee">Function whose arguments we are parsing.</param>
+            <returns>A valid function call expression with arguments.</returns>
+        </member>
         <member name="M:Lox_Interpreter.Lox.Parser.Primary">
             <summary>
             Represents the primary rule, which checks for literals and other terminals (such as nil). Will throw errors in cases of bad grouping use.
@@ -328,7 +363,7 @@
             Checks if a number of types mach the current token.
             </summary>
             <param name="types"><see cref="T:Lox_Interpreter.Lox.TokenType"/>(s) to be checked for matches.</param>
-            <returns><see langword="true"/> if the type(s) match the currenty token's type and advances to the next token; otherwise; <see langword="false"/>.</returns>
+            <returns><see langword="true"/> if the type(s) match the currents token's type and advances to the next token; otherwise; <see langword="false"/>.</returns>
         </member>
         <member name="M:Lox_Interpreter.Lox.Parser.Consume(Lox_Interpreter.Lox.TokenType,System.String)">
             <summary>
@@ -379,8 +414,19 @@
         </member>
         <member name="M:Lox_Interpreter.Lox.Parser.Synchronize">
             <summary>
-            Continues advancing until the start of the nextstatement in order to restore a parser's state.
+            Continues advancing until the start of the next statement in order to restore a parser's state.
             </summary>
+        </member>
+        <member name="T:Lox_Interpreter.Lox.Return">
+            <summary>
+            Represents the return exception, which is invoked in order to return from a function call.
+            </summary>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Return.#ctor(System.Object)">
+            <summary>
+            Initializes an instance of the <see cref="T:Lox_Interpreter.Lox.Return"/> class with the specified value.
+            </summary>
+            <param name="value">Value to be returned, can be <see langword="null"/>.</param>
         </member>
         <member name="T:Lox_Interpreter.Lox.RuntimeError">
             <summary>

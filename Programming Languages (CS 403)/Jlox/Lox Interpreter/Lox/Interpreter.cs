@@ -15,7 +15,38 @@ namespace Lox_Interpreter.Lox
     /// </summary>
     internal class Interpreter : Expr.IVisitor<Object?>, Stmt.IVisitor<Object?>
     {
-        private Environment environment = new(); // Base environment for the variables.
+        public readonly Environment globals = new(); // Global environment, contains native functions for the Lox language
+        private Environment environment = new();// Base environment for the variables.
+        /// <summary>
+        /// Represents the native Lox function "clock()", which returns the current time in seconds.
+        /// </summary>
+        private class ClockFunction : ILoxCallable
+        {
+            public int Arity() 
+            { 
+                return 0;
+            }
+            public Object? Call(Interpreter interpreter, List<Object?> arguments) // In this case, returns the current time in seconds.
+            {
+                return (double)DateTime.UtcNow.Ticks / 10000.0 / 1000.0;
+            }
+
+            public override String ToString() 
+            { 
+                return "<native fn>";
+            }
+        }
+
+        /// <summary>
+        /// Initializes an instance of the <see cref="Interpreter"/> class with a global and base environment and a native <see cref="ClockFunction"/>.
+        /// </summary>
+        public Interpreter()
+        {
+            environment = globals; //Wrapping the base environment in the global variable
+            globals.Define("clock", new ClockFunction());
+        }
+
+
         /// <summary>
         /// Entry point to interpreter, catches and reports an runtime error if one is thrown.
         /// </summary>
@@ -53,7 +84,7 @@ namespace Lox_Interpreter.Lox
         /// </summary>
         /// <param name="statements">List of statements to execute.</param>
         /// <param name="environment">Environment for the scope of the block of statements.</param>
-        private void ExecuteBlock(List<Stmt?> statements, Environment environment)
+        public void ExecuteBlock(List<Stmt?> statements, Environment environment)
         {
             Environment previous = this.environment;
             try
@@ -85,12 +116,12 @@ namespace Lox_Interpreter.Lox
             return expr.Accept(this);
         }
 
-        // Below 6 methods implement the Visitor paradigm for Statements.
+        // Below 8 methods implement the Visitor paradigm for Statements.
         // Since void is not allowed as a generic type in C#, the return type is Object and null is simply returned.
         public Object? VisitVarStmt(Var stmt)
         {
             Object? value = null;
-            if (stmt.initializer != null)
+            if (stmt.initializer != null) // Evaluates the initializer if there is one.
             {
                 value = Evaluate(stmt.initializer);
             }
@@ -103,39 +134,52 @@ namespace Lox_Interpreter.Lox
             Evaluate(stmt.expression);
             return null;
         }
-        public Object? VisitBlockStmt(Stmt.Block stmt)
+        public Object? VisitBlockStmt(Block stmt)
         {
-            ExecuteBlock(stmt.statements, new Environment(environment));
+            ExecuteBlock(stmt.statements, new Environment(environment)); // Evaluates a block of statements with their own scope.
             return null;
         }
         public Object? VisitPrintStmt(Print stmt)
         {
-            Object? value = Evaluate(stmt.expression);
+            Object? value = Evaluate(stmt.expression); // Evaluates the value of the print statement and prints it.
             Console.WriteLine(Stringify(value));
             return null;
         }
-        public Object? VisitIfStmt(Stmt.If stmt)
+        public Object? VisitIfStmt(If stmt)
         {
-            if (IsTruthy(Evaluate(stmt.condition)))
+            if (IsTruthy(Evaluate(stmt.condition))) // Evaluates condition to see if it is true, if so, executes the then part of the statement.
             {
                 Execute(stmt.thenBranch);
             }
-            else if (stmt.elseBranch != null)
+            else if (stmt.elseBranch != null) // Executes the else branch (if there is one) if the condition evaluates to false.
             {
                 Execute(stmt.elseBranch);
             }
             return null;
         }
-        public Object? VisitWhileStmt(Stmt.While stmt)
+        public Object? VisitWhileStmt(While stmt)
         {
-            while (IsTruthy(Evaluate(stmt.condition)))
+            while (IsTruthy(Evaluate(stmt.condition))) // Executes the body while the looping condition evaluates to true.
             {
                 Execute(stmt.body);
             }
             return null;
         }
+        public Object? VisitFunctionStmt(Function stmt)
+        {
+            LoxFunction function = new(stmt, environment); //declares a function in with its own environment
+            environment.Define(stmt.name.lexeme, function); //adds it to base environment.
+            return null;
+        }
+        public Object? VisitReturnStmt(Stmt.Return stmt)
+        {
+            Object? value = null;
+            if (stmt.value != null) value = Evaluate(stmt.value); // returns an evaluated expression if the funciton body uses "return"
 
-        // Below 7 methods implement the Visitor paradigm through treating different expression ttypes differently.
+            throw new Return(value);
+        }
+
+        // Below 8 methods implement the Visitor paradigm through treating different expression ttypes differently.
         // Each method recursively calls Evaluate() except the Literal method, with simply returns it's value.
         // Otherwise, these do the actual evaluating.
         public Object? VisitAssignExpr(Assign expr)
@@ -144,15 +188,15 @@ namespace Lox_Interpreter.Lox
             environment.Assign(expr.name, value);
             return value;
         }
-        public Object? VisitLiteralExpr(Expr.Literal expr)
+        public Object? VisitLiteralExpr(Literal expr)
         {
             return expr.value;
         }
-        public Object? VisitGroupingExpr(Expr.Grouping expr)
+        public Object? VisitGroupingExpr(Grouping expr)
         {
             return Evaluate(expr.expression);
         }
-        public Object? VisitUnaryExpr(Expr.Unary expr)
+        public Object? VisitUnaryExpr(Unary expr)
         {
             Object? right = Evaluate(expr.right);
 
@@ -217,11 +261,11 @@ namespace Lox_Interpreter.Lox
             // Unreachable.
             return null;
         }
-        public Object? VisitVariableExpr(Expr.Variable expr)
+        public Object? VisitVariableExpr(Variable expr)
         {
             return environment.Get(expr.name);
         }
-        public Object? VisitLogicalExpr(Expr.Logical expr)
+        public Object? VisitLogicalExpr(Logical expr)
         {
             Object? left = Evaluate(expr.left);
 
@@ -233,6 +277,26 @@ namespace Lox_Interpreter.Lox
             }
 
             return Evaluate(expr.right);
+        }
+        public Object? VisitCallExpr(Call expr)
+        {
+            Object? callee = Evaluate(expr.callee); // Will normally evaluate to be an identifier of some sort, but not always.
+
+            List<Object?> arguments = new();
+            foreach (Expr argument in expr.arguments) // Evaluating the arguments
+            {
+                arguments.Add(Evaluate(argument));
+            }
+
+            if (!(callee is ILoxCallable)) { // Checks for improper use of the function syntax, i.e. attempting to use a string as a function name instead of an identifier.
+                throw new RuntimeError(expr.paren,  "Can only call functions and classes.");
+            }
+            ILoxCallable? function = (ILoxCallable?)callee;
+            if (arguments.Count != function?.Arity()) // Checks to make sure the number of arguments match whaat is expected.
+            {
+                throw new RuntimeError(expr.paren, "Expected " + function?.Arity() + " arguments but got " + arguments.Count + ".");
+            }
+            return function?.Call(this, arguments);
         }
 
         /// <summary>

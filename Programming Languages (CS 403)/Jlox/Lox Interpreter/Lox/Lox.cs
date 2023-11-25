@@ -24,7 +24,7 @@ namespace Lox_Interpreter.Lox
         /// <param name="args">The command line arguments on which to run jlox. Optional specification of file name or path is allowed.</param>
         public static void Main(String[] args)
         {
-            if (args.Length > 1)
+            if (args.Length > 1) // handles improper command line usage.
             {
                 Console.WriteLine("Usage: jlox [script]");
                 System.Environment.Exit(64);
@@ -47,7 +47,17 @@ namespace Lox_Interpreter.Lox
         private static void RunFile(String path)
         {
             Encoding utf8 = new UTF8Encoding(true);
-            byte[] bytes = File.ReadAllBytes(Path.GetFullPath(path));
+            byte[] bytes = Array.Empty<byte>(); 
+            try
+            {
+                bytes = File.ReadAllBytes(Path.GetFullPath(path));
+            } 
+            catch (Exception) // Catches any file errors, such as an incorrect path or opening a nonexistent file.
+            {
+                Console.Error.WriteLine("File not found in specified directory.");
+                System.Environment.Exit(1);
+            }
+            
             Run(new string(utf8.GetString(bytes)));
             if (hadError) System.Environment.Exit(65);
             if (hadRuntimeError) System.Environment.Exit(70);

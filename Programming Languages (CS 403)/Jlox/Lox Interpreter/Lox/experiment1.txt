@@ -1,4 +1,4 @@
-// LINES 1 - 15 WHERE PRIOR EXPERIMENTS
+// LINES 1 - 15 WERE PRIOR EXPERIMENTS
 
 //var language = "Spanish";
 // this variable is just here
@@ -49,11 +49,59 @@ print b;
 print c;*/
 
 // Chapter 9 Testing
-var a = 0;
+/* var a = 0;
 var temp;
+
+if (a == 1) {
+    print "a is 1";
+} else if (a == 0) {
+    print "a is 0";
+} else {
+    print "Uh something went wrong.";
+}
 
 for (var b = 1; a < 10000; b = temp + b) {
   print a;
   temp = a;
   a = b;
+} */
+
+// Chapter 10 Testing
+// Test 1: Testing defining functions
+fun sayHi(first, last) {
+  print "Hi, " + first + " " + last + "!";
 }
+
+sayHi("Dear", "Reader");
+
+// Test 2: Testing recursion, the return statement, and the native clock method.
+fun fib(n) {
+  if (n <= 1) return n;
+  return fib(n - 2) + fib(n - 1);
+}
+
+print "";
+
+// testing the time function
+var startTime = clock(); 
+for (var i = 0; i < 20; i = i + 1) {
+  print fib(i);
+}
+print clock() - startTime; // prints the elapsed time of the for loop executing function calls
+
+print "";
+
+// Test 3: Testing the closure
+fun makeCounter() {
+  var i = 0;
+  fun count() {
+    i = i + 1;
+    print i;
+  }
+
+  return count;
+}
+
+var counter = makeCounter();
+counter(); // "1".
+counter(); // "2".
