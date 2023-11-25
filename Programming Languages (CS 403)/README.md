@@ -9,8 +9,9 @@ Chapter 8:
 
 Chapter 9:
 - Added the ability to evaluate if-else statements and for/while loops.
-- Moved GenerateAst.cs to it's own project to fix the Main comment problems.
+- Moved GenerateAst.cs to it's own project to fix the Main comment problems, (it's documentation has been moved as well).
 - Used the books test case to test for loop. In order to test the if-else statements, I made my own test-cases including an if-elseif-else statement and removed parts of syntax in order to cause errors.
+- Considering adding remarks to documentation to have more in depth discussions.
 
 In order to run it, you should verify that you have C# installed on your computer. I would also suggest installing Visual Studio since this is the IDE that I created this project with. Then you should naviagate to Jlox/Ast Generator/bin/Debug/net6.0 in your terminal and enter the following commands:
 ```
