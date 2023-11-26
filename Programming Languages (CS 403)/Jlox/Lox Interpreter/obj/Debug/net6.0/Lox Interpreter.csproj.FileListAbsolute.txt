@@ -4,12 +4,12 @@ C:\Users\jaylo\OneDrive\Documents\GitHub\Projects\Programming Languages (CS 403)
 C:\Users\jaylo\OneDrive\Documents\GitHub\Projects\Programming Languages (CS 403)\Jlox\Lox Interpreter\obj\Debug\net6.0\Lox Interpreter.csproj.CoreCompileInputs.cache
 C:\Users\jaylo\OneDrive\Documents\GitHub\Projects\Programming Languages (CS 403)\Jlox\Lox Interpreter\obj\Debug\net6.0\Lox Interpreter.genruntimeconfig.cache
 C:\Users\jaylo\OneDrive\Documents\GitHub\Projects\Programming Languages (CS 403)\Jlox\Lox Interpreter\bin\Debug\net6.0\Lox Documentation.xml
-C:\Users\jaylo\OneDrive\Documents\GitHub\Projects\Programming Languages (CS 403)\Jlox\Lox Interpreter\bin\Debug\net6.0\jlox.exe
-C:\Users\jaylo\OneDrive\Documents\GitHub\Projects\Programming Languages (CS 403)\Jlox\Lox Interpreter\bin\Debug\net6.0\jlox.deps.json
-C:\Users\jaylo\OneDrive\Documents\GitHub\Projects\Programming Languages (CS 403)\Jlox\Lox Interpreter\bin\Debug\net6.0\jlox.runtimeconfig.json
-C:\Users\jaylo\OneDrive\Documents\GitHub\Projects\Programming Languages (CS 403)\Jlox\Lox Interpreter\bin\Debug\net6.0\jlox.dll
-C:\Users\jaylo\OneDrive\Documents\GitHub\Projects\Programming Languages (CS 403)\Jlox\Lox Interpreter\bin\Debug\net6.0\jlox.pdb
-C:\Users\jaylo\OneDrive\Documents\GitHub\Projects\Programming Languages (CS 403)\Jlox\Lox Interpreter\obj\Debug\net6.0\jlox.dll
-C:\Users\jaylo\OneDrive\Documents\GitHub\Projects\Programming Languages (CS 403)\Jlox\Lox Interpreter\obj\Debug\net6.0\refint\jlox.dll
-C:\Users\jaylo\OneDrive\Documents\GitHub\Projects\Programming Languages (CS 403)\Jlox\Lox Interpreter\obj\Debug\net6.0\jlox.pdb
-C:\Users\jaylo\OneDrive\Documents\GitHub\Projects\Programming Languages (CS 403)\Jlox\Lox Interpreter\obj\Debug\net6.0\ref\jlox.dll
+C:\Users\jaylo\OneDrive\Documents\GitHub\Projects\Programming Languages (CS 403)\Jlox\Lox Interpreter\bin\Debug\net6.0\netlox.exe
+C:\Users\jaylo\OneDrive\Documents\GitHub\Projects\Programming Languages (CS 403)\Jlox\Lox Interpreter\bin\Debug\net6.0\netlox.deps.json
+C:\Users\jaylo\OneDrive\Documents\GitHub\Projects\Programming Languages (CS 403)\Jlox\Lox Interpreter\bin\Debug\net6.0\netlox.runtimeconfig.json
+C:\Users\jaylo\OneDrive\Documents\GitHub\Projects\Programming Languages (CS 403)\Jlox\Lox Interpreter\bin\Debug\net6.0\netlox.dll
+C:\Users\jaylo\OneDrive\Documents\GitHub\Projects\Programming Languages (CS 403)\Jlox\Lox Interpreter\bin\Debug\net6.0\netlox.pdb
+C:\Users\jaylo\OneDrive\Documents\GitHub\Projects\Programming Languages (CS 403)\Jlox\Lox Interpreter\obj\Debug\net6.0\netlox.dll
+C:\Users\jaylo\OneDrive\Documents\GitHub\Projects\Programming Languages (CS 403)\Jlox\Lox Interpreter\obj\Debug\net6.0\refint\netlox.dll
+C:\Users\jaylo\OneDrive\Documents\GitHub\Projects\Programming Languages (CS 403)\Jlox\Lox Interpreter\obj\Debug\net6.0\netlox.pdb
+C:\Users\jaylo\OneDrive\Documents\GitHub\Projects\Programming Languages (CS 403)\Jlox\Lox Interpreter\obj\Debug\net6.0\ref\netlox.dll

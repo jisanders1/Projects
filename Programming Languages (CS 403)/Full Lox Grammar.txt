@@ -1,0 +1,36 @@
+NOTE: Capitlized terminals repreeng a single lexeme that have variable text representations. Non-terminals are lowercase. This grammar is from the textbook without the ending semicolons for readability.
+
+program        → declaration* EOF
+
+declaration    → funDecl | varDecl | statement
+funDecl        → "fun" function
+varDecl        → "var" IDENTIFIER ( "=" expression )? ";"
+
+function       → IDENTIFIER "(" parameters? ")" block
+parameters     → IDENTIFIER ( "," IDENTIFIER )*
+
+statement      → exprStmt | forStmt | ifStmt | printStmt | returnStmt | whileStmt | block
+
+block          → "{" declaration* "}"
+
+exprStmt       → expression ";"
+forStmt        → "for" "(" ( varDecl | exprStmt | ";" ) expression? ";" expression? ")" statement
+ifStmt         → "if" "(" expression ")" statement ( "else" statement )?
+printStmt      → "print" expression ";"
+returnStmt     → "return" expression? ";"
+whileStmt      → "while" "(" expression ")" statement
+
+expression     → assignment
+assignment     → IDENTIFIER "=" assignment | logic_or
+
+logic_or       → logic_and ( "or" logic_and )*
+logic_and      → equality ( "and" equality )*
+equality       → comparison ( ( "!=" | "==" ) comparison )*
+comparison     → term ( ( ">" | ">=" | "<" | "<=" ) term )*
+term           → factor ( ( "-" | "+" ) factor )*
+factor         → unary ( ( "/" | "*" ) unary )*
+unary          → ( "!" | "-" ) unary | call
+call           → primary ( "(" arguments? ")" )*
+primary        → NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" | IDENTIFIER
+
+arguments      → expression ( "," expression )*

@@ -90,9 +90,16 @@ namespace Lox_Interpreter.Lox
             List<Token> tokens = scanner.ScanTokens();
 
             Parser parser = new(tokens);
-            List<Stmt?> statements = parser.Parse();// if Parse returns null, an error will be raised and the Print statement below will never execute.
+            List<Stmt?> statements = parser.Parse();
 
             // Stop if there was a syntax error.
+            if (hadError) return;
+
+            // Resolving all variables in the statements
+            Resolver resolver = new(interpreter);
+            resolver.Resolve(statements);
+
+            // Stops if there is a resolution error
             if (hadError) return;
 
             interpreter.Interpret(statements);

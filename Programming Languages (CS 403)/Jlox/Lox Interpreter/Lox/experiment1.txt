@@ -68,7 +68,7 @@ for (var b = 1; a < 10000; b = temp + b) {
 
 // Chapter 10 Testing
 // Test 1: Testing defining functions
-fun sayHi(first, last) {
+/*fun sayHi(first, last) {
   print "Hi, " + first + " " + last + "!";
 }
 
@@ -104,4 +104,38 @@ fun makeCounter() {
 
 var counter = makeCounter();
 counter(); // "1".
-counter(); // "2".
+counter(); // "2".*/
+
+// Chapter 11 Testing
+// Test 1: Ensuring closure bug does not happen.
+// Should print:
+// global
+// global
+var a = "global";
+{
+  fun showA() {
+    print a;
+  }
+
+  showA();
+  var a = "block";
+  showA();
+}
+
+// Test 2: Making sure an error is raised when a variable's name is in its initializer
+// Should raise an error referncing line 129 and mentioning can't read local variable in its own initializer.
+/* var a = "outer";
+{
+  var a = a;
+} */
+
+// Test 3: Making sure a user can't define the same variable twice within the same scope
+// Should raise an error referencing line 136 and mentioning a variable already existing with this name in this scope
+/*fun bad() {
+  var a = "first";
+  var a = "second";
+}*/
+
+// Test 4: Making sure top-level returns are not possible.
+// Should raise an error referncing line 141 and mentioning you can't return from top-level code.
+//return "Something like this";

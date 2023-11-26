@@ -51,6 +51,19 @@ namespace Lox_Interpreter.Lox
         }
 
         /// <summary>
+        /// Retrieves a variable's value by stepping through a certain known number of scopes.
+        /// </summary>
+        /// <param name="distance">Number of steps between current environment and variable's environment.</param>
+        /// <param name="name">Name of variable being searched for.</param>
+        /// <returns>Value of variable stored in the ancestors environment.</returns>
+        public Object? GetAt(int distance, String name)
+        {
+            return Ancestor(distance).values[name];
+        }
+
+        
+
+        /// <summary>
         /// Defines a new variable with the givem name and value in the current environment.
         /// </summary>
         /// <param name="name">Name of new variable.</param>
@@ -81,6 +94,34 @@ namespace Lox_Interpreter.Lox
             }
 
             throw new RuntimeError(name, "Undefined variable '" + name.lexeme + "'.");
+        }
+
+        /// <summary>
+        /// Assigns a variable using its ancestor's environment.
+        /// </summary>
+        /// <param name="distance">Number of environments between current environment and ancestor environment.</param>
+        /// <param name="name">Variable name.</param>
+        /// <param name="value">Variable value.</param>
+        public void AssignAt(int distance, Token name, Object? value)
+        {
+            Ancestor(distance).values[name.lexeme] = value;
+        }
+        
+        /// <summary>
+        /// Steps through a specified number of environments until an environment is located.
+        /// </summary>
+        /// <param name="distance">Number of environments between current environment and ancestor environment.</param>
+        /// <returns>Ancestor environment.</returns>
+        private Environment Ancestor(int distance)
+        {
+            Environment environment = this;
+            for (int i = 0; i < distance; i++)
+            {
+                if (environment.enclosing == null) break; // Should never occur since the ancestor must be non-global
+                environment = environment.enclosing;
+            }
+
+            return environment;
         }
     }
 }

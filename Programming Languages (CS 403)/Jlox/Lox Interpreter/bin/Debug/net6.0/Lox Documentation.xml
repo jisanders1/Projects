@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <doc>
     <assembly>
-        <name>jlox</name>
+        <name>netlox</name>
     </assembly>
     <members>
         <member name="T:Lox_Interpreter.Lox.Environment">
@@ -28,6 +28,14 @@
             <returns>The value of the token stored in the environment.</returns>
             <exception cref="T:Lox_Interpreter.Lox.RuntimeError"></exception>
         </member>
+        <member name="M:Lox_Interpreter.Lox.Environment.GetAt(System.Int32,System.String)">
+            <summary>
+            Retrieves a variable's value by stepping through a certain known number of scopes.
+            </summary>
+            <param name="distance">Number of steps between current environment and variable's environment.</param>
+            <param name="name">Name of variable being searched for.</param>
+            <returns>Value of variable stored in the ancestors environment.</returns>
+        </member>
         <member name="M:Lox_Interpreter.Lox.Environment.Define(System.String,System.Object)">
             <summary>
             Defines a new variable with the givem name and value in the current environment.
@@ -42,6 +50,21 @@
             <param name="name">Name of existing variable.</param>
             <param name="value">New value to be assigned to existing variable.</param>
             <exception cref="T:Lox_Interpreter.Lox.RuntimeError"></exception>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Environment.AssignAt(System.Int32,Lox_Interpreter.Lox.Token,System.Object)">
+            <summary>
+            Assigns a variable using its ancestor's environment.
+            </summary>
+            <param name="distance">Number of environments between current environment and ancestor environment.</param>
+            <param name="name">Variable name.</param>
+            <param name="value">Variable value.</param>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Environment.Ancestor(System.Int32)">
+            <summary>
+            Steps through a specified number of environments until an environment is located.
+            </summary>
+            <param name="distance">Number of environments between current environment and ancestor environment.</param>
+            <returns>Ancestor environment.</returns>
         </member>
         <member name="T:Lox_Interpreter.Lox.ILoxCallable">
             <summary>
@@ -82,6 +105,13 @@
             Entry point to interpreter, catches and reports an runtime error if one is thrown.
             </summary>
             <param name="statements">Syntax tree to be interpreted.</param>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Interpreter.Resolve(Lox_Interpreter.Lox.Expr,System.Int32)">
+            <summary>
+            Stores resolution information in a side-table for when variables and assignments are executed.
+            </summary>
+            <param name="expr">Variable/assignment expression that has been resolved.</param>
+            <param name="depth">Number of scopes between the current scope and the enclosing scope of the interpreter.</param>
         </member>
         <member name="M:Lox_Interpreter.Lox.Interpreter.Execute(Lox_Interpreter.Lox.Stmt)">
             <summary>
@@ -134,6 +164,14 @@
             <param name="a">Left operand.</param>
             <param name="b">Right operand</param>
             <returns><see langword="true"/> if a and b are equivalent objects or if a and b are null, otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Interpreter.LookUpVariable(Lox_Interpreter.Lox.Token,Lox_Interpreter.Lox.Expr)">
+            <summary>
+            Looks for a variable, first in the locals scope, then within the global scope. 
+            </summary>
+            <param name="name">Name of variable to be searched.</param>
+            <param name="expr">Expression that contains the variable.</param>
+            <returns>The variable's value if found.</returns>
         </member>
         <member name="M:Lox_Interpreter.Lox.Interpreter.Stringify(System.Object)">
             <summary>
@@ -416,6 +454,108 @@
             <summary>
             Continues advancing until the start of the next statement in order to restore a parser's state.
             </summary>
+        </member>
+        <member name="T:Lox_Interpreter.Lox.Resolver">
+            <summary>
+            Represents a resolver that figures out which variables refer to what before interpreting.
+            Ensures that the closure mechanism works properly.
+            </summary>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Resolver.#ctor(Lox_Interpreter.Lox.Interpreter)">
+            <summary>
+            Initializes an instance of the <see cref="T:Lox_Interpreter.Lox.Resolver"/> class with the specified interpreter.
+            </summary>
+            <param name="interpreter">The interpreter to be used after the resolver.</param>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Resolver.VisitBlockStmt(Lox_Interpreter.Lox.Stmt.Block)">
+            <summary>
+            Resolves the variables for variable/assignment expressions within a block statement.
+            </summary>
+            <param name="stmt">Block statement to resolve.</param>
+            <returns><see langword="null"/></returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Resolver.VisitFunctionStmt(Lox_Interpreter.Lox.Stmt.Function)">
+            <summary>
+            Resolves a function declaration statement.
+            </summary>
+            <param name="stmt">Function declaration statement to be resolved.</param>
+            <returns><see langword="null"/></returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Resolver.VisitVarStmt(Lox_Interpreter.Lox.Stmt.Var)">
+            <summary>
+            Adds an entry to the current innermost scope's dictionary.
+            </summary>
+            <param name="stmt">Variable statement to be resolved.</param>
+            <returns><see langword="null"/></returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Resolver.VisitVariableExpr(Lox_Interpreter.Lox.Expr.Variable)">
+            <summary>
+            Checks if a variable is present in its initializer before resolving it.
+            </summary>
+            <param name="expr">Variable expression to be resolved.</param>
+            <returns><see langword="null"/></returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Resolver.VisitAssignExpr(Lox_Interpreter.Lox.Expr.Assign)">
+            <summary>
+            Resolves an assignment expression.
+            </summary>
+            <param name="expr">Assignment expression to be resolved.</param>
+            <returns><see langword="null"/></returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Resolver.Resolve(System.Collections.Generic.List{Lox_Interpreter.Lox.Stmt})">
+            <summary>
+            Resolves the variables for variable/assignment expressions within a block statement.
+            </summary>
+            <param name="statements">List of statements to resolve.</param>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Resolver.Resolve(Lox_Interpreter.Lox.Stmt)">
+            <summary>
+            Helper function that resolves a statement.
+            </summary>
+            <param name="stmt">Statement to be resolved.</param>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Resolver.Resolve(Lox_Interpreter.Lox.Expr)">
+            <summary>
+            Helper function that resolves an expression.
+            </summary>
+            <param name="expr">Expression to be resolved.</param>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Resolver.ResolveLocal(Lox_Interpreter.Lox.Expr,Lox_Interpreter.Lox.Token)">
+            <summary>
+            Walks through the scopes, innermost to outermost, looking the the specified name and expresion and resolves it if found.
+            </summary>
+            <param name="expr">Expression to search for</param>
+            <param name="name">Expression's name to search for.</param>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Resolver.ResolveFunction(Lox_Interpreter.Lox.Stmt.Function,Lox_Interpreter.Lox.Resolver.FunctionType)">
+            <summary>
+            Resolves a function's body and it's parameters within the functions scope. 
+            Also updates what the enclosing function is so we know if we are inside a function or not.
+            </summary>
+            <param name="function">Function that needs resolving.</param>
+            <param name="type">Current functions type.</param>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Resolver.BeginScope">
+            <summary>
+            Starts a new scope as the innermost scope.
+            </summary>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Resolver.EndScope">
+            <summary>
+            Ends the innermost scope.
+            </summary>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Resolver.Declare(Lox_Interpreter.Lox.Token)">
+            <summary>
+            Declares a variable in the current innermost scope, but does not resolve it.
+            </summary>
+            <param name="name">Variable name to be declared.</param>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Resolver.Define(Lox_Interpreter.Lox.Token)">
+            <summary>
+            Defines a variable as useable after the initializer has been resolved, resolves the variable as well.
+            </summary>
+            <param name="name">Variable to be defined and resolved.</param>
         </member>
         <member name="T:Lox_Interpreter.Lox.Return">
             <summary>

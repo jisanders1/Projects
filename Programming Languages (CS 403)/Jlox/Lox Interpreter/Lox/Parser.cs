@@ -177,7 +177,7 @@ namespace Lox_Interpreter.Lox
             Consume(RIGHT_PAREN, "Expect ')' after condition.");
             Stmt body = Statement();
 
-            return new Stmt.While(condition, body);
+            return new While(condition, body);
         }
 
         /// <summary>

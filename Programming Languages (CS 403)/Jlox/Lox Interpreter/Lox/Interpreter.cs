@@ -17,6 +17,8 @@ namespace Lox_Interpreter.Lox
     {
         public readonly Environment globals = new(); // Global environment, contains native functions for the Lox language
         private Environment environment = new();// Base environment for the variables.
+        private readonly Dictionary<Expr, int> locals = new();
+
         /// <summary>
         /// Represents the native Lox function "clock()", which returns the current time in seconds.
         /// </summary>
@@ -57,17 +59,27 @@ namespace Lox_Interpreter.Lox
             {
                 foreach (Stmt? statement in statements)
                 {
-                    if (statement == null) // not sure if this is the right way to handle this, will experiment to see what's up
+                    if (statement != null) // not sure if this is the right way to handle this, will experiment to see what's up
                     {
-                        continue;
+                        Execute(statement); 
                     }
-                    Execute(statement);
+                    
                 }
             }
             catch (RuntimeError error)
             {
                 Lox.RuntimeError(error);
             }
+        }
+
+        /// <summary>
+        /// Stores resolution information in a side-table for when variables and assignments are executed.
+        /// </summary>
+        /// <param name="expr">Variable/assignment expression that has been resolved.</param>
+        /// <param name="depth">Number of scopes between the current scope and the enclosing scope of the interpreter.</param>
+        public void Resolve(Expr expr, int depth)
+        {
+            locals[expr] = depth;
         }
 
         /// <summary>
@@ -185,7 +197,14 @@ namespace Lox_Interpreter.Lox
         public Object? VisitAssignExpr(Assign expr)
         {
             Object? value = Evaluate(expr.value);
-            environment.Assign(expr.name, value);
+            if (locals.TryGetValue(expr, out int distance))
+            {
+                environment.AssignAt(distance, expr.name, value);
+            }
+            else
+            {
+                globals.Assign(expr.name, value);
+            }
             return value;
         }
         public Object? VisitLiteralExpr(Literal expr)
@@ -263,7 +282,7 @@ namespace Lox_Interpreter.Lox
         }
         public Object? VisitVariableExpr(Variable expr)
         {
-            return environment.Get(expr.name);
+            return LookUpVariable(expr.name, expr);
         }
         public Object? VisitLogicalExpr(Logical expr)
         {
@@ -349,6 +368,24 @@ namespace Lox_Interpreter.Lox
             if (a == null) return false;
 
             return a.Equals(b);
+        }
+
+        /// <summary>
+        /// Looks for a variable, first in the locals scope, then within the global scope. 
+        /// </summary>
+        /// <param name="name">Name of variable to be searched.</param>
+        /// <param name="expr">Expression that contains the variable.</param>
+        /// <returns>The variable's value if found.</returns>
+        private Object? LookUpVariable(Token name, Expr expr)
+        {
+            if (locals.TryGetValue(expr, out int distance))
+            {
+                return environment.GetAt(distance, name.lexeme);
+            }
+            else
+            {
+                return globals.Get(name);
+            }
         }
 
         /// <summary>

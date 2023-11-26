@@ -6,15 +6,15 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v6.0": {
-      "jlox/1.0.0": {
+      "netlox/1.0.0": {
         "runtime": {
-          "jlox.dll": {}
+          "netlox.dll": {}
         }
       }
     }
   },
   "libraries": {
-    "jlox/1.0.0": {
+    "netlox/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
