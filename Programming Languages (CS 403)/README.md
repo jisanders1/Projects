@@ -48,6 +48,13 @@ Chapter 11:
 - May update the catch clause in the Lox class to be more specific with which error it caught since the File class method used throws many different types.
 - Added a [Lox grammar file](https://github.com/jisanders1/Projects/blob/main/Programming%20Languages%20(CS%20403)/Full%20Lox%20Grammar.txt) to keep track of what the grammar looks like in one place.
 
+Chapter 12:
+- Added classes to my implmentation of lox with constructors, methods, the "this" keyword, and fields/properties. Inheritance will come in the next chapter.
+- Updated the catch clause in the Lox class to print more specific information in regards to which error was caught, such as "Directory not found" for the DirectoryNotFound exception or "File is unable to be accessed due to permission requirements." for the SecurityException.
+- Changed the for loop in the ResolveLocal method of the [Resolver.cs](https://github.com/jisanders1/Projects/blob/main/Programming%20Languages%20(CS%20403)/Jlox/Lox%20Interpreter/Lox/Resolver.cs) class to start at the front and increment instead of starting at the back to decrement. The decrement version caused a weird error to occur where the program could not find the "this" keyword althogh it had already been declared and was in the dictionary being searched.
+- Updated the [Lox grammar file](https://github.com/jisanders1/Projects/blob/main/Programming%20Languages%20(CS%20403)/Full%20Lox%20Grammar.txt) to reflect the addition of classes.
+- Considering moving all projects out of the Lox folder into the Lox Interpreter folder to simplify path calls for both the interpreter itself and the generate_ast project.
+
 Challenges currently implemented:
 - Multi-line comments without nesting of more multi-line comments are allowed.
 - Divide by 0 is not allowed and an error will be thrown.
@@ -56,6 +63,6 @@ Current Issues to Note:
 - Needing to comment out different Main methods in order to execute the program properly. This is extremely tedious and leaves a bit of room for error. [UPDATE 2] I have moved the GenerateAst.cs class to be its own project, therefore, the two projects can be ran nidependently of each other with no issue.
 - A makefile in order to run the program as intended. "dotnet run" should be "jlox" in order to make what's occuring more clear. [UPDATE] I have successfully built the project into an executable, from which I may be able to make a makefile. [FIXED] I found the project properties and was able to change the name of executable that is output.
 - There are a couple of warnings warning that certain strings could possibly be null. However, for the purposes of the interpreter and fromm my testing thus far, these do not wreck the program. [FIXED] Through some intensive '?' usage for variable/return types and the null-coalescing operator.
-- I should probably start making test cases with unit testing to ensure everything is running smoothly. This could probably be handled as soon as I figure out the multiple main problems. However, I do not think this is extremely urgent given the fact that I am refactoring code from a book, and there code is most likely well tested.
+- I should probably start making test cases with unit testing to ensure everything is running smoothly. This could probably be handled as soon as I figure out the multiple main problems. However, I do not think this is extremely urgent given the fact that I am refactoring code from a book, and there code is most likely well tested. [UPDATE] Will be making some unit tests along with utilizing some from the book after I am finished with chapter 13.
 - There is no "throws IOException" equivalent in C# and this may affect how the program works. As of chapter 11, everything appears to be working as normal.
 - Parse currently allows a ")" when there is no opening parenthesis. I'm not sure if this is intended or not but I will continue to monitor it as time goes on. For now, anything after it is simply not evaluated at all. [FIXED] As of chapter 8, this is now caught as error.
