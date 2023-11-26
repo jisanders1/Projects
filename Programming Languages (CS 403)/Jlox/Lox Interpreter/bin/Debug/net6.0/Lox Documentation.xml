@@ -68,7 +68,7 @@
         </member>
         <member name="T:Lox_Interpreter.Lox.ILoxCallable">
             <summary>
-            Represents the ability to call a Lox function.
+            Represents the ability to use the implemnting object as a Lox function.
             </summary>
         </member>
         <member name="M:Lox_Interpreter.Lox.ILoxCallable.Arity">
@@ -239,6 +239,66 @@
             <param name="where">Location in line where error occurs.</param>
             <param name="message">Error message to be printed.</param>
         </member>
+        <member name="T:Lox_Interpreter.Lox.LoxClass">
+            <summary>
+            Represents the runtime representation of a Lox class.
+            </summary>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.LoxClass.#ctor(System.String,System.Collections.Generic.Dictionary{System.String,Lox_Interpreter.Lox.LoxFunction})">
+            <summary>
+            Initializes an instance of the <see cref="T:Lox_Interpreter.Lox.LoxClass"/> class with the specified name and methods.
+            </summary>
+            <param name="name">Name of class.</param>
+            <param name="methods">Dictionary containing the Class's methods.</param>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.LoxClass.Call(Lox_Interpreter.Lox.Interpreter,System.Collections.Generic.List{System.Object})">
+            <summary>
+            Makes a new instance of a Lox class.
+            </summary>
+            <param name="interpreter">Enclosing interpreter used to interpret the class.</param>
+            <param name="arguments">Class arguments for constructor.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.LoxClass.FindMethod(System.String)">
+            <summary>
+            Searches the <see cref="F:Lox_Interpreter.Lox.LoxClass.methods"/> dictionary for a specified method.
+            </summary>
+            <param name="name">Method to search for.</param>
+            <returns>A <see cref="T:Lox_Interpreter.Lox.LoxFunction"/> if found; otherwise <see langword="null"/>.</returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.LoxFunction.Bind(Lox_Interpreter.Lox.LoxInstance)">
+            <summary>
+            Binds the "this" keyword to the instance of its parent class.
+            </summary>
+            <param name="instance">Instance of class to bin "this" to.</param>
+            <returns>A <see cref="T:Lox_Interpreter.Lox.LoxFunction"/> with "this" bound to it.</returns>
+        </member>
+        <member name="T:Lox_Interpreter.Lox.LoxInstance">
+            <summary>
+            Represents the runtime representation of a Lox class instance.
+            </summary>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.LoxInstance.#ctor(Lox_Interpreter.Lox.LoxClass)">
+            <summary>
+            Initializes an instance of the <see cref="T:Lox_Interpreter.Lox.LoxInstance"/> class with the specified class.
+            </summary>
+            <param name="klass">Name of class instance.</param>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.LoxInstance.Get(Lox_Interpreter.Lox.Token)">
+            <summary>
+            Retrieves a fields value if the class instance contains it. Throws an exception if the field is not defined.
+            </summary>
+            <param name="name">Field name to be retrieved.</param>
+            <returns>The value of the field.</returns>
+            <exception cref="T:Lox_Interpreter.Lox.RuntimeError"></exception>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.LoxInstance.Set(Lox_Interpreter.Lox.Token,System.Object)">
+            <summary>
+            Sets a fields value with the specified value.
+            </summary>
+            <param name="name">Field to set.</param>
+            <param name="value">Value to set field to.</param>
+        </member>
         <member name="T:Lox_Interpreter.Lox.Parser.ParseError">
             <summary>
             Inherits from the <see cref="T:System.Exception"/> class in order to throw and report errors.
@@ -268,6 +328,12 @@
             </summary>
             <param name="kind">Type of name expected, can be "function" or "method" for classes.</param>
             <returns>A valid function statement.</returns>
+        </member>
+        <member name="M:Lox_Interpreter.Lox.Parser.ClassDeclaration">
+            <summary>
+            Represents the syntax of a class declaration.
+            </summary>
+            <returns>A class declaration statement.</returns>
         </member>
         <member name="M:Lox_Interpreter.Lox.Parser.VarDeclaration">
             <summary>
@@ -379,7 +445,7 @@
         </member>
         <member name="M:Lox_Interpreter.Lox.Parser.Call">
             <summary>
-            Represents the syntax of a function call.
+            Represents the syntax of a function call or class accessing (methods and properties)
             </summary>
             <returns>A valid function call expression.</returns>
         </member>
@@ -474,6 +540,13 @@
             <param name="stmt">Block statement to resolve.</param>
             <returns><see langword="null"/></returns>
         </member>
+        <member name="M:Lox_Interpreter.Lox.Resolver.VisitClassStmt(Lox_Interpreter.Lox.Stmt.Class)">
+            <summary>
+            Resolves the variables for variable/assignment expressions within a class statement.
+            </summary>
+            <param name="stmt">Class statement to resolve.</param>
+            <returns><see langword="null"/></returns>
+        </member>
         <member name="M:Lox_Interpreter.Lox.Resolver.VisitFunctionStmt(Lox_Interpreter.Lox.Stmt.Function)">
             <summary>
             Resolves a function declaration statement.
@@ -526,6 +599,10 @@
             </summary>
             <param name="expr">Expression to search for</param>
             <param name="name">Expression's name to search for.</param>
+            <remarks>The for loop was changed to starting at the end of the list and decrementing to starting at the beginning of the list and incrementing 
+            due to an error caused by the introduction of the "this" keyword. The function would not recognize "this" as being in the dictionary although it certainly was.
+            Incrementing fixed the issue, hopefully with no other side effects to running the program.
+            </remarks>
         </member>
         <member name="M:Lox_Interpreter.Lox.Resolver.ResolveFunction(Lox_Interpreter.Lox.Stmt.Function,Lox_Interpreter.Lox.Resolver.FunctionType)">
             <summary>

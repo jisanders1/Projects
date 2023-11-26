@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Lox_Interpreter.Lox
 {
     /// <summary>
-    /// Represents the ability to call a Lox function.
+    /// Represents the ability to use the implemnting object as a Lox function.
     /// </summary>
     internal interface ILoxCallable
     {

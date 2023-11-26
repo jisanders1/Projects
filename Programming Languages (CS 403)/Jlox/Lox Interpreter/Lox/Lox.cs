@@ -52,9 +52,41 @@ namespace Lox_Interpreter.Lox
             {
                 bytes = File.ReadAllBytes(Path.GetFullPath(path));
             } 
-            catch (Exception) // Catches any file errors, such as an incorrect path or opening a nonexistent file.
+            catch (Exception e) // Catches any file errors, such as an incorrect path or opening a nonexistent file.
             {
-                Console.Error.WriteLine("File not found in specified directory.");
+                if (e is DirectoryNotFoundException)
+                {
+                    Console.Error.WriteLine("Directory not found.");
+                }
+                else if (e is FileNotFoundException)
+                {
+                    Console.Error.WriteLine("File not found in specified directory.");
+                }
+                else if (e is System.Security.SecurityException)
+                {
+                    Console.Error.WriteLine("File is unable to be accessed due to permission requirements.");
+                }
+                else if (e is UnauthorizedAccessException)
+                {
+                    Console.Error.WriteLine("Attempted to read a write-only file.");
+                }
+                else if (e is NotSupportedException)
+                {
+                    Console.Error.WriteLine("File type not supported.");
+                }
+                else if (e is PathTooLongException)
+                {
+                    Console.Error.WriteLine("Specified path is too long (exceeds 260 characters).");
+                }
+                else if (e is IOException)
+                {
+                    Console.Error.WriteLine("I/O error occurred.");
+                }
+                else
+                {
+                    Console.Error.WriteLine("Invalid function arguments used. Cannot be null");
+                }
+                
                 System.Environment.Exit(1);
             }
             

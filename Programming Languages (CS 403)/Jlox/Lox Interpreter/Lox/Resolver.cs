@@ -21,13 +21,24 @@ namespace Lox_Interpreter.Lox
         // only used by blocks
         private readonly Stack<Dictionary<String, bool>> scopes = new();
 
-        // Indicates whether or not we are inside of a function
+        // Indicates whether or not we are inside of a function or method
         private enum FunctionType
         {
             NONE,
-            FUNCTION
+            FUNCTION,
+            INITIALIZER,
+            METHOD
         }
         private FunctionType currentFunction = FunctionType.NONE;
+
+        // Indicates whether or not we are inside a class
+        private enum ClassType
+        {
+            NONE,
+            CLASS
+        }
+
+        private ClassType currentClass = ClassType.NONE;
 
         /// <summary>
         /// Initializes an instance of the <see cref="Resolver"/> class with the specified interpreter.
@@ -47,6 +58,38 @@ namespace Lox_Interpreter.Lox
         {
             BeginScope();
             Resolve(stmt.statements);
+            EndScope();
+            return null;
+        }
+
+        /// <summary>
+        /// Resolves the variables for variable/assignment expressions within a class statement.
+        /// </summary>
+        /// <param name="stmt">Class statement to resolve.</param>
+        /// <returns><see langword="null"/></returns>
+        public Object? VisitClassStmt(Class stmt)
+        {
+            ClassType enclosingClass = currentClass; // Storing previous enclosing class in order to update current class.
+            currentClass = ClassType.CLASS;
+
+            Declare(stmt.name);
+            Define(stmt.name);
+
+            BeginScope();
+            scopes.Peek()["this"] = true;
+
+            foreach (Function method in stmt.methods)
+            {
+                FunctionType declaration = FunctionType.METHOD;
+                if (method.name.lexeme.Equals("init"))
+                {
+                    declaration = FunctionType.INITIALIZER;
+                }
+                ResolveFunction(method, declaration);
+            }
+
+            currentClass = enclosingClass; // returning to previous enclosing class.
+
             EndScope();
             return null;
         }
@@ -111,7 +154,7 @@ namespace Lox_Interpreter.Lox
             return null;
         }
 
-        // Below 11 methods do not need to be resolved on their own, but they still needed to be implemented
+        // Below 12 methods do not need to be resolved on their own, but they still needed to be implemented
         // in order to traverse the syntax tree
 
         public Object? VisitExpressionStmt(Expression stmt)
@@ -139,6 +182,10 @@ namespace Lox_Interpreter.Lox
             }
             if (stmt.value != null)
             {
+                if (currentFunction == FunctionType.INITIALIZER) // Reports an error for attempting to return from an initializer
+                {
+                    Lox.Error(stmt.keyword, "Can't return a value from an initializer.");
+                }
                 Resolve(stmt.value);
             }
 
@@ -167,6 +214,11 @@ namespace Lox_Interpreter.Lox
 
             return null;
         }
+        public Object? VisitGetExpr(Get expr)
+        {
+            Resolve(expr.obj);
+            return null;
+        }
         public Object? VisitGroupingExpr(Grouping expr)
         {
             Resolve(expr.expression);
@@ -180,6 +232,22 @@ namespace Lox_Interpreter.Lox
         {
             Resolve(expr.left);
             Resolve(expr.right);
+            return null;
+        }
+        public Object? VisitSetExpr(Set expr)
+        {
+            Resolve(expr.value);
+            Resolve(expr.obj);
+            return null;
+        }
+        public Object? VisitThisExpr(This expr)
+        {
+            if (currentClass == ClassType.NONE)
+            {
+                Lox.Error(expr.keyword, "Can't use 'this' outside of a class."); // Throws an error if the user attempts to use "this" outside of a class.
+                return null;
+            }
+            ResolveLocal(expr, expr.keyword);
             return null;
         }
         public Object? VisitUnaryExpr(Unary expr)
@@ -226,14 +294,18 @@ namespace Lox_Interpreter.Lox
         /// </summary>
         /// <param name="expr">Expression to search for</param>
         /// <param name="name">Expression's name to search for.</param>
+        /// <remarks>The for loop was changed to starting at the end of the list and decrementing to starting at the beginning of the list and incrementing 
+        /// due to an error caused by the introduction of the "this" keyword. The function would not recognize "this" as being in the dictionary although it certainly was.
+        /// Incrementing fixed the issue, hopefully with no other side effects to running the program.
+        /// </remarks>
         private void ResolveLocal(Expr expr, Token name)
         {
             List<Dictionary<String, bool>> list_scope = scopes.ToList(); // Converting to a list in order to iterate through the scopes.
-            for (int i = list_scope.Count - 1; i >= 0; i--)
+            for (int i = 0; i < list_scope.Count; i++)
             {
                 if (list_scope[i].ContainsKey(name.lexeme))
                 {
-                    interpreter.Resolve(expr, list_scope.Count - 1 - i);
+                    interpreter.Resolve(expr, i); // Originally was list_scope.Count - 1 - i, had to adjust because using the original version caused errors later on in chapter 12
                     return;
                 }
             }

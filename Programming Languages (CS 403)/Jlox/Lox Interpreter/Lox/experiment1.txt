@@ -111,7 +111,7 @@ counter(); // "2".*/
 // Should print:
 // global
 // global
-var a = "global";
+/*var a = "global";
 {
   fun showA() {
     print a;
@@ -120,22 +120,79 @@ var a = "global";
   showA();
   var a = "block";
   showA();
-}
+}*/
 
 // Test 2: Making sure an error is raised when a variable's name is in its initializer
-// Should raise an error referncing line 129 and mentioning can't read local variable in its own initializer.
+// Should raise an error mentioning can't read local variable in its own initializer.
+// Comment out in order to test other features
 /* var a = "outer";
 {
   var a = a;
 } */
 
 // Test 3: Making sure a user can't define the same variable twice within the same scope
-// Should raise an error referencing line 136 and mentioning a variable already existing with this name in this scope
+// Should raise an error mentioning a variable already existing with this name in this scope
+// Comment out in order to test other features
 /*fun bad() {
   var a = "first";
   var a = "second";
 }*/
 
 // Test 4: Making sure top-level returns are not possible.
+// Comment out in order to test other features
 // Should raise an error referncing line 141 and mentioning you can't return from top-level code.
 //return "Something like this";
+
+// Chapter 12 Testing
+// Test 1: ensuring class is being parsed correctly
+class DevonshireCream {
+  serveOn() {
+    return "Scones";
+  }
+}
+
+print DevonshireCream; // Prints "DevonshireCream".
+
+// Test 2: Testing the instance class to make sure a new instance is actually created
+class Bagel {}
+var bagel = Bagel();
+print bagel; // Prints "Bagel instance".
+
+// Test 3: Ensuring class methods are parsed accurately
+class Bacon {
+  eat() {
+    print "Crunch crunch crunch!";
+  }
+}
+
+Bacon().eat(); // Prints "Crunch crunch crunch!".
+
+// Test 4: Ensuring the "this" keyword is bound and works correctly
+class Cake {
+  taste() {
+    var adjective = "delicious";
+    print "The " + this.flavor + " cake is " + adjective + "!";
+  }
+}
+
+var cake = Cake();
+cake.flavor = "German chocolate";
+cake.taste(); // Prints "The German chocolate cake is delicious!".
+
+// Test 5: Ensuring users cannot use "this" outside of a class (comment out to test other features)
+// Should throw 2 errors
+/*print this;
+
+fun notAMethod() {
+  print this;
+}*/
+
+// Test 6: Testing initializer method inside of a class
+class Foo {
+  init() {
+    print this;
+  }
+}
+
+var foo = Foo();
+print foo.init(); // Prints "Foo instance" 3 times, once for the the variable declaration, once for invoking it for printing, and once for invoking the intializer.

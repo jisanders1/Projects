@@ -128,7 +128,7 @@ namespace Lox_Interpreter.Lox
             return expr.Accept(this);
         }
 
-        // Below 8 methods implement the Visitor paradigm for Statements.
+        // Below 10 methods implement the Visitor paradigm for Statements.
         // Since void is not allowed as a generic type in C#, the return type is Object and null is simply returned.
         public Object? VisitVarStmt(Var stmt)
         {
@@ -179,7 +179,7 @@ namespace Lox_Interpreter.Lox
         }
         public Object? VisitFunctionStmt(Function stmt)
         {
-            LoxFunction function = new(stmt, environment); //declares a function in with its own environment
+            LoxFunction function = new(stmt, environment, false); //declares a function in with its own environment
             environment.Define(stmt.name.lexeme, function); //adds it to base environment.
             return null;
         }
@@ -190,8 +190,22 @@ namespace Lox_Interpreter.Lox
 
             throw new Return(value);
         }
+        public Object? VisitClassStmt(Class stmt)
+        {
+            environment.Define(stmt.name.lexeme, null);
+            Dictionary<String, LoxFunction> methods = new();
+            foreach (Function method in stmt.methods)
+            {
+                LoxFunction function = new(method, environment, method.name.lexeme.Equals("init"));
+                methods[method.name.lexeme] = function;
+            }
 
-        // Below 8 methods implement the Visitor paradigm through treating different expression ttypes differently.
+            LoxClass klass = new(stmt.name.lexeme, methods);
+            environment.Assign(stmt.name, klass);
+            return null;
+        }
+
+        // Below 11 methods implement the Visitor paradigm through treating different expression ttypes differently.
         // Each method recursively calls Evaluate() except the Literal method, with simply returns it's value.
         // Otherwise, these do the actual evaluating.
         public Object? VisitAssignExpr(Assign expr)
@@ -316,6 +330,33 @@ namespace Lox_Interpreter.Lox
                 throw new RuntimeError(expr.paren, "Expected " + function?.Arity() + " arguments but got " + arguments.Count + ".");
             }
             return function?.Call(this, arguments);
+        }
+        public Object? VisitGetExpr(Get expr)
+        {
+            Object? obj = Evaluate(expr.obj);
+            if (obj is LoxInstance) 
+            {
+                return ((LoxInstance)obj).Get(expr.name);
+            }
+
+            throw new RuntimeError(expr.name, "Only instances have properties."); // Throws an exception for attempting to access a property of something that is not a class.
+        }
+        public Object? VisitSetExpr(Set expr)
+        {
+            Object? obj = Evaluate(expr.obj);
+
+            if (!(obj is LoxInstance)) 
+            {
+                throw new RuntimeError(expr.name, "Only instances have fields."); // Throws an exception for attempting to access a field of something that is not a class.
+            }
+
+            Object? value = Evaluate(expr.value);
+            ((LoxInstance)obj).Set(expr.name, value);
+            return value;
+        }
+        public Object? VisitThisExpr(This expr)
+        {
+            return LookUpVariable(expr.keyword, expr);
         }
 
         /// <summary>

@@ -12,10 +12,12 @@ namespace Lox_Interpreter.Lox
     {
         private readonly Function declaration; // contains the function's name, body, and parameters
         private readonly Environment closure; // for holding onto the environment after a function closes
-        public LoxFunction(Function declaration, Environment closure)
+        private readonly bool isInitializer; // used to indicate if a funciton is an initializer or a regular function
+        public LoxFunction(Function declaration, Environment closure, bool isInitializer)
         {
             this.closure = closure;
             this.declaration = declaration;
+            this.isInitializer = isInitializer;
         }
         public int Arity()
         {
@@ -32,11 +34,26 @@ namespace Lox_Interpreter.Lox
             {
                 interpreter.ExecuteBlock(declaration.body, environment);
             }
-            catch (Return returnValue)
+            catch (Return returnValue) // catches a return value
             {
+                if (isInitializer) return closure.GetAt(0, "this"); // establishes default return value of "this" for an initializer method
                 return returnValue.value;
             }
+
+            if (isInitializer) return closure.GetAt(0, "this");
             return null;
+        }
+
+        /// <summary>
+        /// Binds the "this" keyword to the instance of its parent class.
+        /// </summary>
+        /// <param name="instance">Instance of class to bin "this" to.</param>
+        /// <returns>A <see cref="LoxFunction"/> with "this" bound to it.</returns>
+        public LoxFunction Bind(LoxInstance instance)
+        {
+            Environment environment = new(closure);
+            environment.Define("this", instance);
+            return new LoxFunction(declaration, environment, isInitializer);
         }
         public override String ToString()
         {

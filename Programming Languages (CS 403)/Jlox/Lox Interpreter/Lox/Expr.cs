@@ -6,10 +6,13 @@ namespace Lox_Interpreter.Lox
 		{
 			R VisitAssignExpr(Assign expr);
 			R VisitBinaryExpr(Binary expr);
+			R VisitGetExpr(Get expr);
 			R VisitCallExpr(Call expr);
 			R VisitGroupingExpr(Grouping expr);
 			R VisitLiteralExpr(Literal expr);
 			R VisitLogicalExpr(Logical expr);
+			R VisitSetExpr(Set expr);
+			R VisitThisExpr(This expr);
 			R VisitUnaryExpr(Unary expr);
 			R VisitVariableExpr(Variable expr);
 		}
@@ -46,6 +49,22 @@ namespace Lox_Interpreter.Lox
 			public readonly Expr left;
 			public readonly Token oper;
 			public readonly Expr right;
+		}
+		public class Get : Expr
+		{
+			public Get(Expr obj, Token name)
+			{
+				this.obj = obj;
+				this.name = name;
+			}
+
+			public override R Accept<R>(IVisitor<R> visitor)
+			{
+				return visitor.VisitGetExpr(this);
+			}
+
+			public readonly Expr obj;
+			public readonly Token name;
 		}
 		public class Call : Expr
 		{
@@ -110,6 +129,38 @@ namespace Lox_Interpreter.Lox
 			public readonly Expr left;
 			public readonly Token oper;
 			public readonly Expr right;
+		}
+		public class Set : Expr
+		{
+			public Set(Expr obj, Token name, Expr value)
+			{
+				this.obj = obj;
+				this.name = name;
+				this.value = value;
+			}
+
+			public override R Accept<R>(IVisitor<R> visitor)
+			{
+				return visitor.VisitSetExpr(this);
+			}
+
+			public readonly Expr obj;
+			public readonly Token name;
+			public readonly Expr value;
+		}
+		public class This : Expr
+		{
+			public This(Token keyword)
+			{
+				this.keyword = keyword;
+			}
+
+			public override R Accept<R>(IVisitor<R> visitor)
+			{
+				return visitor.VisitThisExpr(this);
+			}
+
+			public readonly Token keyword;
 		}
 		public class Unary : Expr
 		{

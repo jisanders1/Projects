@@ -27,10 +27,13 @@ namespace Ast_Generator
             String[] array = new string[] {
                 "Assign   : Token name, Expr value",
                 "Binary   : Expr left, Token oper, Expr right",
+                "Get      : Expr obj, Token name",
                 "Call     : Expr callee, Token paren, List<Expr> arguments",
                 "Grouping : Expr expression",
                 "Literal  : Object? value",
                 "Logical  : Expr left, Token oper, Expr right",
+                "Set      : Expr obj, Token name, Expr value",
+                "This     : Token keyword",
                 "Unary    : Token oper, Expr right",
                 "Variable : Token name"};
 
@@ -38,6 +41,7 @@ namespace Ast_Generator
 
             array = new string[] {
                 "Block      : List<Stmt?> statements",
+                "Class      : Token name, List<Function> methods",
                 "Expression : Expr expression",
                 "Function   : Token name, List<Token> parameters, List<Stmt?> body",
                 "If         : Expr condition, Stmt thenBranch, Stmt? elseBranch",

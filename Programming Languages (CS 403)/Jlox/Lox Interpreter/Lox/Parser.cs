@@ -51,6 +51,7 @@ namespace Lox_Interpreter.Lox
         {
             try
             {
+                if (Match(CLASS)) return ClassDeclaration();
                 if (Match(FUN)) return Function("function");
                 if (Match(VAR)) return VarDeclaration();
 
@@ -89,6 +90,26 @@ namespace Lox_Interpreter.Lox
             Consume(LEFT_BRACE, "Expect '{' before " + kind + " body."); // Throws error if there is no '{' for the body of the function
             List<Stmt?> body = Block();
             return new Function(name, parameters, body);
+        }
+
+        /// <summary>
+        /// Represents the syntax of a class declaration.
+        /// </summary>
+        /// <returns>A class declaration statement.</returns>
+        private Stmt ClassDeclaration()
+        {
+            Token name = Consume(IDENTIFIER, "Expect class name."); // Throws an exception if a name is not found
+            Consume(LEFT_BRACE, "Expect '{' before class body."); // Throws an exception if the opening curly brace is missing.
+
+            List<Function> methods = new();
+            while (!Check(RIGHT_BRACE) && !IsAtEnd()) // Adds new functions while within the class declaration.
+            {
+                methods.Add(Function("method"));
+            }
+
+            Consume(RIGHT_BRACE, "Expect '}' after class body."); // Throws an exception if the closing curly brace is mising.
+
+            return new Class(name, methods);
         }
         /// <summary>
         /// Represents the syntax of a variable declaration.
@@ -296,6 +317,11 @@ namespace Lox_Interpreter.Lox
                     Token name = ((Variable)expr).name;
                     return new Assign(name, value);
                 }
+                else if (expr is Get)
+                {
+                    Get get = (Get)expr;
+                    return new Set(get.obj, get.name, value);
+                }
 
                 Error(equals, "Invalid assignment target.");
             }
@@ -429,7 +455,7 @@ namespace Lox_Interpreter.Lox
         }
 
         /// <summary>
-        /// Represents the syntax of a function call.
+        /// Represents the syntax of a function call or class accessing (methods and properties)
         /// </summary>
         /// <returns>A valid function call expression.</returns>
         private Expr Call()
@@ -441,6 +467,11 @@ namespace Lox_Interpreter.Lox
                 if (Match(LEFT_PAREN)) // parses the arguments of the function
                 {
                     expr = FinishCall(expr);
+                }
+                else if (Match(DOT)) // parses class property accesses
+                {
+                    Token name = Consume(IDENTIFIER, "Expect property name after '.'.");
+                    expr = new Get(expr, name);
                 }
                 else
                 {
@@ -476,7 +507,6 @@ namespace Lox_Interpreter.Lox
             return new Call(callee, paren, arguments);
         }
 
-
         /// <summary>
         /// Represents the primary rule, which checks for literals and other terminals (such as nil). Will throw errors in cases of bad grouping use.
         /// </summary>
@@ -498,6 +528,8 @@ namespace Lox_Interpreter.Lox
                 Consume(RIGHT_PAREN, "Expect ')' after expression."); // Throws an excption if there is no closing ')'
                 return new Grouping(expr);
             }
+
+            if (Match(THIS)) return new This(Previous()); // Parses this keyword
 
             if (Match(IDENTIFIER)) // Parses variables and function names.
             {
