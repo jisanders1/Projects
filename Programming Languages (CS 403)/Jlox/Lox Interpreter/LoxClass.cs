@@ -5,26 +5,28 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace Lox_Interpreter.Lox
+namespace Lox_Interpreter
 {
     /// <summary>
     /// Represents the runtime representation of a Lox class.
     /// </summary>
     internal class LoxClass : ILoxCallable
     {
-        public readonly String name; // Name of class
-        private readonly Dictionary<String, LoxFunction> methods; // Class's methods
-        private readonly bool isInitializer;
+        public readonly string name; // Name of class
+        private readonly LoxClass? superclass; // superclass
+        private readonly Dictionary<string, LoxFunction> methods; // Class's methods
 
         /// <summary>
         /// Initializes an instance of the <see cref="LoxClass"/> class with the specified name and methods.
         /// </summary>
         /// <param name="name">Name of class.</param>
+        /// <param name="superclass">The superclass that is being inherited from.</param>
         /// <param name="methods">Dictionary containing the Class's methods.</param>
-        public LoxClass(String name, Dictionary<String, LoxFunction> methods)
+        public LoxClass(string name, LoxClass? superclass, Dictionary<string, LoxFunction> methods)
         {
             this.name = name;
             this.methods = methods;
+            this.superclass = superclass;
         }
 
         public int Arity()
@@ -40,7 +42,7 @@ namespace Lox_Interpreter.Lox
         /// <param name="interpreter">Enclosing interpreter used to interpret the class.</param>
         /// <param name="arguments">Class arguments for constructor.</param>
         /// <returns></returns>
-        public Object? Call(Interpreter interpreter, List<Object?> arguments)
+        public object? Call(Interpreter interpreter, List<object?> arguments)
         {
             LoxInstance instance = new(this);
 
@@ -58,17 +60,22 @@ namespace Lox_Interpreter.Lox
         /// </summary>
         /// <param name="name">Method to search for.</param>
         /// <returns>A <see cref="LoxFunction"/> if found; otherwise <see langword="null"/>.</returns>
-        public LoxFunction? FindMethod(String name)
+        public LoxFunction? FindMethod(string name)
         {
             if (methods.ContainsKey(name))
             {
                 return methods[name];
             }
 
+            if (superclass != null)
+            {
+                return superclass.FindMethod(name);
+            }
+
             return null;
         }
 
-        public override String ToString()
+        public override string ToString()
         {
             return name;
         }

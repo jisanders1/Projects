@@ -1,4 +1,4 @@
-namespace Lox_Interpreter.Lox
+namespace Lox_Interpreter
 {
 	internal abstract class Stmt
 	{
@@ -30,9 +30,10 @@ namespace Lox_Interpreter.Lox
 		}
 		public class Class : Stmt
 		{
-			public Class(Token name, List<Function> methods)
+			public Class(Token name, Expr.Variable? superclass, List<Function> methods)
 			{
 				this.name = name;
+				this.superclass = superclass;
 				this.methods = methods;
 			}
 
@@ -42,6 +43,7 @@ namespace Lox_Interpreter.Lox
 			}
 
 			public readonly Token name;
+			public readonly Expr.Variable? superclass;
 			public readonly List<Function> methods;
 		}
 		public class Expression : Stmt

@@ -4,16 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Lox_Interpreter.Lox
+namespace Lox_Interpreter
 {
     /// <summary>
     /// Rerpresents the environment of a program, which includes variable's and their values.
     /// </summary>
     internal class Environment
     {
-        private readonly Environment? enclosing; // Parent environments.
-        private readonly Dictionary<string, Object?> values = new(); // Stores variable names and values
-        
+        public readonly Environment? enclosing; // Parent environments.
+        private readonly Dictionary<string, object?> values = new(); // Stores variable names and values
+
         /// <summary>
         /// Initializes an instance of the <see cref="Environment"/> class with no parent.
         /// </summary>
@@ -26,10 +26,10 @@ namespace Lox_Interpreter.Lox
         /// Initializes an instance of the <see cref="Environment"/> class with a parent environment.
         /// </summary>
         /// <param name="enclosing">The parent of the current environment.</param>
-        public Environment(Environment enclosing) 
+        public Environment(Environment enclosing)
         {
             this.enclosing = enclosing;
-        
+
         }
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace Lox_Interpreter.Lox
         /// <param name="name">Token being searched for</param>
         /// <returns>The value of the token stored in the environment.</returns>
         /// <exception cref="RuntimeError"></exception>
-        public Object? Get(Token name)
+        public object? Get(Token name)
         {
             if (values.ContainsKey(name.lexeme))
             {
@@ -56,19 +56,19 @@ namespace Lox_Interpreter.Lox
         /// <param name="distance">Number of steps between current environment and variable's environment.</param>
         /// <param name="name">Name of variable being searched for.</param>
         /// <returns>Value of variable stored in the ancestors environment.</returns>
-        public Object? GetAt(int distance, String name)
+        public object? GetAt(int distance, string name)
         {
             return Ancestor(distance).values[name];
         }
 
-        
+
 
         /// <summary>
         /// Defines a new variable with the givem name and value in the current environment.
         /// </summary>
         /// <param name="name">Name of new variable.</param>
         /// <param name="value">Value of new variable.</param>
-        public void Define(String name, Object? value)
+        public void Define(string name, object? value)
         {
             values[name] = value;
         }
@@ -79,7 +79,7 @@ namespace Lox_Interpreter.Lox
         /// <param name="name">Name of existing variable.</param>
         /// <param name="value">New value to be assigned to existing variable.</param>
         /// <exception cref="RuntimeError"></exception>
-        public void Assign(Token name, Object? value)
+        public void Assign(Token name, object? value)
         {
             if (values.ContainsKey(name.lexeme))
             {
@@ -102,11 +102,11 @@ namespace Lox_Interpreter.Lox
         /// <param name="distance">Number of environments between current environment and ancestor environment.</param>
         /// <param name="name">Variable name.</param>
         /// <param name="value">Variable value.</param>
-        public void AssignAt(int distance, Token name, Object? value)
+        public void AssignAt(int distance, Token name, object? value)
         {
             Ancestor(distance).values[name.lexeme] = value;
         }
-        
+
         /// <summary>
         /// Steps through a specified number of environments until an environment is located.
         /// </summary>

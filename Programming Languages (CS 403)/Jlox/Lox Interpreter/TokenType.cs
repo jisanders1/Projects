@@ -1,11 +1,11 @@
 ﻿using System;
 
-namespace Lox_Interpreter.Lox
+namespace Lox_Interpreter
 {
     /// <summary>
     /// Represents all the possible types of tokens there can be in Lox.
     /// </summary>
-    internal enum TokenType                             
+    internal enum TokenType
     {
         // Single-character tokens.
         LEFT_PAREN, RIGHT_PAREN, LEFT_BRACE, RIGHT_BRACE,

@@ -4,16 +4,16 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static Lox_Interpreter.Lox.Expr;
-using static Lox_Interpreter.Lox.Stmt;
-using static Lox_Interpreter.Lox.TokenType;
+using static Lox_Interpreter.Expr;
+using static Lox_Interpreter.Stmt;
+using static Lox_Interpreter.TokenType;
 
-namespace Lox_Interpreter.Lox
+namespace Lox_Interpreter
 {
     /// <summary>
     /// Represents an interpreter that takes in a syntax tree and evaluates it.
     /// </summary>
-    internal class Interpreter : Expr.IVisitor<Object?>, Stmt.IVisitor<Object?>
+    internal class Interpreter : Expr.IVisitor<object?>, Stmt.IVisitor<object?>
     {
         public readonly Environment globals = new(); // Global environment, contains native functions for the Lox language
         private Environment environment = new();// Base environment for the variables.
@@ -24,17 +24,17 @@ namespace Lox_Interpreter.Lox
         /// </summary>
         private class ClockFunction : ILoxCallable
         {
-            public int Arity() 
-            { 
+            public int Arity()
+            {
                 return 0;
             }
-            public Object? Call(Interpreter interpreter, List<Object?> arguments) // In this case, returns the current time in seconds.
+            public object? Call(Interpreter interpreter, List<object?> arguments) // In this case, returns the current time in seconds.
             {
-                return (double)DateTime.UtcNow.Ticks / 10000.0 / 1000.0;
+                return DateTime.UtcNow.Ticks / 10000.0 / 1000.0;
             }
 
-            public override String ToString() 
-            { 
+            public override string ToString()
+            {
                 return "<native fn>";
             }
         }
@@ -61,9 +61,9 @@ namespace Lox_Interpreter.Lox
                 {
                     if (statement != null) // not sure if this is the right way to handle this, will experiment to see what's up
                     {
-                        Execute(statement); 
+                        Execute(statement);
                     }
-                    
+
                 }
             }
             catch (RuntimeError error)
@@ -123,16 +123,16 @@ namespace Lox_Interpreter.Lox
         /// </summary>
         /// <param name="expr">Expression to be evaluated.</param>
         /// <returns>An object containing the result of the evaluation.</returns>
-        private Object? Evaluate(Expr expr)
+        private object? Evaluate(Expr expr)
         {
             return expr.Accept(this);
         }
 
         // Below 10 methods implement the Visitor paradigm for Statements.
         // Since void is not allowed as a generic type in C#, the return type is Object and null is simply returned.
-        public Object? VisitVarStmt(Var stmt)
+        public object? VisitVarStmt(Var stmt)
         {
-            Object? value = null;
+            object? value = null;
             if (stmt.initializer != null) // Evaluates the initializer if there is one.
             {
                 value = Evaluate(stmt.initializer);
@@ -141,23 +141,23 @@ namespace Lox_Interpreter.Lox
             environment.Define(stmt.name.lexeme, value);
             return null;
         }
-        public Object? VisitExpressionStmt(Expression stmt)
+        public object? VisitExpressionStmt(Expression stmt)
         {
             Evaluate(stmt.expression);
             return null;
         }
-        public Object? VisitBlockStmt(Block stmt)
+        public object? VisitBlockStmt(Block stmt)
         {
             ExecuteBlock(stmt.statements, new Environment(environment)); // Evaluates a block of statements with their own scope.
             return null;
         }
-        public Object? VisitPrintStmt(Print stmt)
+        public object? VisitPrintStmt(Print stmt)
         {
-            Object? value = Evaluate(stmt.expression); // Evaluates the value of the print statement and prints it.
+            object? value = Evaluate(stmt.expression); // Evaluates the value of the print statement and prints it.
             Console.WriteLine(Stringify(value));
             return null;
         }
-        public Object? VisitIfStmt(If stmt)
+        public object? VisitIfStmt(If stmt)
         {
             if (IsTruthy(Evaluate(stmt.condition))) // Evaluates condition to see if it is true, if so, executes the then part of the statement.
             {
@@ -169,7 +169,7 @@ namespace Lox_Interpreter.Lox
             }
             return null;
         }
-        public Object? VisitWhileStmt(While stmt)
+        public object? VisitWhileStmt(While stmt)
         {
             while (IsTruthy(Evaluate(stmt.condition))) // Executes the body while the looping condition evaluates to true.
             {
@@ -177,30 +177,51 @@ namespace Lox_Interpreter.Lox
             }
             return null;
         }
-        public Object? VisitFunctionStmt(Function stmt)
+        public object? VisitFunctionStmt(Function stmt)
         {
             LoxFunction function = new(stmt, environment, false); //declares a function in with its own environment
             environment.Define(stmt.name.lexeme, function); //adds it to base environment.
             return null;
         }
-        public Object? VisitReturnStmt(Stmt.Return stmt)
+        public object? VisitReturnStmt(Stmt.Return stmt)
         {
-            Object? value = null;
+            object? value = null;
             if (stmt.value != null) value = Evaluate(stmt.value); // returns an evaluated expression if the funciton body uses "return"
 
             throw new Return(value);
         }
-        public Object? VisitClassStmt(Class stmt)
+        public object? VisitClassStmt(Class stmt)
         {
+            Object? superclass = null;
+            if (stmt.superclass != null) // Checks to see if there is a superclass.
+            {
+                superclass = Evaluate(stmt.superclass);
+                if (!(superclass is LoxClass)) { // Checks to ensure that superclass is indeed a class and not some other object (like a string, integer, etc.)
+                    throw new RuntimeError(stmt.superclass.name, "Superclass must be a class.");
+                }
+            }
             environment.Define(stmt.name.lexeme, null);
-            Dictionary<String, LoxFunction> methods = new();
+
+            if (stmt.superclass != null) // Creates a new environment 
+            {
+                environment = new Environment(environment);
+                environment.Define("super", superclass);
+            }
+
+            Dictionary<string, LoxFunction> methods = new();
             foreach (Function method in stmt.methods)
             {
                 LoxFunction function = new(method, environment, method.name.lexeme.Equals("init"));
                 methods[method.name.lexeme] = function;
             }
 
-            LoxClass klass = new(stmt.name.lexeme, methods);
+            LoxClass klass = new(stmt.name.lexeme, (LoxClass?)superclass, methods);
+
+            if (superclass != null && environment.enclosing != null)
+            {
+                environment = environment.enclosing;
+            }
+
             environment.Assign(stmt.name, klass);
             return null;
         }
@@ -208,9 +229,9 @@ namespace Lox_Interpreter.Lox
         // Below 11 methods implement the Visitor paradigm through treating different expression ttypes differently.
         // Each method recursively calls Evaluate() except the Literal method, with simply returns it's value.
         // Otherwise, these do the actual evaluating.
-        public Object? VisitAssignExpr(Assign expr)
+        public object? VisitAssignExpr(Assign expr)
         {
-            Object? value = Evaluate(expr.value);
+            object? value = Evaluate(expr.value);
             if (locals.TryGetValue(expr, out int distance))
             {
                 environment.AssignAt(distance, expr.name, value);
@@ -221,19 +242,19 @@ namespace Lox_Interpreter.Lox
             }
             return value;
         }
-        public Object? VisitLiteralExpr(Literal expr)
+        public object? VisitLiteralExpr(Literal expr)
         {
             return expr.value;
         }
-        public Object? VisitGroupingExpr(Grouping expr)
+        public object? VisitGroupingExpr(Grouping expr)
         {
             return Evaluate(expr.expression);
         }
-        public Object? VisitUnaryExpr(Unary expr)
+        public object? VisitUnaryExpr(Unary expr)
         {
-            Object? right = Evaluate(expr.right);
+            object? right = Evaluate(expr.right);
 
-            switch (expr.oper.type) 
+            switch (expr.oper.type)
             {
                 case BANG: // Negation of boolean values.
                     return !IsTruthy(right);
@@ -245,13 +266,14 @@ namespace Lox_Interpreter.Lox
             // Unreachable.
             return null;
         }
-        public Object? VisitBinaryExpr(Binary expr)
+        public object? VisitBinaryExpr(Binary expr)
         {
-            Object? left = Evaluate(expr.left);
-            Object? right = Evaluate(expr.right);
+            object? left = Evaluate(expr.left);
+            object? right = Evaluate(expr.right);
 
             // Below evaluates based on the type of operator.
-            switch (expr.oper.type) {
+            switch (expr.oper.type)
+            {
                 case GREATER: // >
                     CheckNumberOperands(expr.oper, left, right);
                     return (double)left > (double)right;
@@ -278,11 +300,13 @@ namespace Lox_Interpreter.Lox
                     CheckNumberOperands(expr.oper, left, right);
                     return (double)left * (double)right;
                 case PLUS: // + (addition)
-                    if (left is double && right is double) {
+                    if (left is double && right is double)
+                    {
                         return (double)left + (double)right;
                     }
 
-                    if (left is string && right is string) {
+                    if (left is string && right is string)
+                    {
                         return (string)left + (string)right;
                     }
 
@@ -290,39 +314,42 @@ namespace Lox_Interpreter.Lox
                 case BANG_EQUAL: return !IsEqual(left, right); // !=
                 case EQUAL_EQUAL: return IsEqual(left, right); // ==
             }
-            
+
             // Unreachable.
             return null;
         }
-        public Object? VisitVariableExpr(Variable expr)
+        public object? VisitVariableExpr(Variable expr)
         {
             return LookUpVariable(expr.name, expr);
         }
-        public Object? VisitLogicalExpr(Logical expr)
+        public object? VisitLogicalExpr(Logical expr)
         {
-            Object? left = Evaluate(expr.left);
+            object? left = Evaluate(expr.left);
 
-            if (expr.oper.type == TokenType.OR) { // Allows for short-circuiting with the and/or operator
+            if (expr.oper.type == OR)
+            { // Allows for short-circuiting with the and/or operator
                 if (IsTruthy(left)) return left;
-            } else
+            }
+            else
             {
                 if (!IsTruthy(left)) return left;
             }
 
             return Evaluate(expr.right);
         }
-        public Object? VisitCallExpr(Call expr)
+        public object? VisitCallExpr(Call expr)
         {
-            Object? callee = Evaluate(expr.callee); // Will normally evaluate to be an identifier of some sort, but not always.
+            object? callee = Evaluate(expr.callee); // Will normally evaluate to be an identifier of some sort, but not always.
 
-            List<Object?> arguments = new();
+            List<object?> arguments = new();
             foreach (Expr argument in expr.arguments) // Evaluating the arguments
             {
                 arguments.Add(Evaluate(argument));
             }
 
-            if (!(callee is ILoxCallable)) { // Checks for improper use of the function syntax, i.e. attempting to use a string as a function name instead of an identifier.
-                throw new RuntimeError(expr.paren,  "Can only call functions and classes.");
+            if (!(callee is ILoxCallable))
+            { // Checks for improper use of the function syntax, i.e. attempting to use a string as a function name instead of an identifier.
+                throw new RuntimeError(expr.paren, "Can only call functions and classes.");
             }
             ILoxCallable? function = (ILoxCallable?)callee;
             if (arguments.Count != function?.Arity()) // Checks to make sure the number of arguments match whaat is expected.
@@ -331,30 +358,42 @@ namespace Lox_Interpreter.Lox
             }
             return function?.Call(this, arguments);
         }
-        public Object? VisitGetExpr(Get expr)
+        public object? VisitGetExpr(Get expr)
         {
-            Object? obj = Evaluate(expr.obj);
-            if (obj is LoxInstance) 
+            object? obj = Evaluate(expr.obj);
+            if (obj is LoxInstance)
             {
                 return ((LoxInstance)obj).Get(expr.name);
             }
 
             throw new RuntimeError(expr.name, "Only instances have properties."); // Throws an exception for attempting to access a property of something that is not a class.
         }
-        public Object? VisitSetExpr(Set expr)
+        public object? VisitSetExpr(Set expr)
         {
-            Object? obj = Evaluate(expr.obj);
+            object? obj = Evaluate(expr.obj);
 
-            if (!(obj is LoxInstance)) 
+            if (!(obj is LoxInstance))
             {
                 throw new RuntimeError(expr.name, "Only instances have fields."); // Throws an exception for attempting to access a field of something that is not a class.
             }
 
-            Object? value = Evaluate(expr.value);
+            object? value = Evaluate(expr.value);
             ((LoxInstance)obj).Set(expr.name, value);
             return value;
         }
-        public Object? VisitThisExpr(This expr)
+        public object? VisitSuperExpr(Super expr)
+        {
+            int distance = locals[expr]; // If we have gotten to this point, the superclass must be in the locals table.
+            LoxClass? superclass = (LoxClass?)environment.GetAt(distance, "super");
+
+            // An error should never be thrown with this, simply handles a warning.
+            LoxInstance? obj = (LoxInstance?)environment.GetAt(distance - 1, "this") ?? throw new RuntimeError(expr.method, "Instance of class not found.");
+
+            // Using coalesce operator to throw an exception if method is null
+            LoxFunction? method = (superclass?.FindMethod(expr.method.lexeme)) ?? throw new RuntimeError(expr.method, "Undefined property '" + expr.method.lexeme + "'.");
+            return method.Bind(obj);
+        }
+        public object? VisitThisExpr(This expr)
         {
             return LookUpVariable(expr.keyword, expr);
         }
@@ -365,9 +404,9 @@ namespace Lox_Interpreter.Lox
         /// <param name="oper">Operator token of the expression.</param>
         /// <param name="operand">Operand being evaluated.</param>
         /// <exception cref="RuntimeError"></exception>
-        private void CheckNumberOperand(Token oper, [NotNull] Object? operand)
+        private void CheckNumberOperand(Token oper, [NotNull] object? operand)
         {
-            if (operand is Double) return;
+            if (operand is double) return;
             throw new RuntimeError(oper, "Operand must be a number.");
         }
 
@@ -378,7 +417,7 @@ namespace Lox_Interpreter.Lox
         /// <param name="left">Left operand of expression.</param>
         /// <param name="right">Right operand of expression.</param>
         /// <exception cref="RuntimeError"></exception>
-        private void CheckNumberOperands(Token oper, [NotNull] Object? left, [NotNull] Object? right) //[NotNull] keyword indicates to C# that the statements won't be null upon returning from function.
+        private void CheckNumberOperands(Token oper, [NotNull] object? left, [NotNull] object? right) //[NotNull] keyword indicates to C# that the statements won't be null upon returning from function.
         {
             if (left is double && right is double) return;
 
@@ -390,7 +429,7 @@ namespace Lox_Interpreter.Lox
         /// </summary>
         /// <param name="obj">Value to check for truthy-ness.</param>
         /// <returns><see langword="true"/> if the input is True or is a non-null value; otherwise, <see langword="false"/> if False or <see langword="null"/>.</returns>
-        private bool IsTruthy(Object? obj)
+        private bool IsTruthy(object? obj)
         {
             if (obj == null) return false;
             if (obj is bool) return (bool)obj;
@@ -403,7 +442,7 @@ namespace Lox_Interpreter.Lox
         /// <param name="a">Left operand.</param>
         /// <param name="b">Right operand</param>
         /// <returns><see langword="true"/> if a and b are equivalent objects or if a and b are null, otherwise, <see langword="false"/>.</returns>
-        private bool IsEqual(Object? a, Object? b)
+        private bool IsEqual(object? a, object? b)
         {
             if (a == null && b == null) return true;
             if (a == null) return false;
@@ -417,7 +456,7 @@ namespace Lox_Interpreter.Lox
         /// <param name="name">Name of variable to be searched.</param>
         /// <param name="expr">Expression that contains the variable.</param>
         /// <returns>The variable's value if found.</returns>
-        private Object? LookUpVariable(Token name, Expr expr)
+        private object? LookUpVariable(Token name, Expr expr)
         {
             if (locals.TryGetValue(expr, out int distance))
             {
@@ -434,14 +473,15 @@ namespace Lox_Interpreter.Lox
         /// </summary>
         /// <param name="obj">Object to be converted into a string.</param>
         /// <returns>A string equivalent of the object.</returns>
-        private string? Stringify(Object? obj)
+        private string? Stringify(object? obj)
         {
             if (obj == null) return "nil";
 
-            if (obj is double) {
+            if (obj is double)
+            {
                 // "nil" will never be used here since obj is not null
                 // It is simply here to handle a possible null reference warning with the null-coalescing operator
-                string text = obj.ToString() ?? "nil"; 
+                string text = obj.ToString() ?? "nil";
                 if (text.EndsWith(".0")) // Accounting for the case of an integer
                 {
                     text = text[..^2];

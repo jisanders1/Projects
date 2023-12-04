@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Lox_Interpreter.Lox
+namespace Lox_Interpreter
 {
     /// <summary>
     /// Represents the ability to use the implemnting object as a Lox function.
@@ -23,6 +23,6 @@ namespace Lox_Interpreter.Lox
         /// <param name="interpreter">Interpreter used to interpret and execute the body.</param>
         /// <param name="arguments">Arguments of the function</param>
         /// <returns>A value if the "return" keyword is used, otherwise; returns <see langword="null"/>.</returns>
-        public Object? Call(Interpreter interpreter, List<Object?> arguments);
+        public object? Call(Interpreter interpreter, List<object?> arguments);
     }
 }

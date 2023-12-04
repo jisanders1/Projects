@@ -2,26 +2,26 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using static Lox_Interpreter.Lox.TokenType;
+using static Lox_Interpreter.TokenType;
 
-namespace Lox_Interpreter.Lox
+namespace Lox_Interpreter
 {
     /// <summary>
     /// Represents the scanning of source code into tokens.
     /// </summary>
     internal class Scanner
     {
-        private readonly String source; // Source code
+        private readonly string source; // Source code
         private readonly List<Token> tokens = new(); //List of tokens
         private int start = 0; // indicates the start of a lexeme
         private int current = 0; // indicates the current position inside of source
         private int line = 1; // indicates the current line number
-        private static readonly Dictionary<String, TokenType> keywords; // dictionary of key words
+        private static readonly Dictionary<string, TokenType> keywords; // dictionary of key words
 
         /// <summary>
         /// Generates a dictionary of reserved words for the Lox language.
         /// </summary>
-        static Scanner() 
+        static Scanner()
         {
             keywords = new Dictionary<string, TokenType>
             {
@@ -49,9 +49,9 @@ namespace Lox_Interpreter.Lox
         /// </summary>
         /// <param name="source">Source code to scan tokens from.</param>
         public Scanner(string source)
-            {
-                this.source = source;
-            }
+        {
+            this.source = source;
+        }
 
         /// <summary>
         /// Calls <see cref="ScanToken"/> while not at the end of the file in order to handle scnaning. Adds an EOF token at the end of the token list.
@@ -182,7 +182,7 @@ namespace Lox_Interpreter.Lox
         {
             while (IsAlphaNumeric(Peek())) Advance(); //advacing to the end of the lexeme
 
-            String text = source[start..current]; // Captures the full lexeme
+            string text = source[start..current]; // Captures the full lexeme
             TokenType type;
             if (!keywords.ContainsKey(text)) // Checks if the lexeme is a keyword or not.
             {
@@ -211,20 +211,22 @@ namespace Lox_Interpreter.Lox
                 while (IsDigit(Peek())) Advance();
             }
 
-            AddToken(NUMBER, Double.Parse(source[start..current]));
+            AddToken(NUMBER, double.Parse(source[start..current]));
         }
 
         /// <summary>
         /// Identifies a lexeme as a string and adds it as a token. Reports an error if the string is unterminated.
         /// </summary>
-        private void StringMethod() {
+        private void StringMethod()
+        {
             while (Peek() != '"' && !IsAtEnd())
             {
                 if (Peek() == '\n') line++;
                 Advance();
             }
 
-            if (IsAtEnd()) {
+            if (IsAtEnd())
+            {
                 Lox.Error(line, "Unterminated string.");
                 return;
             }
@@ -233,7 +235,7 @@ namespace Lox_Interpreter.Lox
             Advance();
 
             // Trim the surrounding quotes.
-            String value = source[(start + 1)..(current - 1)];
+            string value = source[(start + 1)..(current - 1)];
             AddToken(STRING, value);
         }
 
@@ -288,8 +290,8 @@ namespace Lox_Interpreter.Lox
         /// <returns><see langword="true"/> if the character is a letter or underscore; otherwise <see langword="false"/>.</returns>
         private bool IsAlpha(char c)
         {
-            return (c >= 'a' && c <= 'z') ||
-                   (c >= 'A' && c <= 'Z') ||
+            return c >= 'a' && c <= 'z' ||
+                   c >= 'A' && c <= 'Z' ||
                     c == '_';
         }
 
@@ -335,9 +337,9 @@ namespace Lox_Interpreter.Lox
         /// </summary>
         /// <param name="type">Type of token being added.</param>
         /// <param name="literal">Actual value of lexeme if applicable.</param>
-        private void AddToken(TokenType type, Object? literal)
+        private void AddToken(TokenType type, object? literal)
         {
-            String text = source[start..current];
+            string text = source[start..current];
             tokens.Add(new Token(type, text, literal, line));
         }
     }

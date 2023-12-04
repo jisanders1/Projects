@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static Lox_Interpreter.Lox.TokenType;
-using static Lox_Interpreter.Lox.Expr;
-using static Lox_Interpreter.Lox.Stmt;
+using static Lox_Interpreter.TokenType;
+using static Lox_Interpreter.Expr;
+using static Lox_Interpreter.Stmt;
 
-namespace Lox_Interpreter.Lox
+namespace Lox_Interpreter
 {
     internal class Parser
     {
@@ -69,7 +69,7 @@ namespace Lox_Interpreter.Lox
         /// </summary>
         /// <param name="kind">Type of name expected, can be "function" or "method" for classes.</param>
         /// <returns>A valid function statement.</returns>
-        private Function Function(String kind)
+        private Function Function(string kind)
         {
             Token name = Consume(IDENTIFIER, "Expect " + kind + " name."); // Throws an error if no name is present after "fun"
             Consume(LEFT_PAREN, "Expect '(' after " + kind + " name."); // Throws an error if there is no '(' before the parameters
@@ -99,6 +99,14 @@ namespace Lox_Interpreter.Lox
         private Stmt ClassDeclaration()
         {
             Token name = Consume(IDENTIFIER, "Expect class name."); // Throws an exception if a name is not found
+            
+            Variable? superclass = null;
+            if (Match(LESS))
+            {
+                Consume(IDENTIFIER, "Expect superclass name.");
+                superclass = new Variable(Previous());
+            }
+            
             Consume(LEFT_BRACE, "Expect '{' before class body."); // Throws an exception if the opening curly brace is missing.
 
             List<Function> methods = new();
@@ -109,7 +117,7 @@ namespace Lox_Interpreter.Lox
 
             Consume(RIGHT_BRACE, "Expect '}' after class body."); // Throws an exception if the closing curly brace is mising.
 
-            return new Class(name, methods);
+            return new Class(name, superclass, methods);
         }
         /// <summary>
         /// Represents the syntax of a variable declaration.
@@ -313,7 +321,8 @@ namespace Lox_Interpreter.Lox
                 Token equals = Previous();
                 Expr value = Assignment();
 
-                if (expr is Variable) { //looks to see if the left-hand side of the expression is a variable, if so, it's assignment we do
+                if (expr is Variable)
+                { //looks to see if the left-hand side of the expression is a variable, if so, it's assignment we do
                     Token name = ((Variable)expr).name;
                     return new Assign(name, value);
                 }
@@ -529,6 +538,14 @@ namespace Lox_Interpreter.Lox
                 return new Grouping(expr);
             }
 
+            if (Match(SUPER))
+            {
+                Token keyword = Previous();
+                Consume(DOT, "Expect '.' after 'super'.");
+                Token method = Consume(IDENTIFIER, "Expect superclass method name.");
+                return new Super(keyword, method);
+            }
+
             if (Match(THIS)) return new This(Previous()); // Parses this keyword
 
             if (Match(IDENTIFIER)) // Parses variables and function names.
@@ -564,7 +581,7 @@ namespace Lox_Interpreter.Lox
         /// <param name="type">Type to search for.</param>
         /// <param name="message">Error message to print in case the input type is not found.</param>
         /// <returns>The token matching the input's type if an exception is not thrown.'</returns>
-        private Token Consume(TokenType type, String message)
+        private Token Consume(TokenType type, string message)
         {
             if (Check(type)) return Advance();
 
@@ -625,7 +642,7 @@ namespace Lox_Interpreter.Lox
         /// <param name="token">Token that caused the error.</param>
         /// <param name="message">Error message to be printed.</param>
         /// <returns>A <see cref="ParseError"/> exception.</returns>
-        private ParseError Error(Token token, String message)
+        private ParseError Error(Token token, string message)
         {
             Lox.Error(token, message);
             return new ParseError();

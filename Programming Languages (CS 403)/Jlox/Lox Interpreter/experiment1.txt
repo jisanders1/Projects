@@ -145,7 +145,7 @@ counter(); // "2".*/
 
 // Chapter 12 Testing
 // Test 1: ensuring class is being parsed correctly
-class DevonshireCream {
+/*class DevonshireCream {
   serveOn() {
     return "Scones";
   }
@@ -181,11 +181,11 @@ cake.taste(); // Prints "The German chocolate cake is delicious!".
 
 // Test 5: Ensuring users cannot use "this" outside of a class (comment out to test other features)
 // Should throw 2 errors
-/*print this;
+print this;
 
 fun notAMethod() {
   print this;
-}*/
+}
 
 // Test 6: Testing initializer method inside of a class
 class Foo {
@@ -195,4 +195,45 @@ class Foo {
 }
 
 var foo = Foo();
-print foo.init(); // Prints "Foo instance" 3 times, once for the the variable declaration, once for invoking it for printing, and once for invoking the intializer.
+print foo.init(); */// Prints "Foo instance" 3 times, once for the the variable declaration, once for invoking it for printing, and once for invoking the intializer.
+
+// Chapter 13 Testing
+// Test 1: Testing calling superclass method calls with a subclass
+class Doughnut {
+  cook() {
+    print "Fry until golden brown.";
+  }
+}
+
+// The 2 lines below needs to be commented out in order to run test 2
+// class BostonCream < Doughnut {}
+// BostonCream().cook(); // Should print "Fry until golden brown."
+
+// Test 2: Implementing the "super" keyword. Should print
+// Fry until golden brown.
+// Pipe full of custard and coat with chocolate.
+class Doughnut {
+  cook() {
+    print "Fry until golden brown.";
+  }
+}
+
+class BostonCream < Doughnut {
+  cook() {
+    super.cook();
+    print "Pipe full of custard and coat with chocolate.";
+  }
+}
+
+BostonCream().cook();
+
+// Test 3: Ensuring super cannot be used in invalid locations.
+// Should throw 2 errors, one for trying to use super in a class with no superclass and another for attempting to use super outside of a class.
+class Eclair {
+  cook() {
+    super.cook();
+    print "Pipe full of crème pâtissière.";
+  }
+}
+
+super.notEvenInAClass();

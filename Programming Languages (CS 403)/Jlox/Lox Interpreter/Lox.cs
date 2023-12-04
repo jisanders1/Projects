@@ -3,7 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Lox_Interpreter.Lox
+namespace Lox_Interpreter
 {
     /// <summary>
     /// Represents the entry point to the Jlox interepreter. 
@@ -22,7 +22,7 @@ namespace Lox_Interpreter.Lox
         /// Handles when and how to run jlox, either in line-by-line in the terminal or runnning a file specified by path.
         /// </summary>
         /// <param name="args">The command line arguments on which to run jlox. Optional specification of file name or path is allowed.</param>
-        public static void Main(String[] args)
+        public static void Main(string[] args)
         {
             if (args.Length > 1) // handles improper command line usage.
             {
@@ -44,14 +44,14 @@ namespace Lox_Interpreter.Lox
         /// If an error occurs in running the code, the code will stop being executed.
         /// </summary>
         /// <param name="path">File name or path of file that is being interpreted.</param>
-        private static void RunFile(String path)
+        private static void RunFile(string path)
         {
             Encoding utf8 = new UTF8Encoding(true);
-            byte[] bytes = Array.Empty<byte>(); 
+            byte[] bytes = Array.Empty<byte>();
             try
             {
                 bytes = File.ReadAllBytes(Path.GetFullPath(path));
-            } 
+            }
             catch (Exception e) // Catches any file errors, such as an incorrect path or opening a nonexistent file.
             {
                 if (e is DirectoryNotFoundException)
@@ -86,10 +86,10 @@ namespace Lox_Interpreter.Lox
                 {
                     Console.Error.WriteLine("Invalid function arguments used. Cannot be null");
                 }
-                
+
                 System.Environment.Exit(1);
             }
-            
+
             Run(new string(utf8.GetString(bytes)));
             if (hadError) System.Environment.Exit(65);
             if (hadRuntimeError) System.Environment.Exit(70);
@@ -143,7 +143,7 @@ namespace Lox_Interpreter.Lox
         /// </summary>
         /// <param name="line">Line where the error was found.</param>
         /// <param name="message">Error message to be printed.</param>
-        public static void Error(int line, String message)
+        public static void Error(int line, string message)
         {
             Report(line, "", message);
         }
@@ -153,7 +153,7 @@ namespace Lox_Interpreter.Lox
         /// </summary>
         /// <param name="token">Token that causes the error.</param>
         /// <param name="message">Error message to be printed</param>
-        public static void Error(Token token, String message)
+        public static void Error(Token token, string message)
         {
             if (token.type == TokenType.EOF)
             {
@@ -181,7 +181,7 @@ namespace Lox_Interpreter.Lox
         /// <param name="line">Line where the error was found.</param>
         /// <param name="where">Location in line where error occurs.</param>
         /// <param name="message">Error message to be printed.</param>
-        private static void Report(int line, String where, String message)
+        private static void Report(int line, string where, string message)
         {
             Console.Error.WriteLine("[line " + line + "] Error" + where + ": " + message);
             hadError = true;

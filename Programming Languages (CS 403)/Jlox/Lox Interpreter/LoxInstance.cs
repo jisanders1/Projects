@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Lox_Interpreter.Lox
+namespace Lox_Interpreter
 {
     /// <summary>
     /// Represents the runtime representation of a Lox class instance.
@@ -12,7 +12,7 @@ namespace Lox_Interpreter.Lox
     internal class LoxInstance
     {
         private LoxClass klass; // Name of class instance
-        private readonly Dictionary<String, Object?> fields = new();
+        private readonly Dictionary<string, object?> fields = new();
 
         /// <summary>
         /// Initializes an instance of the <see cref="LoxInstance"/> class with the specified class.
@@ -29,7 +29,7 @@ namespace Lox_Interpreter.Lox
         /// <param name="name">Field name to be retrieved.</param>
         /// <returns>The value of the field.</returns>
         /// <exception cref="RuntimeError"></exception>
-        public Object? Get(Token name)
+        public object? Get(Token name)
         {
             if (fields.ContainsKey(name.lexeme))
             {
@@ -47,12 +47,12 @@ namespace Lox_Interpreter.Lox
         /// </summary>
         /// <param name="name">Field to set.</param>
         /// <param name="value">Value to set field to.</param>
-        public void Set(Token name, Object? value)
+        public void Set(Token name, object? value)
         {
             fields[name.lexeme] = value;
         }
 
-        public override String ToString()
+        public override string ToString()
         {
             return klass.name + " instance";
         }

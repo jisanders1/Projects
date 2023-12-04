@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Lox_Interpreter.Lox
+namespace Lox_Interpreter
 {
     /// <summary>
     /// Represents a token that has a type, lexeme, a literal, and the line it is on.
@@ -8,8 +8,8 @@ namespace Lox_Interpreter.Lox
     internal class Token
     {
         public readonly TokenType type; // Type of token
-        public readonly String lexeme; // these are the blobs of raw source code
-        public readonly Object? literal; // can be null, represents acutal values that the code needs/uses
+        public readonly string lexeme; // these are the blobs of raw source code
+        public readonly object? literal; // can be null, represents acutal values that the code needs/uses
         public readonly int line;
 
         /// <summary>
@@ -19,7 +19,7 @@ namespace Lox_Interpreter.Lox
         /// <param name="lexeme">The raw representation of the code from the source.</param>
         /// <param name="literal">Literal value of the token if it is a string or a number.</param>
         /// <param name="line">Line number the token is present on.</param>
-        public Token(TokenType type, String lexeme, Object? literal, int line)
+        public Token(TokenType type, string lexeme, object? literal, int line)
         {
             this.type = type;
             this.lexeme = lexeme;
@@ -31,7 +31,7 @@ namespace Lox_Interpreter.Lox
         /// Generates a string representation of a token.
         /// </summary>
         /// <returns>A string with a token's type, lexeme, and literal value if applicable.</returns>
-        public override String ToString()
+        public override string ToString()
         {
             return type + " " + lexeme + " " + literal;
         }

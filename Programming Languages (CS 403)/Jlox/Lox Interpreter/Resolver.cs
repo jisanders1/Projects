@@ -3,23 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static Lox_Interpreter.Lox.Expr;
-using static Lox_Interpreter.Lox.Stmt;
+using static Lox_Interpreter.Expr;
+using static Lox_Interpreter.Stmt;
 using static System.Formats.Asn1.AsnWriter;
 
-namespace Lox_Interpreter.Lox
+namespace Lox_Interpreter
 {
     /// <summary>
     /// Represents a resolver that figures out which variables refer to what before interpreting.
     /// Ensures that the closure mechanism works properly.
     /// </summary>
-    internal class Resolver : Expr.IVisitor<Object?>, Stmt.IVisitor<Object?>
+    internal class Resolver : Expr.IVisitor<object?>, Stmt.IVisitor<object?>
     {
         private readonly Interpreter interpreter;
 
         // Keys: Environments, Booleans: whether or not a vairable has been resolved yet (true for resolved, false for not resolved)
         // only used by blocks
-        private readonly Stack<Dictionary<String, bool>> scopes = new();
+        private readonly Stack<Dictionary<string, bool>> scopes = new();
 
         // Indicates whether or not we are inside of a function or method
         private enum FunctionType
@@ -35,7 +35,8 @@ namespace Lox_Interpreter.Lox
         private enum ClassType
         {
             NONE,
-            CLASS
+            CLASS,
+            SUBCLASS
         }
 
         private ClassType currentClass = ClassType.NONE;
@@ -54,7 +55,7 @@ namespace Lox_Interpreter.Lox
         /// </summary>
         /// <param name="stmt">Block statement to resolve.</param>
         /// <returns><see langword="null"/></returns>
-        public Object? VisitBlockStmt(Block stmt)
+        public object? VisitBlockStmt(Block stmt)
         {
             BeginScope();
             Resolve(stmt.statements);
@@ -67,13 +68,30 @@ namespace Lox_Interpreter.Lox
         /// </summary>
         /// <param name="stmt">Class statement to resolve.</param>
         /// <returns><see langword="null"/></returns>
-        public Object? VisitClassStmt(Class stmt)
+        public object? VisitClassStmt(Class stmt)
         {
             ClassType enclosingClass = currentClass; // Storing previous enclosing class in order to update current class.
             currentClass = ClassType.CLASS;
 
             Declare(stmt.name);
             Define(stmt.name);
+
+            if (stmt.superclass != null) // Resolving a superclass if there is one
+            {
+                if (stmt.name.lexeme.Equals(stmt.superclass.name.lexeme))
+                {
+                    Lox.Error(stmt.superclass.name, "A class can't inherit from itself."); // Throws an error if the superclass and the current class are the same
+                }
+                else
+                {
+                    currentClass = ClassType.SUBCLASS;
+                    Resolve(stmt.superclass);
+                    BeginScope();
+                    scopes.Peek()["super"] = true;
+
+                }
+                
+            }
 
             BeginScope();
             scopes.Peek()["this"] = true;
@@ -87,10 +105,13 @@ namespace Lox_Interpreter.Lox
                 }
                 ResolveFunction(method, declaration);
             }
+            
+            EndScope();
+
+            if (stmt.superclass != null) EndScope();
 
             currentClass = enclosingClass; // returning to previous enclosing class.
 
-            EndScope();
             return null;
         }
 
@@ -99,7 +120,7 @@ namespace Lox_Interpreter.Lox
         /// </summary>
         /// <param name="stmt">Function declaration statement to be resolved.</param>
         /// <returns><see langword="null"/></returns>
-        public Object? VisitFunctionStmt(Function stmt)
+        public object? VisitFunctionStmt(Function stmt)
         {
             // Function name is both declared and defined in the current scope.
             Declare(stmt.name);
@@ -114,7 +135,7 @@ namespace Lox_Interpreter.Lox
         /// </summary>
         /// <param name="stmt">Variable statement to be resolved.</param>
         /// <returns><see langword="null"/></returns>
-        public Object? VisitVarStmt(Var stmt)
+        public object? VisitVarStmt(Var stmt)
         {
             Declare(stmt.name);
             if (stmt.initializer != null)
@@ -130,10 +151,10 @@ namespace Lox_Interpreter.Lox
         /// </summary>
         /// <param name="expr">Variable expression to be resolved.</param>
         /// <returns><see langword="null"/></returns>
-        public Object? VisitVariableExpr(Variable expr)
+        public object? VisitVariableExpr(Variable expr)
         {
             // added a third check to ensure the key is actually in the dictionary before attempting to check its value
-            if (scopes.Count != 0 && scopes.Peek().TryGetValue(expr.name.lexeme, out bool isResolved) == true && isResolved == false) 
+            if (scopes.Count != 0 && scopes.Peek().TryGetValue(expr.name.lexeme, out bool isResolved) == true && isResolved == false)
             {
                 Lox.Error(expr.name, "Can't read local variable in its own initializer.");
             }
@@ -147,34 +168,34 @@ namespace Lox_Interpreter.Lox
         /// </summary>
         /// <param name="expr">Assignment expression to be resolved.</param>
         /// <returns><see langword="null"/></returns>
-        public Object? VisitAssignExpr(Assign expr)
+        public object? VisitAssignExpr(Assign expr)
         {
             Resolve(expr.value); // Resolve expression first in case it references other variables.
             ResolveLocal(expr, expr.name); // Resolve assignment
             return null;
         }
 
-        // Below 12 methods do not need to be resolved on their own, but they still needed to be implemented
+        // Below 15 methods do not need to be resolved on their own, but they still needed to be implemented
         // in order to traverse the syntax tree
 
-        public Object? VisitExpressionStmt(Expression stmt)
+        public object? VisitExpressionStmt(Expression stmt)
         {
             Resolve(stmt.expression);
             return null;
         }
-        public Object? VisitIfStmt(If stmt)
+        public object? VisitIfStmt(If stmt)
         {
             Resolve(stmt.condition);
             Resolve(stmt.thenBranch);
             if (stmt.elseBranch != null) Resolve(stmt.elseBranch);
             return null;
         }
-        public Object? VisitPrintStmt(Print stmt)
+        public object? VisitPrintStmt(Print stmt)
         {
             Resolve(stmt.expression);
             return null;
         }
-        public Object? VisitReturnStmt(Stmt.Return stmt)
+        public object? VisitReturnStmt(Stmt.Return stmt)
         {
             if (currentFunction == FunctionType.NONE) // Reports an error for attempting to return from top-level code.
             {
@@ -191,19 +212,19 @@ namespace Lox_Interpreter.Lox
 
             return null;
         }
-        public Object? VisitWhileStmt(While stmt)
+        public object? VisitWhileStmt(While stmt)
         {
             Resolve(stmt.condition);
             Resolve(stmt.body);
             return null;
         }
-        public Object? VisitBinaryExpr(Binary expr)
+        public object? VisitBinaryExpr(Binary expr)
         {
             Resolve(expr.left);
             Resolve(expr.right);
             return null;
         }
-        public Object? VisitCallExpr(Call expr)
+        public object? VisitCallExpr(Call expr)
         {
             Resolve(expr.callee);
 
@@ -214,33 +235,46 @@ namespace Lox_Interpreter.Lox
 
             return null;
         }
-        public Object? VisitGetExpr(Get expr)
+        public object? VisitGetExpr(Get expr)
         {
             Resolve(expr.obj);
             return null;
         }
-        public Object? VisitGroupingExpr(Grouping expr)
+        public object? VisitGroupingExpr(Grouping expr)
         {
             Resolve(expr.expression);
             return null;
         }
-        public Object? VisitLiteralExpr(Literal expr)
+        public object? VisitLiteralExpr(Literal expr)
         {
             return null;
         }
-        public Object? VisitLogicalExpr(Logical expr)
+        public object? VisitLogicalExpr(Logical expr)
         {
             Resolve(expr.left);
             Resolve(expr.right);
             return null;
         }
-        public Object? VisitSetExpr(Set expr)
+        public object? VisitSetExpr(Set expr)
         {
             Resolve(expr.value);
             Resolve(expr.obj);
             return null;
         }
-        public Object? VisitThisExpr(This expr)
+        public object? VisitSuperExpr(Expr.Super expr)
+        {
+            if (currentClass == ClassType.NONE)
+            {
+                Lox.Error(expr.keyword, "Can't use 'super' outside of a class.");
+            }
+            else if (currentClass != ClassType.SUBCLASS)
+            {
+                Lox.Error(expr.keyword, "Can't use 'super' in a class with no superclass.");
+            }
+            ResolveLocal(expr, expr.keyword);
+            return null;
+        }
+        public object? VisitThisExpr(This expr)
         {
             if (currentClass == ClassType.NONE)
             {
@@ -250,7 +284,7 @@ namespace Lox_Interpreter.Lox
             ResolveLocal(expr, expr.keyword);
             return null;
         }
-        public Object? VisitUnaryExpr(Unary expr)
+        public object? VisitUnaryExpr(Unary expr)
         {
             Resolve(expr.right);
             return null;
@@ -300,7 +334,7 @@ namespace Lox_Interpreter.Lox
         /// </remarks>
         private void ResolveLocal(Expr expr, Token name)
         {
-            List<Dictionary<String, bool>> list_scope = scopes.ToList(); // Converting to a list in order to iterate through the scopes.
+            List<Dictionary<string, bool>> list_scope = scopes.ToList(); // Converting to a list in order to iterate through the scopes.
             for (int i = 0; i < list_scope.Count; i++)
             {
                 if (list_scope[i].ContainsKey(name.lexeme))
@@ -318,10 +352,10 @@ namespace Lox_Interpreter.Lox
         /// <param name="function">Function that needs resolving.</param>
         /// <param name="type">Current functions type.</param>
         private void ResolveFunction(Function function, FunctionType type)
-        { 
+        {
             FunctionType enclosingFunction = currentFunction; // Stashing the previous enclosing function
             currentFunction = type; // Indicates we are now inside a new function
-            
+
             BeginScope();
             foreach (Token param in function.parameters)
             {
@@ -338,7 +372,7 @@ namespace Lox_Interpreter.Lox
         /// </summary>
         private void BeginScope()
         {
-            scopes.Push(new Dictionary<String, bool>());
+            scopes.Push(new Dictionary<string, bool>());
         }
 
         /// <summary>
@@ -356,12 +390,12 @@ namespace Lox_Interpreter.Lox
         private void Declare(Token name)
         {
             if (scopes.Count == 0) return;
-            
 
-            Dictionary<String, bool> scope = scopes.Peek();
+
+            Dictionary<string, bool> scope = scopes.Peek();
             if (scope.ContainsKey(name.lexeme)) // Prevents user from declaring the same variable twice within the same scope.
             {
-                Lox.Error(name, "Already a variable with this name in this scope."); 
+                Lox.Error(name, "Already a variable with this name in this scope.");
             }
 
             scope[name.lexeme] = false;

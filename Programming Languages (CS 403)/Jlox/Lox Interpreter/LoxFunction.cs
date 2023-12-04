@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using static Lox_Interpreter.Lox.Stmt;
+using static Lox_Interpreter.Stmt;
 
-namespace Lox_Interpreter.Lox
+namespace Lox_Interpreter
 {
     internal class LoxFunction : ILoxCallable
     {
@@ -23,10 +23,11 @@ namespace Lox_Interpreter.Lox
         {
             return declaration.parameters.Count;
         }
-        public Object? Call(Interpreter interpreter, List<Object?> arguments)
+        public object? Call(Interpreter interpreter, List<object?> arguments)
         {
             Environment environment = new(closure);
-            for (int i = 0; i < declaration.parameters.Count; i++) {
+            for (int i = 0; i < declaration.parameters.Count; i++)
+            {
                 environment.Define(declaration.parameters[i].lexeme, arguments[i]);
             }
 
@@ -55,7 +56,7 @@ namespace Lox_Interpreter.Lox
             environment.Define("this", instance);
             return new LoxFunction(declaration, environment, isInitializer);
         }
-        public override String ToString()
+        public override string ToString()
         {
             return "<fn " + declaration.name.lexeme + ">";
         }

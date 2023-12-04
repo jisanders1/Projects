@@ -3,7 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 
-// Directory of Lox Files is ../../../../"Lox Interpreter"/Lox
+// Directory of Lox Files is ../../../../"Lox Interpreter"
 namespace Ast_Generator
 {
     /// <summary>
@@ -33,6 +33,7 @@ namespace Ast_Generator
                 "Literal  : Object? value",
                 "Logical  : Expr left, Token oper, Expr right",
                 "Set      : Expr obj, Token name, Expr value",
+                "Super    : Token keyword, Token method",
                 "This     : Token keyword",
                 "Unary    : Token oper, Expr right",
                 "Variable : Token name"};
@@ -41,7 +42,7 @@ namespace Ast_Generator
 
             array = new string[] {
                 "Block      : List<Stmt?> statements",
-                "Class      : Token name, List<Function> methods",
+                "Class      : Token name, Expr.Variable? superclass, List<Function> methods",
                 "Expression : Expr expression",
                 "Function   : Token name, List<Token> parameters, List<Stmt?> body",
                 "If         : Expr condition, Stmt thenBranch, Stmt? elseBranch",
@@ -62,7 +63,7 @@ namespace Ast_Generator
             String path = outputDir + "/" + baseName + ".cs";
             using StreamWriter writer = new(path);
 
-            writer.WriteLine("namespace Lox_Interpreter.Lox");
+            writer.WriteLine("namespace Lox_Interpreter");
             writer.WriteLine("{");
 
             writer.WriteLine("\tinternal abstract class " + baseName);

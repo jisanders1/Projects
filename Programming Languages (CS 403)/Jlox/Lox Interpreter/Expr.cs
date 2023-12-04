@@ -1,4 +1,4 @@
-namespace Lox_Interpreter.Lox
+namespace Lox_Interpreter
 {
 	internal abstract class Expr
 	{
@@ -12,6 +12,7 @@ namespace Lox_Interpreter.Lox
 			R VisitLiteralExpr(Literal expr);
 			R VisitLogicalExpr(Logical expr);
 			R VisitSetExpr(Set expr);
+			R VisitSuperExpr(Super expr);
 			R VisitThisExpr(This expr);
 			R VisitUnaryExpr(Unary expr);
 			R VisitVariableExpr(Variable expr);
@@ -147,6 +148,22 @@ namespace Lox_Interpreter.Lox
 			public readonly Expr obj;
 			public readonly Token name;
 			public readonly Expr value;
+		}
+		public class Super : Expr
+		{
+			public Super(Token keyword, Token method)
+			{
+				this.keyword = keyword;
+				this.method = method;
+			}
+
+			public override R Accept<R>(IVisitor<R> visitor)
+			{
+				return visitor.VisitSuperExpr(this);
+			}
+
+			public readonly Token keyword;
+			public readonly Token method;
 		}
 		public class This : Expr
 		{
