@@ -1,6 +1,6 @@
 Jaylon Sanders: CS 403
 
-This repository currently contains the workings of a Lox interpreter. I am currently using the book "Crafting Interpreters" and translating from Java to C#.
+This repository contains the workings of a Lox interpreter. I used the book "Crafting Interpreters" and translated the code from Java to C#.
 
 In order to run it, you should verify that you have C# installed on your computer. I would also suggest installing Visual Studio since this is the IDE that I created this project with. Additionally, you should clone this repository. I would build the project again to ensure it works on your operating system. Next, navigate to Jlox/Lox Interpreter/bin/net6.0 in a terminal and use one of the following commands to start the interpreter:
 ```
@@ -54,6 +54,11 @@ Chapter 12:
 - Changed the for loop in the ResolveLocal method of the [Resolver.cs](https://github.com/jisanders1/Projects/blob/main/Programming%20Languages%20(CS%20403)/Jlox/Lox%20Interpreter/Lox/Resolver.cs) class to start at the front and increment instead of starting at the back to decrement. The decrement version caused a weird error to occur where the program could not find the "this" keyword althogh it had already been declared and was in the dictionary being searched.
 - Updated the [Lox grammar file](https://github.com/jisanders1/Projects/blob/main/Programming%20Languages%20(CS%20403)/Full%20Lox%20Grammar.txt) to reflect the addition of classes.
 - Considering moving all projects out of the Lox folder into the Lox Interpreter folder to simplify path calls for both the interpreter itself and the generate_ast project.
+
+Chapter 13:
+- Added inheritance to the classes along with the super keyword and
+- Updated the [Lox grammar file](https://github.com/jisanders1/Projects/blob/main/Programming%20Languages%20(CS%20403)/Full%20Lox%20Grammar.txt) to reflect the addition of the super keyword and inheritance.
+- Will clone the books test case repo and get a testing suite started. 
 
 Challenges currently implemented:
 - Multi-line comments without nesting of more multi-line comments are allowed.
