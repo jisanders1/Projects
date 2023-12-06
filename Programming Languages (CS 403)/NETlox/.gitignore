@@ -1,0 +1,4 @@
+# Ignores Visual Studio Folders
+**/.vs/
+**/bin/
+**/obj/
