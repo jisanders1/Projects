@@ -4,7 +4,7 @@ Jaylon Sanders: CS 403
 This folder containts the workings of a Lox interpreter via a virtual machine in C. I used the book "Crafting Interpreters" and modified the code slightly. These modifications often included changing names where I feel a more understandable name could be used, switching switch statements for if statements and vice-versa, and switching some for loops to while loops where applicable.
 
 ## Compiling
-In order to run the program, you should first make sure that you have the ability to compile and run C code. If you are running a Linux based system, then there is a high chance that it is already installed on your computer. If you are using a Windows, you should install the MinGW compiler (for instructions to compile go (here)[https://www.geeksforgeeks.org/installing-mingw-tools-for-c-c-and-changing-environment-variable/]). 
+In order to run the program, you should first make sure that you have the ability to compile and run C code. If you are running a Linux based system, then there is a high chance that it is already installed on your computer. If you are using a Windows, you should install the MinGW compiler (for instructions to compile go [here](https://www.geeksforgeeks.org/installing-mingw-tools-for-c-c-and-changing-environment-variable/])). 
 
 If you wish to enter debug mode, un-comment line 10 of the file ```common.h```. Debug mode will print extra information, such as the op_codes that the program utilizes and the stack of values that is used for evaluating expressions. If you wish to simply run a program, you should leave line 10 as a comment.
 
