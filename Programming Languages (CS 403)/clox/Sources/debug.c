@@ -46,7 +46,23 @@ int disassembleInstruction(Chunk* chunk, int position) {
     // Handles what to print based on which opcode the instruction contains.
     if (instruction == CONSTANT_OP ) {
         return constantInstruction("CONSTANT_OP", chunk, position);
-    } else if (instruction == RETURN_OP) {
+    } 
+    else if (instruction == ADD_OP) {
+        return simpleInstruction("ADD_OP", position);
+    } 
+    else if (instruction == SUBTRACT_OP) {
+        return simpleInstruction("SUBTRACT_OP", position);
+    } 
+    else if (instruction == MULTIPLY_OP) {
+        return simpleInstruction("MULTIPLY_OP", position);
+    } 
+    else if (instruction == DIVIDE_OP) {
+        return simpleInstruction("DIVIDE_OP", position);
+    } 
+    else if (instruction == NEGATE_OP) {
+        return simpleInstruction("NEGATE_OP", position);
+    } 
+    else if (instruction == RETURN_OP) {
         return simpleInstruction("RETURN_OP", position);
     } else {
         printf("Unknown opcode %d\n", instruction);

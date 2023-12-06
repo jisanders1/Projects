@@ -4,9 +4,14 @@
 #include "common.h"
 #include "value.h"
 
-// Controls what kind of operation we are doing.
+// Contains the operation code name that control what kind of operation we are doing.
 typedef enum {
     CONSTANT_OP,
+    ADD_OP,
+    SUBTRACT_OP,
+    MULTIPLY_OP,
+    DIVIDE_OP,
+    NEGATE_OP,
     RETURN_OP,
 } OpCode;
 

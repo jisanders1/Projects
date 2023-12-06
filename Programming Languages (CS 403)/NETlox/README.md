@@ -1,7 +1,9 @@
+# Lox: Tree-Walk Implementation in C#
 Jaylon Sanders: CS 403
 
 This folder contains the workings of a Lox interpreter. I used the book "Crafting Interpreters" and translated the code from Java to C#.
 
+## Building
 In order to run it, you should verify that you have C# installed on your computer. I would also suggest installing Visual Studio since this is the IDE that I created this project with. Additionally, you should clone this repository. I would build the project again to ensure it works on your operating system. Next, navigate to Jlox/Lox Interpreter/bin/net6.0 in a terminal and use one of the following commands to start the interpreter:
 ```
 netlox
@@ -20,7 +22,7 @@ This will re-generate both of these scripts as they allow the languge to be prop
 
 [This file](https://github.com/jisanders1/Projects/blob/main/Programming%20Languages%20(CS%20403)/Jlox/Lox%20Interpreter/Lox/experiment1.txt) is the file that I have been using to test each chapters test cases as well as some of my own. I will be making unit tests in the near future when I am done with chapter 13.
 
-What I did for each chapter:
+## Progression Notes
 Chapter 8:
 - Added the ability to evauate statements with scope.
 - Handled the copious null errors. This involved the use of '?' with return types/variable types and also the null-coalescent operator '??'.
@@ -64,7 +66,7 @@ Challenges currently implemented:
 - Multi-line comments without nesting of more multi-line comments are allowed.
 - Divide by 0 is not allowed and an error will be thrown.
 
-Current Issues to Note:
+## Issues (and Solutions to Issues)
 - Needing to comment out different Main methods in order to execute the program properly. This is extremely tedious and leaves a bit of room for error. [UPDATE 2] I have moved the GenerateAst.cs class to be its own project, therefore, the two projects can be ran nidependently of each other with no issue.
 - A makefile in order to run the program as intended. "dotnet run" should be "jlox" in order to make what's occuring more clear. [UPDATE] I have successfully built the project into an executable, from which I may be able to make a makefile. [FIXED] I found the project properties and was able to change the name of executable that is output.
 - There are a couple of warnings warning that certain strings could possibly be null. However, for the purposes of the interpreter and fromm my testing thus far, these do not wreck the program. [FIXED] Through some intensive '?' usage for variable/return types and the null-coalescing operator.
