@@ -1,3 +1,4 @@
+#include <stdarg.h>
 #include <stdio.h>
 #include "../Headers/common.h"
 #include "../Headers/compiler.h"
@@ -9,6 +10,20 @@ VM vm;
 // Resets the stack by setting the top pointer back to the first index of the stack (0 index)
 static void resetStack() {
     vm.stackTop = vm.stack;
+}
+
+// Reports a runtime error, ... represents a variable amount of arguments
+static void runtimeError(const char* format, ...) {
+    va_list args;
+    va_start(args, format);
+    vfprintf(stderr, format, args);
+    va_end(args);
+    fputs("\n", stderr);
+
+    size_t instruction = vm.ip - vm.chunk->instructions- 1;
+    int line = vm.chunk->lineNumbers[instruction];
+    fprintf(stderr, "[line %d] in script\n", line);
+    resetStack();
 }
 
 // Initializes the stack in the VM to be empty
@@ -32,15 +47,30 @@ Value pop() {
     return *vm.stackTop;
 }
 
+// Returns the value in the stack given an offset from the top.
+static Value peek(int distanceFromTop) {
+    return vm.stackTop[-1 - distanceFromTop];
+}
+
+// Determines what is treated as false
+static bool isFalsey(Value value) {
+    return IS_NIL(value) || (IS_BOOL(value) && !AS_BOOL(value));
+}
+
 // Executes the current chunk of the VM.
 static InterpretResult run() {
 #define READ_BYTE() (*vm.ip++)
 #define READ_CONSTANT() (vm.chunk->constants.values[READ_BYTE()])
-#define BINARY_OP(op) \
+// BINARY_OP checks to ensure both operants are numbers before attempting to perform the operations.
+#define BINARY_OP(valueType, op) \
     do { \
-        double b = pop(); \
-        double a = pop(); \
-        push(a op b); \
+        if (!IS_NUMBER(peek(0)) || !IS_NUMBER(peek(1))) { \
+            runtimeError("Operands must be numbers."); \
+            return INTERPRET_RUNTIME_ERROR; \
+        } \
+        double b = AS_NUMBER(pop()); \
+        double a = AS_NUMBER(pop()); \
+        push(valueType(a op b)); \
     } while (false)
 
     while (true) { // replaces for (;;)
@@ -62,20 +92,48 @@ static InterpretResult run() {
             Value constant = READ_CONSTANT();
             push(constant);
         } 
+        else if (instruction == NIL_OP) {
+            push(NIL_V);
+        }
+        else if (instruction == TRUE_OP) {
+            push(BOOL_V(true));
+        }
+        else if (instruction == FALSE_OP) {
+            push(BOOL_V(false));
+        }
+        else if (instruction == EQUAL_OP) {
+            Value b = pop();
+            Value a = pop();
+            push(BOOL_V(areValuesEqual(a, b)));
+        }
+        else if (instruction == GREATER_OP) {
+            BINARY_OP(BOOL_V, >);
+        }
+        else if (instruction == LESS_OP) {
+            BINARY_OP(BOOL_V, <);
+        }
         else if (instruction == ADD_OP) {
-            BINARY_OP(+);
+            BINARY_OP(NUMBER_V, +);
         } 
         else if (instruction == SUBTRACT_OP) {
-            BINARY_OP(-);
+            BINARY_OP(NUMBER_V, -);
         } 
         else if (instruction == MULTIPLY_OP) {
-            BINARY_OP(*);
+            BINARY_OP(NUMBER_V, *);
         } 
         else if (instruction == DIVIDE_OP) {
-            BINARY_OP(/);
+            BINARY_OP(NUMBER_V, /);
+        }
+        else if (instruction == NOT_OP) {
+            push(BOOL_V(isFalsey(pop())));
         } 
         else if (instruction == NEGATE_OP) {
-            push(-pop());
+            // Ensures the top of the stack is a number before trying to negate it.
+            if (!IS_NUMBER(peek(0))) { 
+                runtimeError("Operand must be a number.");
+                return INTERPRET_RUNTIME_ERROR;
+            }
+            push(NUMBER_V(-AS_NUMBER(pop())));
         } 
         else if (instruction == RETURN_OP) {
             // 2 lines below will be changed when functions come into play

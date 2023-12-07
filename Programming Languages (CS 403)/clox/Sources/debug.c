@@ -46,7 +46,25 @@ int disassembleInstruction(Chunk* chunk, int position) {
     // Handles what to print based on which opcode the instruction contains.
     if (instruction == CONSTANT_OP ) {
         return constantInstruction("CONSTANT_OP", chunk, position);
-    } 
+    }
+    else if (instruction == NIL_OP) {
+        return simpleInstruction("NIL_OP", position);
+    }
+    else if (instruction == TRUE_OP) {
+        return simpleInstruction("TRUE_OP", position);
+    }
+    else if (instruction == FALSE_OP) {
+        return simpleInstruction("FALSE_OP", position);
+    }
+    else if (instruction == EQUAL_OP) {
+        return simpleInstruction("EQUAL_OP", position);
+    }
+    else if (instruction == GREATER_OP) {
+        return simpleInstruction("GREATER_OP", position);
+    }
+    else if (instruction == LESS_OP) {
+        return simpleInstruction("LESS_OP", position);
+    }
     else if (instruction == ADD_OP) {
         return simpleInstruction("ADD_OP", position);
     } 
@@ -58,7 +76,10 @@ int disassembleInstruction(Chunk* chunk, int position) {
     } 
     else if (instruction == DIVIDE_OP) {
         return simpleInstruction("DIVIDE_OP", position);
-    } 
+    }
+    else if (instruction == NOT_OP) {
+        return simpleInstruction("NOT_OP", position);
+    }
     else if (instruction == NEGATE_OP) {
         return simpleInstruction("NEGATE_OP", position);
     } 

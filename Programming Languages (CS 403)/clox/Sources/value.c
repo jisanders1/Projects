@@ -27,7 +27,24 @@ void freeValueArray(ValueArray* array) {
     initValueArray(array);
 }
 
-// Prints a value.
+// Prints a value. Also handles different types.
 void printValue(Value value) {
-    printf("%g", value);
+    switch (value.type) {
+        case BOOL_VAL:
+            printf(AS_BOOL(value) ? "true" : "false");
+            break;
+        case NIL_VAL: printf("nil"); break;
+        case NUMBER_VAL: printf("%g", AS_NUMBER(value)); break;
+  }
+}
+
+// Checks if two values are equal. Returns true if they are equal; otherwise, false.
+bool areValuesEqual(Value a, Value b) {
+    if (a.type != b.type) return false;
+    switch (a.type) {
+        case BOOL_VAL:   return AS_BOOL(a) == AS_BOOL(b);
+        case NIL_VAL:    return true;
+        case NUMBER_VAL: return AS_NUMBER(a) == AS_NUMBER(b);
+        default:         return false; // Unreachable.
+    }
 }

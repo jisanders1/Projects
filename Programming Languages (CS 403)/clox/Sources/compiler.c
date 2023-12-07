@@ -164,10 +164,26 @@ static void binary() {
     parsePrecedence((Precedence)(rule->precedence + 1));
 
     switch (operatorType) {
+        case TOKEN_BANG_EQUAL:    appendBytes(EQUAL_OP, NOT_OP); break;
+        case TOKEN_EQUAL_EQUAL:   appendByte(EQUAL_OP); break;
+        case TOKEN_GREATER:       appendByte(GREATER_OP); break;
+        case TOKEN_GREATER_EQUAL: appendBytes(LESS_OP, NOT_OP); break;
+        case TOKEN_LESS:          appendByte(LESS_OP); break;
+        case TOKEN_LESS_EQUAL:    appendBytes(GREATER_OP, NOT_OP); break;
         case TOKEN_PLUS: appendByte(ADD_OP); break;
         case TOKEN_MINUS: appendByte(SUBTRACT_OP); break;
         case TOKEN_STAR: appendByte(MULTIPLY_OP); break;
         case TOKEN_SLASH: appendByte(DIVIDE_OP); break;
+        default: return; // Unreachable.
+    }
+}
+
+// Evaluates literals, currently false, nil, and tru
+static void literal() {
+    switch (parser.previous.type) {
+        case TOKEN_FALSE: appendByte(FALSE_OP); break;
+        case TOKEN_NIL: appendByte(NIL_OP); break;
+        case TOKEN_TRUE: appendByte(TRUE_OP); break;
         default: return; // Unreachable.
     }
 }
@@ -181,9 +197,10 @@ static void grouping() {
 // Converts the sourceCode's string number to an actual number and appends it to the back of the chunk.
 static void number() {
     double value = strtod(parser.previous.sourcePointer, NULL); // string -> double
-    appendConstant(value);
+    appendConstant(NUMBER_V(value));
 }
 
+// Evaluates a unary expression
 static void unary() {
     TokenType operatorType = parser.previous.type; // Gets the negation symbol
 
@@ -192,12 +209,13 @@ static void unary() {
 
     // Emit the operator instruction.
     switch (operatorType) {
+        case TOKEN_BANG: appendByte(NOT_OP); break;
         case TOKEN_MINUS: appendByte(NEGATE_OP); break;
         default: return; // Unreachable.
     }
 }
 
-// Represents the parsing rules for Lox.
+// Represents the parsing rules for Lox. Will be filled out as time goes on
 ParseRule rules[] = {
     [TOKEN_LEFT_PAREN]    = {grouping, NULL,   NONE_PREC},
     [TOKEN_RIGHT_PAREN]   = {NULL,     NULL,   NONE_PREC},
@@ -210,31 +228,31 @@ ParseRule rules[] = {
     [TOKEN_SEMICOLON]     = {NULL,     NULL,   NONE_PREC},
     [TOKEN_SLASH]         = {NULL,     binary, FACTOR_PREC},
     [TOKEN_STAR]          = {NULL,     binary, FACTOR_PREC},
-    [TOKEN_BANG]          = {NULL,     NULL,   NONE_PREC},
-    [TOKEN_BANG_EQUAL]    = {NULL,     NULL,   NONE_PREC},
+    [TOKEN_BANG]          = {unary,    NULL,   NONE_PREC},
+    [TOKEN_BANG_EQUAL]    = {NULL,     binary, EQUALITY_PREC},
     [TOKEN_EQUAL]         = {NULL,     NULL,   NONE_PREC},
-    [TOKEN_EQUAL_EQUAL]   = {NULL,     NULL,   NONE_PREC},
-    [TOKEN_GREATER]       = {NULL,     NULL,   NONE_PREC},
-    [TOKEN_GREATER_EQUAL] = {NULL,     NULL,   NONE_PREC},
-    [TOKEN_LESS]          = {NULL,     NULL,   NONE_PREC},
-    [TOKEN_LESS_EQUAL]    = {NULL,     NULL,   NONE_PREC},
+    [TOKEN_EQUAL_EQUAL]   = {NULL,     binary, EQUALITY_PREC},
+    [TOKEN_GREATER]       = {NULL,     binary, COMPARISON_PREC},
+    [TOKEN_GREATER_EQUAL] = {NULL,     binary, COMPARISON_PREC},
+    [TOKEN_LESS]          = {NULL,     binary, COMPARISON_PREC},
+    [TOKEN_LESS_EQUAL]    = {NULL,     binary, COMPARISON_PREC},
     [TOKEN_IDENTIFIER]    = {NULL,     NULL,   NONE_PREC},
     [TOKEN_STRING]        = {NULL,     NULL,   NONE_PREC},
     [TOKEN_NUMBER]        = {number,   NULL,   NONE_PREC},
     [TOKEN_AND]           = {NULL,     NULL,   NONE_PREC},
     [TOKEN_CLASS]         = {NULL,     NULL,   NONE_PREC},
     [TOKEN_ELSE]          = {NULL,     NULL,   NONE_PREC},
-    [TOKEN_FALSE]         = {NULL,     NULL,   NONE_PREC},
+    [TOKEN_FALSE]         = {literal,  NULL,   NONE_PREC},
     [TOKEN_FOR]           = {NULL,     NULL,   NONE_PREC},
     [TOKEN_FUN]           = {NULL,     NULL,   NONE_PREC},
     [TOKEN_IF]            = {NULL,     NULL,   NONE_PREC},
-    [TOKEN_NIL]           = {NULL,     NULL,   NONE_PREC},
+    [TOKEN_NIL]           = {literal,  NULL,   NONE_PREC},
     [TOKEN_OR]            = {NULL,     NULL,   NONE_PREC},
     [TOKEN_PRINT]         = {NULL,     NULL,   NONE_PREC},
     [TOKEN_RETURN]        = {NULL,     NULL,   NONE_PREC},
     [TOKEN_SUPER]         = {NULL,     NULL,   NONE_PREC},
     [TOKEN_THIS]          = {NULL,     NULL,   NONE_PREC},
-    [TOKEN_TRUE]          = {NULL,     NULL,   NONE_PREC},
+    [TOKEN_TRUE]          = {literal,  NULL,   NONE_PREC},
     [TOKEN_VAR]           = {NULL,     NULL,   NONE_PREC},
     [TOKEN_WHILE]         = {NULL,     NULL,   NONE_PREC},
     [TOKEN_ERROR]         = {NULL,     NULL,   NONE_PREC},

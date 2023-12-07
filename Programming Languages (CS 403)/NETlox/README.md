@@ -1,7 +1,7 @@
 # Lox: Tree-Walk Implementation in C#
 Jaylon Sanders: CS 403
 
-This folder contains the workings of a Lox interpreter. I used the book [_Crafting Interpreters_](https://www.craftinginterpreters.com/) and translated the code from Java to C#. In addition to using some of my own test cases with the books' in-text test cases (found in the file [```experiment1.txt```](https://github.com/jisanders1/Projects/blob/main/Programming%20Languages%20(CS%20403)/Jlox/Lox%20Interpreter/Lox/experiment1.txt)), I will also be utilizing most of the test-cases found in the [book's repository](https://github.com/munificent/craftinginterpreters/tree/master/test).
+This folder contains the workings of a Lox interpreter. I used the book [_Crafting Interpreters_](https://www.craftinginterpreters.com/) and translated the code from Java to C#. In addition to using some of my own test cases with the books' in-text test cases (found in the file [experiment1.txt](https://github.com/jisanders1/Projects/blob/main/Programming%20Languages%20(CS%20403)/NETlox/Lox%20Interpreter/experiment1.txt)), I will also be utilizing most of the test-cases found in the [book's repository](https://github.com/munificent/craftinginterpreters/tree/master/test).
 
 ## Building
 In order to run it, you should verify that you have C# installed on your computer. I would also suggest installing Visual Studio since this is the IDE that I created this project with. Additionally, you should clone this repository. I would build the project again to ensure it works on your operating system. Next, navigate to Jlox/Lox Interpreter/bin/net6.0 in a terminal and use one of the following commands to start the interpreter:

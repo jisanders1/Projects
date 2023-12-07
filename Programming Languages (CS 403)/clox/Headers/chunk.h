@@ -7,10 +7,17 @@
 // Contains the operation code name that control what kind of operation we are doing.
 typedef enum {
     CONSTANT_OP,
+    NIL_OP,
+    TRUE_OP,
+    FALSE_OP,
+    EQUAL_OP,
+    GREATER_OP,
+    LESS_OP,
     ADD_OP,
     SUBTRACT_OP,
     MULTIPLY_OP,
     DIVIDE_OP,
+    NOT_OP,
     NEGATE_OP,
     RETURN_OP,
 } OpCode;
