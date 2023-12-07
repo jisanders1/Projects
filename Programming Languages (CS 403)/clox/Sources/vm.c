@@ -91,7 +91,21 @@ static InterpretResult run() {
 }
 
 // Interprets sourceCode via compilation and indicates a successful return.
+// Also creates a new chunk for the sourceCode tokens to be loaded into.
 InterpretResult interpret(const char* sourceCode) {
-    compile(sourceCode);
-    return INTERPRET_OK;
+    Chunk chunk;
+    initChunk(&chunk);
+
+    if (!compile(sourceCode, &chunk)) {
+        freeChunk(&chunk);
+        return INTERPRET_COMPILE_ERROR;
+    }
+
+    vm.chunk = &chunk;
+    vm.ip = vm.chunk->instructions;
+
+    InterpretResult result = run();
+
+    freeChunk(&chunk);
+    return result;
 }
