@@ -19,7 +19,7 @@ DEBUG_TRACE_EXECUTION - Line 14
 
 Finally, navigate to the ```Sources``` folder and enter (I would copy and paste if I were you) the following line of code to compile the source files:
 ```
-gcc chunk.c debug.c main.c memory.c value.c vm.c compiler.c scanner.c object.c -o clox
+gcc chunk.c debug.c main.c memory.c value.c vm.c compiler.c scanner.c object.c table.c -o clox
 ```
 ## Running
 After you enter this command, the program sholud be compiled to an executable. In order to run the program, you should type invoke the executable file, which may end in ".exe" or ".out" for most. For Windows users, you should be able to type the following in the Command Prompt:
@@ -138,6 +138,11 @@ Chapter 18 - Types of Values:
 Chapter 19 - Strings:
 - Added the ability to use strings in expressions for concatenation and comparison, as well as a base object class that can be used for other functionality later on.
 - Set up cleanup for the storage used by string objects, although there is no garbage collection at the moment so all strings stick around until the program ends.
+
+Chapter 20 - Hash Tables:
+- Added a hash table module in order to implement assignment, function declarations, and class declarations in later chapters.
+- Changed the way equality is checked with strings, instead of stepping through each character in the string, hash codes are used instead.
+- Ran a REPL checking for string equality to ensure that the output is still correct
 
 ## Issues
 - The compilation process is a bit long. Perhaps making a makefile will reduce difficulty. 

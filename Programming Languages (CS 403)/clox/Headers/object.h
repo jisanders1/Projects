@@ -27,6 +27,7 @@ struct ObjString {
     Obj object;
     int size;
     char* string;
+    uint32_t hash;
 };
 
 // Object functions

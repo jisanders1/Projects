@@ -48,11 +48,7 @@ bool areValuesEqual(Value a, Value b) {
         case BOOL_VAL:   return AS_BOOL(a) == AS_BOOL(b);
         case NIL_VAL:    return true;
         case NUMBER_VAL: return AS_NUMBER(a) == AS_NUMBER(b);
-        case OBJ_VAL: {
-            ObjString* aString = AS_STRING(a);
-            ObjString* bString = AS_STRING(b);
-            return aString->size == bString->size && memcmp(aString->string, bString->string, aString->size) == 0;
-        }
+        case OBJ_VAL:    return AS_OBJ(a) == AS_OBJ(b);
         default:         return false; // Unreachable.
     }
 }

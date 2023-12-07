@@ -2,6 +2,7 @@
 #define clox_vm_h
 
 #include "chunk.h"
+#include "table.h"
 #include "value.h"
 
 #define STACK_CAP 256
@@ -11,6 +12,7 @@ typedef struct {
     uint8_t* ip; // Stands for instruction pointer
     Value stack[STACK_CAP];
     Value* stackTop;
+    Table strings;
     Obj* objects;
 } VM;
 

@@ -33,11 +33,13 @@ static void runtimeError(const char* format, ...) {
 void initVM() {
     resetStack();
     vm.objects = NULL;
+    initTable(&vm.strings);
 }
 
 // Cleans up any leftover objects by freeing them.
 // Even though the garbage collector may free some objects, it won't always free all of the objects, hence this function.
 void freeVM() {
+    freeTable(&vm.strings);
     freeObjects();
 }
 
