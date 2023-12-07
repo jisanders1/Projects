@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "../Headers/common.h"
+#include "../Headers/compiler.h"
 #include "../Headers/debug.h"
 #include "../Headers/vm.h"
 
@@ -89,8 +90,8 @@ static InterpretResult run() {
 #undef READ_BYTE
 }
 
-InterpretResult interpret(Chunk* chunk) {
-    vm.chunk = chunk;
-    vm.ip = vm.chunk->instructions;
-    return run();
+// Interprets sourceCode via compilation and indicates a successful return.
+InterpretResult interpret(const char* sourceCode) {
+    compile(sourceCode);
+    return INTERPRET_OK;
 }

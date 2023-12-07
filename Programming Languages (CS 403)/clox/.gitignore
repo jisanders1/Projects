@@ -2,3 +2,5 @@
 Sources/clox.*
 Sources/*.exe
 Sources/*.out
+Sources/*.lox
+Sources/*.txt

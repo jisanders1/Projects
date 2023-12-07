@@ -1,7 +1,7 @@
 # Lox: Tree-Walk Implementation in C#
 Jaylon Sanders: CS 403
 
-This folder contains the workings of a Lox interpreter. I used the book "Crafting Interpreters" and translated the code from Java to C#.
+This folder contains the workings of a Lox interpreter. I used the book [_Crafting Interpreters_](https://www.craftinginterpreters.com/) and translated the code from Java to C#. In addition to using some of my own test cases with the books' in-text test cases (found in the file [```experiment1.txt```](https://github.com/jisanders1/Projects/blob/main/Programming%20Languages%20(CS%20403)/Jlox/Lox%20Interpreter/Lox/experiment1.txt)), I will also be utilizing most of the test-cases found in the [book's repository](https://github.com/munificent/craftinginterpreters/tree/master/test).
 
 ## Building
 In order to run it, you should verify that you have C# installed on your computer. I would also suggest installing Visual Studio since this is the IDE that I created this project with. Additionally, you should clone this repository. I would build the project again to ensure it works on your operating system. Next, navigate to Jlox/Lox Interpreter/bin/net6.0 in a terminal and use one of the following commands to start the interpreter:
@@ -10,7 +10,7 @@ netlox
 ```
 This starts an interactive program within the terminal where you can enter codes of Lox.
 ```
-netlox <filename>.txt
+netlox <filename>.lox
 ```
 This runs code from a file within the Jlox/Lox Interpreter/bin/net6.0 directory. You can specify a path and you should be able to run a file from any directory as long as special access is  not needed and the file exists. This interpreter currently allows variable assignments, printing, evaluation of expressions, if/else statements, for/while loops, and functions. It currently does not implement classes. These will come in future chapters.
 
@@ -67,9 +67,10 @@ Challenges currently implemented:
 - Divide by 0 is not allowed and an error will be thrown.
 
 ## Issues (and Solutions to Issues)
-- Needing to comment out different Main methods in order to execute the program properly. This is extremely tedious and leaves a bit of room for error. [UPDATE 2] I have moved the GenerateAst.cs class to be its own project, therefore, the two projects can be ran nidependently of each other with no issue.
+- Needing to comment out different Main methods in order to execute the program properly. This is extremely tedious and leaves a bit of room for error. [UPDATE 2] I have moved the GenerateAst.cs class to be its own project, therefore, the two projects can be ran independently of each other with no issue.
 - A makefile in order to run the program as intended. "dotnet run" should be "jlox" in order to make what's occuring more clear. [UPDATE] I have successfully built the project into an executable, from which I may be able to make a makefile. [FIXED] I found the project properties and was able to change the name of executable that is output.
 - There are a couple of warnings warning that certain strings could possibly be null. However, for the purposes of the interpreter and fromm my testing thus far, these do not wreck the program. [FIXED] Through some intensive '?' usage for variable/return types and the null-coalescing operator.
 - I should probably start making test cases with unit testing to ensure everything is running smoothly. This could probably be handled as soon as I figure out the multiple main problems. However, I do not think this is extremely urgent given the fact that I am refactoring code from a book, and there code is most likely well tested. [UPDATE] Will be making some unit tests along with utilizing some from the book after I am finished with chapter 13.
 - There is no "throws IOException" equivalent in C# and this may affect how the program works. As of chapter 11, everything appears to be working as normal.
 - Parse currently allows a ")" when there is no opening parenthesis. I'm not sure if this is intended or not but I will continue to monitor it as time goes on. For now, anything after it is simply not evaluated at all. [FIXED] As of chapter 8, this is now caught as error.
+- This iteration of the interpreter works well for smaller files will little recursion or small loops, but it is slow when you run much larger files. This issue is allevieted when using a different implementation of a Lox interpreter. However, this faster implementation is implemented in a different folder of this repository named [```clox```](https://github.com/jisanders1/Projects/tree/main/Programming%20Languages%20(CS%20403)/clox).

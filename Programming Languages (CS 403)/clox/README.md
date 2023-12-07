@@ -1,71 +1,53 @@
 # Lox: Bytecode Implementation in C
 Jaylon Sanders: CS 403
 
-This folder containts the workings of a Lox interpreter via a virtual machine in C. I used the book "Crafting Interpreters" and modified the code slightly. These modifications often included changing names where I feel a more understandable name could be used, switching switch statements for if statements and vice-versa, and switching some for loops to while loops where applicable.
+This folder containts the workings of a Lox interpreter via a virtual machine in C. I used the book [_Crafting Interpreters_](https://www.craftinginterpreters.com/) and modified the code slightly. These modifications often included changing names where I feel a more understandable name could be used, switching switch statements for if statements and vice-versa, and switching some for loops to while loops where applicable. Additionally, I ran several test cases that were provided in the text, and will be running several of the test cases found in the [books' repository](https://github.com/munificent/craftinginterpreters/tree/master/test).
 
 ## Compiling
-In order to run the program, you should first make sure that you have the ability to compile and run C code. If you are running a Linux based system, then there is a high chance that it is already installed on your computer. If you are using a Windows, you should install the MinGW compiler (for instructions to compile go [here](https://www.geeksforgeeks.org/installing-mingw-tools-for-c-c-and-changing-environment-variable/])). 
+In order to run the program, you should first make sure that you have the ability to compile and run C code. If you are running a Linux based system, then there is a high chance that it is already installed on your computer. If you are using a Windows, you should install the MinGW compiler (for instructions to compile go [here](https://www.geeksforgeeks.org/installing-mingw-tools-for-c-c-and-changing-environment-variable/])). After this step, you should clone this repository to a directory of your choice.
 
-If you wish to enter debug mode, un-comment line 10 of the file ```common.h```. Debug mode will print extra information, such as the op_codes that the program utilizes and the stack of values that is used for evaluating expressions. If you wish to simply run a program, you should leave line 10 as a comment.
+Before you compile the program, you should verify if you wish to enter debug mode. In order to enter debug mode, un-comment line 10 of the file ```common.h```. Debug mode will print extra information, such as the op_codes that the program utilizes and the stack of values that is used for evaluating expressions. If you wish to simply run a program, you should leave line 10 as a comment.
 
 Finally, navigate to the ```Sources``` folder and enter the following line of code to compile the source files:
 ```
-gcc main.c debug.c chunk.c memory.c value.c vm.c -o clox
+gcc main.c debug.c chunk.c memory.c value.c vm.c scanner.c compiler.c -o clox
 ```
 ## Running
-After you enter this command, the program sholud be compiled to an executable. In order to run the program, you should type invoke the executable file, which may end in ".exe" or ".out" for most. For Windows users, you should be able to type the following.:
+After you enter this command, the program sholud be compiled to an executable. In order to run the program, you should type invoke the executable file, which may end in ".exe" or ".out" for most. For Windows users, you should be able to type the following in the Command Prompt:
 ```
 clox
 ```
-
-The current program in ```main.c``` will output the opcodes and result for the expression -((1.2 + 3.4) / 5.6). 
-The output should look like the following when not in debug mode: 
+or the following if using Cygwin:
 ```
-== test chunk ==
-0000  123 CONSTANT_OP         0 '1.2'
-0002    | CONSTANT_OP         1 '3.4'
-0004    | ADD_OP
-0005    | CONSTANT_OP         2 '5.6'
-0007    | DIVIDE_OP
-0008    | NEGATE_OP
-0009    | RETURN_OP
--0.821429
-
+./clox
 ```
-when in debug mode, the output looks like the following:
+This will launch the REPL (short for **R**eading a line of input, **E**valuating it, **P**rinting the result, then **L**ooping and repeating all four steps again) and allow a user to enter lines of code into the terminal and have their code executed. You can only enter a maximum of 1,024 characters. If you want to run code from a file, enter the following:
 ```
-== test chunk ==
-0000  123 CONSTANT_OP         0 '1.2'
-0002    | CONSTANT_OP         1 '3.4'
-0004    | ADD_OP
-0005    | CONSTANT_OP         2 '5.6'
-0007    | DIVIDE_OP
-0008    | NEGATE_OP
-0009    | RETURN_OP
-Val Stack:
-
-0000  123 CONSTANT_OP         0 '1.2'
-Val Stack: [ 1.2 ]
-
-0002    | CONSTANT_OP         1 '3.4'
-Val Stack: [ 1.2 ][ 3.4 ]
-
-0004    | ADD_OP
-Val Stack: [ 4.6 ]
-
-0005    | CONSTANT_OP         2 '5.6'
-Val Stack: [ 4.6 ][ 5.6 ]
-
-0007    | DIVIDE_OP
-Val Stack: [ 0.821429 ]
-
-0008    | NEGATE_OP
-Val Stack: [ -0.821429 ]
-
-0009    | RETURN_OP
--0.821429
-
+clox <filename>.lox
 ```
+or if using Cygwin:
+```
+./clox <filename>.lox
+```
+If there is an error (attempting to open a non-existent file or directory, running out of memory, etc.), the program will report it. 
+
+Currently, the program does not compile the tokens, but it does print out the scanned tokens. For example, running above with ```experiment.lox```, where ```experiment.lox``` is:
+```
+1
+// breathe
+3
+4
+5
+```
+Should output the following regardless of whether debug mode is enabled or not:
+```
+1 21 '1'
+3 21 '3'
+4 21 '4'
+5 21 '5'
+| 39 ''
+```
+This is because the second line of the source file contains a comment (indicated by '//') and the last line of output represents the EOF token. The line numbers for each token is the first number in each line of output, followed by the size of the token and the token itself.
 
 ## Progresion
 You can find a copy of my code after each chapter in the ```Progression``` folder. To run these, you should unzip them to a location outside of this folder and complete the instructions fro running above.
@@ -80,6 +62,12 @@ Chapter 15 - A Virtual Machine:
 - Updated ```.gitignore``` to not track additional compilation side effects (such as ```clox.exe.stackdump```).
 - Updated and added comments above functions and wtihin them to detail what is happening.
 - Made some changes to the debugger to more easily associate what is happening in the stack with the op codes.
+
+Chapter 16 - Scanning on Demand:
+- Added a scanner file, ```scanner.c```, that scans in source code from a either a file or the REPL. The REPL is an interactive command line program that allows users to enter a line of code and have it evaluated and executed. 
+- Updated ```.gitignore``` to not track any Lox or Text files. This is so the repository looks cleaner.
+- Got rid of old main in order to suppport the REPL and file reading features.
+- Tested with some of my own test cases to ensure that error were being caught (opening a non-existent file, scanning an unterminated string, etc.). 
 
 ## Issues
 - The compilation process is a bit long. Perhaps making a makefile will reduce difficulty. 

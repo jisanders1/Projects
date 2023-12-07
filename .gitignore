@@ -1,3 +1,4 @@
 # Ignoring Files Specific to my Setup
+.vscode/
 .vs/
 .metadata/
