@@ -11,6 +11,7 @@ typedef struct {
     uint8_t* ip; // Stands for instruction pointer
     Value stack[STACK_CAP];
     Value* stackTop;
+    Obj* objects;
 } VM;
 
 // Represents the state of the interpreter after it has interpreted something.
@@ -19,6 +20,8 @@ typedef enum {
     INTERPRET_COMPILE_ERROR,
     INTERPRET_RUNTIME_ERROR
 } InterpretResult;
+
+extern VM vm; // exposes the global VM so it can be seen by other modules.
 
 // VM Operations
 void initVM();

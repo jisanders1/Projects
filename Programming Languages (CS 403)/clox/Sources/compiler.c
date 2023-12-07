@@ -200,6 +200,11 @@ static void number() {
     appendConstant(NUMBER_V(value));
 }
 
+// Parses a string
+static void string() {
+    appendConstant(OBJ_V(copyString(parser.previous.sourcePointer + 1, parser.previous.size - 2)));
+}
+
 // Evaluates a unary expression
 static void unary() {
     TokenType operatorType = parser.previous.type; // Gets the negation symbol
@@ -237,7 +242,7 @@ ParseRule rules[] = {
     [TOKEN_LESS]          = {NULL,     binary, COMPARISON_PREC},
     [TOKEN_LESS_EQUAL]    = {NULL,     binary, COMPARISON_PREC},
     [TOKEN_IDENTIFIER]    = {NULL,     NULL,   NONE_PREC},
-    [TOKEN_STRING]        = {NULL,     NULL,   NONE_PREC},
+    [TOKEN_STRING]        = {string,   NULL,   NONE_PREC},
     [TOKEN_NUMBER]        = {number,   NULL,   NONE_PREC},
     [TOKEN_AND]           = {NULL,     NULL,   NONE_PREC},
     [TOKEN_CLASS]         = {NULL,     NULL,   NONE_PREC},

@@ -1,8 +1,11 @@
 #include <stdarg.h>
 #include <stdio.h>
+#include <string.h>
 #include "../Headers/common.h"
 #include "../Headers/compiler.h"
 #include "../Headers/debug.h"
+#include "../Headers/object.h"
+#include "../Headers/memory.h"
 #include "../Headers/vm.h"
 
 VM vm;
@@ -26,13 +29,16 @@ static void runtimeError(const char* format, ...) {
     resetStack();
 }
 
-// Initializes the stack in the VM to be empty
+// Initializes the stack in the VM to be empty and the objects pointer is empty for now.
 void initVM() {
     resetStack();
+    vm.objects = NULL;
 }
 
+// Cleans up any leftover objects by freeing them.
+// Even though the garbage collector may free some objects, it won't always free all of the objects, hence this function.
 void freeVM() {
-
+    freeObjects();
 }
 
 // Adds a value to the top of the VM's stack
@@ -55,6 +61,23 @@ static Value peek(int distanceFromTop) {
 // Determines what is treated as false
 static bool isFalsey(Value value) {
     return IS_NIL(value) || (IS_BOOL(value) && !AS_BOOL(value));
+}
+
+// Concatenates two strings together
+static void concatenate() {
+    ObjString* b = AS_STRING(pop());
+    ObjString* a = AS_STRING(pop());
+
+    int size = a->size + b->size;
+    char* chars = ALLOCATE(char, size + 1);
+
+    // Copying the values over into the new string and attaching a null terminator at the end.
+    memcpy(chars, a->string, a->size);
+    memcpy(chars + a->size, b->string, b->size);
+    chars[size] = '\0';
+
+    ObjString* result = takeString(chars, size);
+    push(OBJ_V(result));
 }
 
 // Executes the current chunk of the VM.
@@ -113,7 +136,18 @@ static InterpretResult run() {
             BINARY_OP(BOOL_V, <);
         }
         else if (instruction == ADD_OP) {
-            BINARY_OP(NUMBER_V, +);
+            if (IS_STRING(peek(0)) && IS_STRING(peek(1))) { // Both operands are a string
+                concatenate();
+            } 
+            else if (IS_NUMBER(peek(0)) && IS_NUMBER(peek(1))) { // Both operands are a number
+                double b = AS_NUMBER(pop());
+                double a = AS_NUMBER(pop());
+                push(NUMBER_V(a + b));
+            } 
+            else { // Mismatch in operands, one is a string and the other is a number
+                runtimeError("Operands must be two numbers or two strings.");
+                return INTERPRET_RUNTIME_ERROR;
+            }
         } 
         else if (instruction == SUBTRACT_OP) {
             BINARY_OP(NUMBER_V, -);

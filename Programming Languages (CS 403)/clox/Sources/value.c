@@ -1,6 +1,8 @@
 #include <stdio.h>
+#include <string.h>
 #include "../Headers/memory.h"
 #include "../Headers/value.h"
+#include "../Headers/object.h"
 
 // Initializes the empty state.
 void initValueArray(ValueArray* array) {
@@ -35,6 +37,7 @@ void printValue(Value value) {
             break;
         case NIL_VAL: printf("nil"); break;
         case NUMBER_VAL: printf("%g", AS_NUMBER(value)); break;
+        case OBJ_VAL: printObject(value); break;
   }
 }
 
@@ -45,6 +48,11 @@ bool areValuesEqual(Value a, Value b) {
         case BOOL_VAL:   return AS_BOOL(a) == AS_BOOL(b);
         case NIL_VAL:    return true;
         case NUMBER_VAL: return AS_NUMBER(a) == AS_NUMBER(b);
+        case OBJ_VAL: {
+            ObjString* aString = AS_STRING(a);
+            ObjString* bString = AS_STRING(b);
+            return aString->size == bString->size && memcmp(aString->string, bString->string, aString->size) == 0;
+        }
         default:         return false; // Unreachable.
     }
 }
