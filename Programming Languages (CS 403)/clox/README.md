@@ -236,7 +236,7 @@ beignets with cafe au lait
 beignets with cafe au lait
 ```
 
-4. With no flags enabled: // Should print "beignets with cafe au lait"
+4. With no flags enabled:
 ```
 beignets with cafe au lait
 beignets with cafe au lait
