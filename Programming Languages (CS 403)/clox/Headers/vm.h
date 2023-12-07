@@ -12,6 +12,7 @@ typedef struct {
     uint8_t* ip; // Stands for instruction pointer
     Value stack[STACK_CAP];
     Value* stackTop;
+    Table globals;
     Table strings;
     Obj* objects;
 } VM;

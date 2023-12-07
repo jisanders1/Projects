@@ -40,74 +40,212 @@ or if using Cygwin:
 ```
 If there is an error (attempting to open a non-existent file or directory, running out of memory, etc.), the program will report it. 
 
-Currently, the program evaluates an expression with strings, numbers, boolean values. The best method of testing this iteration of the program is utilizing the REPL in order to evaluate an different expression on each line in rapid sucession. For example: entering the ```"Hello " + "World!"``` in the REPL should output:
+Currently, the program evaluates statements involving global variable declarations and printing them. For example, you can run the clox program with a file that contains the following:
+```
+// Test 1: Check to make sure variable declaration is working.
+var beverage = "cafe au lait";
+var breakfast = "beignets with " + beverage;
+print breakfast;
+
+// Test 2: Verifying assignment works correctly.
+var breakfast = "beignets";
+var beverage = "cafe au lait";
+breakfast = "beignets with " + beverage;
+
+print breakfast;
+```
+This should output:
 
 1. With Both Flags enabled:
 ```
 == code ==
-0000    1 CONSTANT_OP         0 'Hello '
-0002    | CONSTANT_OP         1 'World!'
-0004    | ADD_OP
-0005    2 RETURN_OP
+0000   10 CONSTANT_OP         1 'cafe au lait'
+0002    | DEFINE_GLOBAL_OP    0 'beverage'
+0004   11 CONSTANT_OP         3 'beignets with '
+0006    | GET_GLOBAL_OP       4 'beverage'
+0008    | ADD_OP
+0009    | DEFINE_GLOBAL_OP    2 'breakfast'
+0011   12 GET_GLOBAL_OP       5 'breakfast'
+0013    | PRINT_OP
+0014   15 CONSTANT_OP         7 'beignets'
+0016    | DEFINE_GLOBAL_OP    6 'breakfast'
+0018   16 CONSTANT_OP         9 'cafe au lait'
+0020    | DEFINE_GLOBAL_OP    8 'beverage'
+0022   17 CONSTANT_OP        11 'beignets with '
+0024    | GET_GLOBAL_OP      12 'beverage'
+0026    | ADD_OP
+0027    | SET_GLOBAL_OP      10 'breakfast'
+0029    | POP_OP
+0030   19 GET_GLOBAL_OP      13 'breakfast'
+0032    | PRINT_OP
+0033    | RETURN_OP
 Val Stack:
 
-0000    1 CONSTANT_OP         0 'Hello '
-Val Stack: [ Hello  ]
+0000   10 CONSTANT_OP         1 'cafe au lait'
+Val Stack: [ cafe au lait ]
 
-0002    | CONSTANT_OP         1 'World!'
-Val Stack: [ Hello  ][ World! ]
+0002    | DEFINE_GLOBAL_OP    0 'beverage'
+Val Stack:
 
-0004    | ADD_OP
-Val Stack: [ Hello World! ]
+0004   11 CONSTANT_OP         3 'beignets with '
+Val Stack: [ beignets with  ]
 
-0005    2 RETURN_OP
-Hello World!
+0006    | GET_GLOBAL_OP       4 'beverage'
+Val Stack: [ beignets with  ][ cafe au lait ]
+
+0008    | ADD_OP
+Val Stack: [ beignets with cafe au lait ]
+
+0009    | DEFINE_GLOBAL_OP    2 'breakfast'
+Val Stack:
+
+0011   12 GET_GLOBAL_OP       5 'breakfast'
+Val Stack: [ beignets with cafe au lait ]
+
+0013    | PRINT_OP
+beignets with cafe au lait
+Val Stack:
+
+0014   15 CONSTANT_OP         7 'beignets'
+Val Stack: [ beignets ]
+
+0016    | DEFINE_GLOBAL_OP    6 'breakfast'
+Val Stack:
+
+0018   16 CONSTANT_OP         9 'cafe au lait'
+Val Stack: [ cafe au lait ]
+
+0020    | DEFINE_GLOBAL_OP    8 'beverage'
+Val Stack:
+
+0022   17 CONSTANT_OP        11 'beignets with '
+Val Stack: [ beignets with  ]
+
+0024    | GET_GLOBAL_OP      12 'beverage'
+Val Stack: [ beignets with  ][ cafe au lait ]
+
+0026    | ADD_OP
+Val Stack: [ beignets with cafe au lait ]
+
+0027    | SET_GLOBAL_OP      10 'breakfast'
+Val Stack: [ beignets with cafe au lait ]
+
+0029    | POP_OP
+Val Stack:
+
+0030   19 GET_GLOBAL_OP      13 'breakfast'
+Val Stack: [ beignets with cafe au lait ]
+
+0032    | PRINT_OP
+beignets with cafe au lait
+Val Stack:
+
+0033    | RETURN_OP
 ```
 
 2. With only the ```DEBUG_TRACE_EXECUTION``` flag enabled:
 ```
+Val Stack: 
+
+0000   10 CONSTANT_OP         1 'cafe au lait'
+Val Stack: [ cafe au lait ]
+
+0002    | DEFINE_GLOBAL_OP    0 'beverage'
 Val Stack:
 
-0000    1 CONSTANT_OP         0 'Hello '
-Val Stack: [ Hello  ]
+0004   11 CONSTANT_OP         3 'beignets with '
+Val Stack: [ beignets with  ]
 
-0002    | CONSTANT_OP         1 'World!'
-Val Stack: [ Hello  ][ World! ]
+0006    | GET_GLOBAL_OP       4 'beverage'
+Val Stack: [ beignets with  ][ cafe au lait ]
 
-0004    | ADD_OP
-Val Stack: [ Hello World! ]
+0008    | ADD_OP
+Val Stack: [ beignets with cafe au lait ]
 
-0005    2 RETURN_OP
-Hello World!
+0009    | DEFINE_GLOBAL_OP    2 'breakfast'
+Val Stack:
+
+0011   12 GET_GLOBAL_OP       5 'breakfast'
+Val Stack: [ beignets with cafe au lait ]
+
+0013    | PRINT_OP
+beignets with cafe au lait
+Val Stack:
+
+0014   15 CONSTANT_OP         7 'beignets'
+Val Stack: [ beignets ]
+
+0016    | DEFINE_GLOBAL_OP    6 'breakfast'
+Val Stack:
+
+0018   16 CONSTANT_OP         9 'cafe au lait'
+Val Stack: [ cafe au lait ]
+
+0020    | DEFINE_GLOBAL_OP    8 'beverage'
+Val Stack:
+
+0022   17 CONSTANT_OP        11 'beignets with '
+Val Stack: [ beignets with  ]
+
+0024    | GET_GLOBAL_OP      12 'beverage'
+Val Stack: [ beignets with  ][ cafe au lait ]
+
+0026    | ADD_OP
+Val Stack: [ beignets with cafe au lait ]
+
+0027    | SET_GLOBAL_OP      10 'breakfast'
+Val Stack: [ beignets with cafe au lait ]
+
+0029    | POP_OP
+Val Stack:
+
+0030   19 GET_GLOBAL_OP      13 'breakfast'
+Val Stack: [ beignets with cafe au lait ]
+
+0032    | PRINT_OP
+beignets with cafe au lait
+Val Stack:
+
+0033    | RETURN_OP
 ```
 
 3. With only the ```DEBUG_PRINT_CODE``` flag enabled:
 ```
 == code ==
-0000    1 CONSTANT_OP         0 'Hello '
-0002    | CONSTANT_OP         1 'World!'
-0004    | ADD_OP
-0005    2 RETURN_OP
-Hello World!
+0000   10 CONSTANT_OP         1 'cafe au lait'
+0002    | DEFINE_GLOBAL_OP    0 'beverage'
+0004   11 CONSTANT_OP         3 'beignets with '
+0006    | GET_GLOBAL_OP       4 'beverage'
+0008    | ADD_OP
+0009    | DEFINE_GLOBAL_OP    2 'breakfast'
+0011   12 GET_GLOBAL_OP       5 'breakfast'
+0013    | PRINT_OP
+0014   15 CONSTANT_OP         7 'beignets'
+0016    | DEFINE_GLOBAL_OP    6 'breakfast'
+0018   16 CONSTANT_OP         9 'cafe au lait'
+0020    | DEFINE_GLOBAL_OP    8 'beverage'
+0022   17 CONSTANT_OP        11 'beignets with '
+0024    | GET_GLOBAL_OP      12 'beverage'
+0026    | ADD_OP
+0027    | SET_GLOBAL_OP      10 'breakfast'
+0029    | POP_OP
+0030   19 GET_GLOBAL_OP      13 'breakfast'
+0032    | PRINT_OP
+0033    | RETURN_OP
+beignets with cafe au lait
+beignets with cafe au lait
 ```
 
-4. With no flags enabled:
+4. With no flags enabled: // Should print "beignets with cafe au lait"
 ```
-Hello World!
+beignets with cafe au lait
+beignets with cafe au lait
 ```
 
-In all cases, the answer to the evaluation will be the last line of the output. The program should also handle reporting errors in expressions. For example, enterring ```*``` into the REPL should report the error ```[line 1] Error at '*': Expect expression.``` correctly. Attempting to perform a calculation (subtraction, division, multiplication) with strings will generate the following error:
-```
-Operands must be numbers.
-[line 1] in script
-```
-Attempting to add a string and a number will result in the following error:
-```
-Operands must be two numbers or two strings.
-[line 1] in script
-```
+In the last two cases, the output should be the last few lines of code, but in the first two cases, the output is nestled within the debug information. Due to this, I would highley recommend you to disable the ```DEBUG_TRACE_EXECUTION``` flag for more clarity in outputs. The program should also handle reporting errors in statements or errors that are inside of statements. If you attempt to enter an expression and not an expression statement (ie, you are missing a semicolon) into the REPL, such as ```1 + 2```, the program outputs: ```[line 2] Error at end: Expect ';' after expression.```. Entering an expression statement and not assigning it to a variable will evaluate it, but the result will not be stored.
+
 ## Progresion
-You can find a copy of my code after each chapter in the ```Progression``` folder. To run these, you should unzip them to a location outside of this folder and complete the instructions fro running above.
+You can find a copy of my code after each chapter in the ```Progression``` folder. To run these, you should unzip them to a location outside of this folder and complete the instructions from the [Compiling](https://github.com/jisanders1/Projects/tree/main/Programming%20Languages%20(CS%20403)/clox#compiling) and [Running](https://github.com/jisanders1/Projects/tree/main/Programming%20Languages%20(CS%20403)/clox#running) sections above. 
 
 Chapter 14 - Chunks of Bytecode:
 - Added basic functionality for encoding constant and return operations, and for encoding constants and values.
@@ -142,7 +280,13 @@ Chapter 19 - Strings:
 Chapter 20 - Hash Tables:
 - Added a hash table module in order to implement assignment, function declarations, and class declarations in later chapters.
 - Changed the way equality is checked with strings, instead of stepping through each character in the string, hash codes are used instead.
-- Ran a REPL checking for string equality to ensure that the output is still correct
+- Ran a REPL checking for string equality to ensure that the output is still correct.
+
+Chapter 21 - Global Variables:
+- Added the ability to define and assign global variables.
+- Added the ability to print statements. Print statements print a newline with them by default.
+- Entering expressions no longer will work, you must use a statement and follow it with a ';'.
+- Tested the examples from this chapter through running a file with the test cases listed above in the [Running](https://github.com/jisanders1/Projects/tree/main/Programming%20Languages%20(CS%20403)/clox#running) section.
 
 ## Issues
 - The compilation process is a bit long. Perhaps making a makefile will reduce difficulty. 

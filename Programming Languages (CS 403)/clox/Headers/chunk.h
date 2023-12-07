@@ -10,6 +10,10 @@ typedef enum {
     NIL_OP,
     TRUE_OP,
     FALSE_OP,
+    POP_OP,
+    GET_GLOBAL_OP,
+    DEFINE_GLOBAL_OP,
+    SET_GLOBAL_OP,
     EQUAL_OP,
     GREATER_OP,
     LESS_OP,
@@ -19,7 +23,8 @@ typedef enum {
     DIVIDE_OP,
     NOT_OP,
     NEGATE_OP,
-    RETURN_OP,
+    PRINT_OP,
+    RETURN_OP
 } OpCode;
 
 // Holds additional data along with the instructions

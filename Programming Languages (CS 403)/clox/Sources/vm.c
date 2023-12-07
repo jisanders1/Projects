@@ -31,14 +31,18 @@ static void runtimeError(const char* format, ...) {
 
 // Initializes the stack in the VM to be empty and the objects pointer is empty for now.
 void initVM() {
-    resetStack();
-    vm.objects = NULL;
+    resetStack(); // Inisializes value stack
+    vm.objects = NULL; // Empty object list
+
+    // Initializing tables for global and string values.
+    initTable(&vm.globals);
     initTable(&vm.strings);
 }
 
 // Cleans up any leftover objects by freeing them.
 // Even though the garbage collector may free some objects, it won't always free all of the objects, hence this function.
 void freeVM() {
+    freeTable(&vm.globals);
     freeTable(&vm.strings);
     freeObjects();
 }
@@ -86,6 +90,7 @@ static void concatenate() {
 static InterpretResult run() {
 #define READ_BYTE() (*vm.ip++)
 #define READ_CONSTANT() (vm.chunk->constants.values[READ_BYTE()])
+#define READ_STRING() AS_STRING(READ_CONSTANT())
 // BINARY_OP checks to ensure both operants are numbers before attempting to perform the operations.
 #define BINARY_OP(valueType, op) \
     do { \
@@ -125,6 +130,33 @@ static InterpretResult run() {
         }
         else if (instruction == FALSE_OP) {
             push(BOOL_V(false));
+        }
+        else if (instruction == POP_OP) {
+            pop();
+        }
+        else if (instruction == GET_GLOBAL_OP) {
+            ObjString* name = READ_STRING();
+            Value value;
+
+            if (!getValue(&vm.globals, name, &value)) { // Reports an error if a reference is made to an undefined variable.
+                runtimeError("Undefined variable '%s'.", name->string);
+                return INTERPRET_RUNTIME_ERROR;
+            }
+
+            push(value);
+        }
+        else if (instruction == DEFINE_GLOBAL_OP) {
+            ObjString* name = READ_STRING();
+            insertPair(&vm.globals, name, peek(0));
+            pop();
+        }
+        else if (instruction == SET_GLOBAL_OP) {
+            ObjString* name = READ_STRING();
+            if (insertPair(&vm.globals, name, peek(0))) {
+                deletePair(&vm.globals, name); 
+                runtimeError("Undefined variable '%s'.", name->string);
+                return INTERPRET_RUNTIME_ERROR;
+            }
         }
         else if (instruction == EQUAL_OP) {
             Value b = pop();
@@ -170,16 +202,19 @@ static InterpretResult run() {
                 return INTERPRET_RUNTIME_ERROR;
             }
             push(NUMBER_V(-AS_NUMBER(pop())));
-        } 
-        else if (instruction == RETURN_OP) {
-            // 2 lines below will be changed when functions come into play
+        }
+        else if (instruction == PRINT_OP) {
             printValue(pop());
             printf("\n");
+        }
+        else if (instruction == RETURN_OP) {
+            // Exit interpreter since we now have a print function.
             return INTERPRET_OK;
         }
     }
 
 #undef BINARY_OP
+#undef READ_STRING
 #undef READ_CONSTANT
 #undef READ_BYTE
 }

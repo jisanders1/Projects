@@ -56,6 +56,18 @@ int disassembleInstruction(Chunk* chunk, int position) {
     else if (instruction == FALSE_OP) {
         return simpleInstruction("FALSE_OP", position);
     }
+    else if (instruction == POP_OP) {
+        return simpleInstruction("POP_OP", position);
+    }
+    else if (instruction == GET_GLOBAL_OP) {
+        return constantInstruction("GET_GLOBAL_OP", chunk, position);
+    }
+    else if (instruction == DEFINE_GLOBAL_OP) {
+        return constantInstruction("DEFINE_GLOBAL_OP", chunk, position);
+    }
+    else if (instruction == SET_GLOBAL_OP) {
+        return constantInstruction("SET_GLOBAL_OP", chunk, position);
+    }
     else if (instruction == EQUAL_OP) {
         return simpleInstruction("EQUAL_OP", position);
     }
@@ -82,6 +94,9 @@ int disassembleInstruction(Chunk* chunk, int position) {
     }
     else if (instruction == NEGATE_OP) {
         return simpleInstruction("NEGATE_OP", position);
+    }
+    else if (instruction == PRINT_OP) {
+        return simpleInstruction("PRINT_OP", position);
     } 
     else if (instruction == RETURN_OP) {
         return simpleInstruction("RETURN_OP", position);
