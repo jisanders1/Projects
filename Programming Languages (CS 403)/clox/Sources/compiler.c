@@ -148,6 +148,25 @@ static void appendBytes(uint8_t byte1, uint8_t byte2) {
     appendByte(byte2);
 }
 
+// Appends a loop structure to the opcode
+static void appendLoop(int loopStart) {
+    appendByte(LOOP_OP);
+
+    int offset = currentChunk()->size - loopStart + 2;
+    if (offset > UINT16_MAX) error("Loop body too large."); // Reports an error if the loop body is larger than 65,535
+
+    appendByte((offset >> 8) & 0xff);
+    appendByte(offset & 0xff);
+}
+
+// Makes placeholders for a jump instruction to be patched later and returns a pointer to the start of the placeholders.
+static int appendJump(uint8_t instruction) {
+    appendByte(instruction);
+    appendByte(0xff);
+    appendByte(0xff);
+    return currentChunk()->size - 2;
+}
+
 // Adds a return operator to the end of the chunk's byte.
 static void causeReturn() {
     appendByte(RETURN_OP);
@@ -169,6 +188,19 @@ static uint8_t makeConstant(Value value) {
 // Appends a constant op code and a constant to the end of the current chunks function.
 static void appendConstant(Value value) {
     appendBytes(CONSTANT_OP, makeConstant(value));
+}
+
+// Fixes placeholders with actual jump value so we know how far to jump.
+static void patchJump(int offset) {
+    // -2 to adjust for the bytecode for the jump offset itself.
+    int jump = currentChunk()->size - offset - 2;
+
+    if (jump > UINT16_MAX) { // Jump is way too far
+        error("Too much code to jump over.");
+    }
+
+    currentChunk()->instructions[offset] = (jump >> 8) & 0xff;
+    currentChunk()->instructions[offset + 1] = jump & 0xff;
 }
 
 // Initializes the state of the compiler, including the local variables and how deep in the scope we are.
@@ -302,6 +334,16 @@ static void defineVariable(uint8_t global) {
     appendBytes(DEFINE_GLOBAL_OP, global);
 }
 
+// Parses the and operator into bytecode. It has it's own precedence level.
+static void and_(bool canAssign) {
+    int endJump = appendJump(JUMP_IF_FALSE_OP);
+
+    appendByte(POP_OP);
+    parsePrecedence(AND_PREC);
+
+    patchJump(endJump);
+}
+
 // Evaluates binary operators
 static void binary(bool canAssign) {
     TokenType operatorType = parser.previous.type;
@@ -343,6 +385,18 @@ static void grouping(bool canAssign) {
 static void number(bool canAssign) {
     double value = strtod(parser.previous.sourcePointer, NULL); // string -> double
     appendConstant(NUMBER_V(value));
+}
+
+// Parses an or operator into bytecode
+static void or_(bool canAssign) {
+    int elseJump = appendJump(JUMP_IF_FALSE_OP);
+    int endJump = appendJump(JUMP_OP);
+
+    patchJump(elseJump);
+    appendByte(POP_OP);
+
+    parsePrecedence(OR_PREC);
+    patchJump(endJump);
 }
 
 // Parses a string
@@ -415,7 +469,7 @@ ParseRule rules[] = {
     [TOKEN_IDENTIFIER]    = {variable, NULL,   NONE_PREC},
     [TOKEN_STRING]        = {string,   NULL,   NONE_PREC},
     [TOKEN_NUMBER]        = {number,   NULL,   NONE_PREC},
-    [TOKEN_AND]           = {NULL,     NULL,   NONE_PREC},
+    [TOKEN_AND]           = {NULL,     and_,   AND_PREC},
     [TOKEN_CLASS]         = {NULL,     NULL,   NONE_PREC},
     [TOKEN_ELSE]          = {NULL,     NULL,   NONE_PREC},
     [TOKEN_FALSE]         = {literal,  NULL,   NONE_PREC},
@@ -423,7 +477,7 @@ ParseRule rules[] = {
     [TOKEN_FUN]           = {NULL,     NULL,   NONE_PREC},
     [TOKEN_IF]            = {NULL,     NULL,   NONE_PREC},
     [TOKEN_NIL]           = {literal,  NULL,   NONE_PREC},
-    [TOKEN_OR]            = {NULL,     NULL,   NONE_PREC},
+    [TOKEN_OR]            = {NULL,     or_,    OR_PREC},
     [TOKEN_PRINT]         = {NULL,     NULL,   NONE_PREC},
     [TOKEN_RETURN]        = {NULL,     NULL,   NONE_PREC},
     [TOKEN_SUPER]         = {NULL,     NULL,   NONE_PREC},
@@ -489,10 +543,63 @@ static void varDeclaration() {
     defineVariable(global);
 }
 
+// Parses an expression statement to bytecode.
 static void expressionStatement() {
     expression();
     consume(TOKEN_SEMICOLON, "Expect ';' after expression.");
     appendByte(POP_OP);
+}
+
+// Parses a for loop statement into bytecode.
+static void forStatement() {
+    startScope();
+    // Reports errors if syntax is missing.
+    consume(TOKEN_LEFT_PAREN, "Expect '(' after 'for'.");
+    
+    // Handles the declaration portion of the for loop
+    if (match(TOKEN_SEMICOLON)) {
+        // No initializer.
+    } 
+    else if (match(TOKEN_VAR)) {
+        varDeclaration();
+    } 
+    else {
+        expressionStatement();
+    }
+
+    int loopStart = currentChunk()->size;
+    int exitJump = -1;
+    // handles the end point portion of the for loop
+    if (!match(TOKEN_SEMICOLON)) {
+        expression();
+        consume(TOKEN_SEMICOLON, "Expect ';' after loop condition."); // reports an error if a semicolon is missing.
+
+        // Jump out of the loop if the condition is false.
+        exitJump = appendJump(JUMP_IF_FALSE_OP);
+        appendByte(POP_OP); // Condition.
+    }
+
+    // handles the increment portion of the for loop
+    if (!match(TOKEN_RIGHT_PAREN)) {
+        int bodyJump = appendJump(JUMP_OP);
+        int incrementStart = currentChunk()->size;
+        expression();
+        appendByte(POP_OP);
+        consume(TOKEN_RIGHT_PAREN, "Expect ')' after for clauses."); // reports an error if the closing parenthesis is missing.
+
+        appendLoop(loopStart);
+        loopStart = incrementStart;
+        patchJump(bodyJump);
+    }
+
+    statement();
+    appendLoop(loopStart);
+
+    if (exitJump != -1) {
+        patchJump(exitJump);
+        appendByte(POP_OP); // Condition.
+    }
+    endScope();
 }
 
 // Parses a print statement to bytecode.
@@ -500,6 +607,42 @@ static void printStatement() {
     expression();
     consume(TOKEN_SEMICOLON, "Expect ';' after value.");
     appendByte(PRINT_OP);
+}
+
+// Parses tokens for a while statement into bytecode
+static void whileStatement() {
+    int loopStart = currentChunk()->size;
+    consume(TOKEN_LEFT_PAREN, "Expect '(' after 'while'.");
+    expression();
+    consume(TOKEN_RIGHT_PAREN, "Expect ')' after condition.");
+
+    int exitJump = appendJump(JUMP_IF_FALSE_OP);
+    appendByte(POP_OP);
+    statement();
+
+    appendLoop(loopStart);
+
+    patchJump(exitJump);
+    appendByte(POP_OP);
+}
+
+static void ifStatement() {
+    consume(TOKEN_LEFT_PAREN, "Expect '(' after 'if'.");
+    expression();
+    consume(TOKEN_RIGHT_PAREN, "Expect ')' after condition."); 
+
+    int thenJump = appendJump(JUMP_IF_FALSE_OP);
+    appendByte(POP_OP);
+    statement();
+
+    int elseJump = appendJump(JUMP_OP);
+
+    patchJump(thenJump);
+    appendByte(POP_OP);
+
+    // If an else statement is declared, we parse it's statements
+    if (match(TOKEN_ELSE)) statement();
+    patchJump(elseJump);
 }
 
 // Gets the parsing back to a good state after an error has occured to prevent the cascading of errors from one error.
@@ -542,7 +685,16 @@ static void declaration() {
 static void statement() {
     if (match(TOKEN_PRINT)) { // We've reached a print statement
         printStatement();
-    } 
+    }
+    else if (match(TOKEN_FOR)) { // We've reached a for statement.
+        forStatement();
+    }
+    else if (match(TOKEN_IF)) { // We've reached an if statement.
+        ifStatement();
+    }
+    else if (match(TOKEN_WHILE)) { // We've reached a while statement.
+        whileStatement();
+    }
     else if (match(TOKEN_LEFT_BRACE)) { // We've reached a block statement.
         startScope();
         block();

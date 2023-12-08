@@ -27,10 +27,19 @@ static int simpleInstruction(const char* name, int position) {
     return position + 1;
 }
 
+// Handle printing local variables
 static int byteInstruction(const char* name, Chunk* chunk, int position) {
     uint8_t slot = chunk->instructions[position + 1];
     printf("%-16s %4d\n", name, slot);
     return position + 2; 
+}
+
+// Handles printing for jumps in the if-else statements currently.
+static int jumpInstruction(const char* name, int sign, Chunk* chunk, int offset) {
+    uint16_t jump = (uint16_t)(chunk->instructions[offset + 1] << 8);
+    jump |= chunk->instructions[offset + 2];
+    printf("%-16s %4d -> %d\n", name, offset, offset + 3 + sign * jump);
+    return offset + 3;
 }
 
 // Calls a different helper function depending on what an instruction's opcode.
@@ -109,7 +118,16 @@ int disassembleInstruction(Chunk* chunk, int position) {
     }
     else if (instruction == PRINT_OP) {
         return simpleInstruction("PRINT_OP", position);
+    }
+    else if (instruction == JUMP_OP) {
+        return jumpInstruction("JUMP_OP", 1, chunk, position);
+    }
+    else if (instruction == JUMP_IF_FALSE_OP) {
+        return jumpInstruction("JUMP_IF_FALSE_OP", 1, chunk, position);
     } 
+    else if (instruction == LOOP_OP) {
+        return jumpInstruction("LOOP_OP", -1, chunk, position);
+    }
     else if (instruction == RETURN_OP) {
         return simpleInstruction("RETURN_OP", position);
     } else {

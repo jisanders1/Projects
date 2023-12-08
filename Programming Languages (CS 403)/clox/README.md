@@ -17,46 +17,8 @@ DEBUG_PRINT_CODE - Line 10
 DEBUG_TRACE_EXECUTION - Line 14
 ```
 
-Finally, navigate to the ```Sources``` folder and enter (I would copy and paste if I were you) the following line of code to compile the source files:
-```
-gcc chunk.c debug.c main.c memory.c value.c vm.c compiler.c scanner.c object.c table.c -o clox
-```
-## Running
-After you enter this command, the program sholud be compiled to an executable. In order to run the program, you should type invoke the executable file, which may end in ".exe" or ".out" for most. For Windows users, you should be able to type the following in the Command Prompt:
-```
-clox
-```
-or the following if using Cygwin:
-```
-./clox
-```
-This will launch the REPL (short for **_R_**eading a line of input, **_E_**valuating it, **_P_**rinting the result, then **_L_**ooping and repeating all four steps again) and allow a user to enter lines of code into the terminal and have their code executed. You can only enter a maximum of 1,024 characters per line. If you want to run code from a file, enter the following:
-```
-clox <filename>.lox
-```
-or if using Cygwin:
-```
-./clox <filename>.lox
-```
-If there is an error (attempting to open a non-existent file or directory, running out of memory, etc.), the program will report it. 
-
-Currently, the program evaluates both normal and block statements. These can involved both global and local variables. For example, you can run the clox program with a file that contains the following:
-```
-// Test 1: Check to make sure variable declaration is working.
-var beverage = "cafe au lait";
-var breakfast = "beignets with " + beverage;
-print breakfast;
-
-// Test 2: Verifying assignment works correctly.
-var breakfast = "beignets";
-var beverage = "cafe au lait";
-breakfast = "beignets with " + beverage;
-
-print breakfast;
-```
-This should output:
-
-1. With Both Flags enabled:
+For reference here is the content that each flag may output. There is one example of each, but the length and output with most likely vary from Lox program to Lox program.
+1. ```DEBUG_PRINT_CODE```
 ```
 == code ==
 0000   10 CONSTANT_OP         1 'cafe au lait'
@@ -79,7 +41,12 @@ This should output:
 0030   19 GET_GLOBAL_OP      13 'breakfast'
 0032    | PRINT_OP
 0033    | RETURN_OP
-Val Stack:
+
+```
+
+2. ```DEBUG_TRACE_EXECUTION``
+```
+Val Stack: 
 
 0000   10 CONSTANT_OP         1 'cafe au lait'
 Val Stack: [ cafe au lait ]
@@ -141,9 +108,49 @@ beignets with cafe au lait
 Val Stack:
 
 0033    | RETURN_OP
+
 ```
 
-2. With only the ```DEBUG_TRACE_EXECUTION``` flag enabled:
+Finally, navigate to the ```Sources``` folder and enter (I would copy and paste if I were you) the following line of code to compile the source files:
+```
+gcc chunk.c debug.c main.c memory.c value.c vm.c compiler.c scanner.c object.c table.c -o clox
+```
+## Running
+After you enter this command, the program sholud be compiled to an executable. In order to run the program, you should type invoke the executable file, which may end in ".exe" or ".out" for most. For Windows users, you should be able to type the following in the Command Prompt:
+```
+clox
+```
+or the following if using Cygwin:
+```
+./clox
+```
+This will launch the REPL (short for **_R_**eading a line of input, **_E_**valuating it, **_P_**rinting the result, then **_L_**ooping and repeating all four steps again) and allow a user to enter lines of code into the terminal and have their code executed. You can only enter a maximum of 1,024 characters per line. If you want to run code from a file, enter the following:
+```
+clox <filename>.lox
+```
+or if using Cygwin:
+```
+./clox <filename>.lox
+```
+If there is an error (attempting to open a non-existent file or directory, running out of memory, etc.), the program will report it. 
+
+Currently, the program evaluates both normal and block statements. Additionally, the program can handle control flow, such as if-else statements, while loops, and for loops, These can involve both global and local variables. For example, you can run the clox program with a file that contains the following:
+```
+// Test 1: Check to make sure variable declaration is working.
+var beverage = "cafe au lait";
+var breakfast = "beignets with " + beverage;
+print breakfast;
+
+// Test 2: Verifying assignment works correctly.
+var breakfast = "beignets";
+var beverage = "cafe au lait";
+breakfast = "beignets with " + beverage;
+
+print breakfast;
+```
+This should output:
+
+1. With only the ```DEBUG_TRACE_EXECUTION``` flag enabled:
 ```
 Val Stack: 
 
@@ -209,7 +216,7 @@ Val Stack:
 0033    | RETURN_OP
 ```
 
-3. With only the ```DEBUG_PRINT_CODE``` flag enabled:
+2. With only the ```DEBUG_PRINT_CODE``` flag enabled:
 ```
 == code ==
 0000   10 CONSTANT_OP         1 'cafe au lait'
@@ -236,7 +243,7 @@ beignets with cafe au lait
 beignets with cafe au lait
 ```
 
-4. With no flags enabled:
+3. With no flags enabled:
 ```
 beignets with cafe au lait
 beignets with cafe au lait
@@ -293,5 +300,12 @@ Chapter 22 - Local Variables:
 - With block statements, the differentiation between global and local variables was specified.
 - Re-declaration of variables within the same scope and using a variable in its own initializer are not allowed.
 
+Chapter 23 - Jumping Back and Forth:
+- Added control flow to the program, including while loops, for loops, and if-else statements.
+- Tested all of the different types of control flow with my own test cases.
+- Decided that chapter 24 will be the last chapter that I am able to do for now due to time constraints.
+- May consider showing a general example for how the debug flags look instead of providing 4 different version of the same program for each example.
+
 ## Issues
-- The compilation process is a bit long. Perhaps making a makefile will reduce difficulty. 
+- The compilation process is a bit long. Perhaps making a makefile will reduce difficulty.
+- Changing the books code is slightly difficult due to how rigid C requires its declarations to be. Additionally, I have found switching switch statements to if-else statement negatively impacts readability completely. I will keep the original switch statements for most of the code.

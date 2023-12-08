@@ -26,6 +26,9 @@ typedef enum {
     NOT_OP,
     NEGATE_OP,
     PRINT_OP,
+    JUMP_OP,
+    JUMP_IF_FALSE_OP,
+    LOOP_OP,
     RETURN_OP
 } OpCode;
 
