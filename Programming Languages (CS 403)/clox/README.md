@@ -40,7 +40,7 @@ or if using Cygwin:
 ```
 If there is an error (attempting to open a non-existent file or directory, running out of memory, etc.), the program will report it. 
 
-Currently, the program evaluates statements involving global variable declarations and printing them. For example, you can run the clox program with a file that contains the following:
+Currently, the program evaluates both normal and block statements. These can involved both global and local variables. For example, you can run the clox program with a file that contains the following:
 ```
 // Test 1: Check to make sure variable declaration is working.
 var beverage = "cafe au lait";
@@ -242,7 +242,7 @@ beignets with cafe au lait
 beignets with cafe au lait
 ```
 
-In the last two cases, the output should be the last few lines of code, but in the first two cases, the output is nestled within the debug information. Due to this, I would highley recommend you to disable the ```DEBUG_TRACE_EXECUTION``` flag for more clarity in outputs. The program should also handle reporting errors in statements or errors that are inside of statements. If you attempt to enter an expression and not an expression statement (ie, you are missing a semicolon) into the REPL, such as ```1 + 2```, the program outputs: ```[line 2] Error at end: Expect ';' after expression.```. Entering an expression statement and not assigning it to a variable will evaluate it, but the result will not be stored.
+In the last two cases, the output should be the last few lines of code, but in the first two cases, the output is nestled within the debug information. Due to this, I would highley recommend you to disable the ```DEBUG_TRACE_EXECUTION``` flag for more clarity in outputs. The program should also handle reporting errors in statements or errors that are inside of statements. If you attempt to enter an expression and not an expression statement (ie, you are missing a semicolon) into the REPL, such as ```1 + 2```, the program outputs: ```[line 2] Error at end: Expect ';' after expression.```. Entering an expression statement and not assigning it to a variable will evaluate it, but the result will not be stored nor printed.
 
 ## Progresion
 You can find a copy of my code after each chapter in the ```Progression``` folder. To run these, you should unzip them to a location outside of this folder and complete the instructions from the [Compiling](https://github.com/jisanders1/Projects/tree/main/Programming%20Languages%20(CS%20403)/clox#compiling) and [Running](https://github.com/jisanders1/Projects/tree/main/Programming%20Languages%20(CS%20403)/clox#running) sections above. 
@@ -287,6 +287,11 @@ Chapter 21 - Global Variables:
 - Added the ability to print statements. Print statements print a newline with them by default.
 - Entering expressions no longer will work, you must use a statement and follow it with a ';'.
 - Tested the examples from this chapter through running a file with the test cases listed above in the [Running](https://github.com/jisanders1/Projects/tree/main/Programming%20Languages%20(CS%20403)/clox#running) section.
+
+Chapter 22 - Local Variables:
+- Added block statements with the ability to track the scope.
+- With block statements, the differentiation between global and local variables was specified.
+- Re-declaration of variables within the same scope and using a variable in its own initializer are not allowed.
 
 ## Issues
 - The compilation process is a bit long. Perhaps making a makefile will reduce difficulty. 

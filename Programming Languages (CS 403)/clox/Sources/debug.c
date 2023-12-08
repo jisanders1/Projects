@@ -27,6 +27,12 @@ static int simpleInstruction(const char* name, int position) {
     return position + 1;
 }
 
+static int byteInstruction(const char* name, Chunk* chunk, int position) {
+    uint8_t slot = chunk->instructions[position + 1];
+    printf("%-16s %4d\n", name, slot);
+    return position + 2; 
+}
+
 // Calls a different helper function depending on what an instruction's opcode.
 // Additionally adds on a line number if one was specified.
 int disassembleInstruction(Chunk* chunk, int position) {
@@ -58,6 +64,12 @@ int disassembleInstruction(Chunk* chunk, int position) {
     }
     else if (instruction == POP_OP) {
         return simpleInstruction("POP_OP", position);
+    }
+    else if (instruction == GET_LOCAL_OP) {
+        return byteInstruction("GET_LOCAL_OP", chunk, position);
+    }
+    else if (instruction == SET_LOCAL_OP) {
+        return byteInstruction("GET_LOCAL_OP", chunk, position);
     }
     else if (instruction == GET_GLOBAL_OP) {
         return constantInstruction("GET_GLOBAL_OP", chunk, position);

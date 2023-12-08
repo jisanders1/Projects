@@ -134,6 +134,10 @@ static InterpretResult run() {
         else if (instruction == POP_OP) {
             pop();
         }
+        else if (instruction == GET_LOCAL_OP) {
+            uint8_t slot = READ_BYTE();
+            push(vm.stack[slot]); 
+        }
         else if (instruction == GET_GLOBAL_OP) {
             ObjString* name = READ_STRING();
             Value value;
@@ -149,6 +153,10 @@ static InterpretResult run() {
             ObjString* name = READ_STRING();
             insertPair(&vm.globals, name, peek(0));
             pop();
+        }
+        else if (instruction == SET_LOCAL_OP) {
+            uint8_t slot = READ_BYTE();
+            vm.stack[slot] = peek(0);
         }
         else if (instruction == SET_GLOBAL_OP) {
             ObjString* name = READ_STRING();
