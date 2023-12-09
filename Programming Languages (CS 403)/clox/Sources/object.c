@@ -19,6 +19,22 @@ static Obj* allocateObject(size_t size, ObjType type) {
     return object;
 }
 
+// Initializes a new function with no name, no arity, and initializes the chunk inside of the function.
+ObjFunction* initNewFunction() {
+    ObjFunction* function = ALLOCATE_OBJ(ObjFunction, FUNCTION_OBJ);
+    function->arity = 0;
+    function->name = NULL;
+    initChunk(&function->chunk);
+    return function;
+}
+
+// Initializes a new native function given a function argument.
+ObjNative* initNewNative(NativeFn function) {
+    ObjNative* native = ALLOCATE_OBJ(ObjNative, NATIVE_OBJ);
+    native->function = function;
+    return native;
+}
+
 // Allocates a string object
 static ObjString* allocateString(char* chars, int length, uint32_t hash) {
     ObjString* string = ALLOCATE_OBJ(ObjString, STRING_OBJ);
@@ -65,9 +81,25 @@ ObjString* copyString(const char* chars, int length) {
     return allocateString(heapChars, length, hash);
 }
 
+// Prints a function as an object
+static void printFunction(ObjFunction* function) {
+    // Handles the VM's functions
+    if (function->name == NULL) {
+        printf("<script>");
+        return;
+    }
+    printf("<fn %s>", function->name->string);
+}
+
 // Prints an object differently depending on what type of object it is.
 void printObject(Value value) {
   switch (OBJ_TYPE(value)) {
+    case FUNCTION_OBJ:
+        printFunction(AS_FUNCTION(value));
+        break;
+    case NATIVE_OBJ:
+        printf("<native fn>");
+        break;
     case STRING_OBJ:
         printf("%s", AS_CSTRING(value));
         break;

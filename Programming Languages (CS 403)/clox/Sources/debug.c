@@ -128,6 +128,9 @@ int disassembleInstruction(Chunk* chunk, int position) {
     else if (instruction == LOOP_OP) {
         return jumpInstruction("LOOP_OP", -1, chunk, position);
     }
+    else if (instruction == CALL_OP) {
+        return byteInstruction("CALL_OP", chunk, position);
+    }
     else if (instruction == RETURN_OP) {
         return simpleInstruction("RETURN_OP", position);
     } else {

@@ -4,6 +4,6 @@
 #include "object.h"
 #include "vm.h"
 
-bool compile(const char* sourceCode, Chunk* chunk);
+ObjFunction* compile(const char* sourceCode);
 
 #endif

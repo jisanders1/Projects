@@ -1,15 +1,23 @@
 #ifndef clox_vm_h
 #define clox_vm_h
 
-#include "chunk.h"
+#include "object.h"
 #include "table.h"
 #include "value.h"
 
-#define STACK_CAP 256
+#define FRAMES_CAP 64
+#define STACK_CAP (FRAMES_CAP * UINT8_COUNT)
+
+// represents the call frame for function calls
+typedef struct {
+    ObjFunction* function;
+    uint8_t* ip; // Stands for instruction pointer
+    Value* slots;
+} CallFrame;
 
 typedef struct {
-    Chunk* chunk;
-    uint8_t* ip; // Stands for instruction pointer
+    CallFrame frames[FRAMES_CAP];
+    int frameSize; 
     Value stack[STACK_CAP];
     Value* stackTop;
     Table globals;
