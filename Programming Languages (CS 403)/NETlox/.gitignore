@@ -2,3 +2,8 @@
 **/.vs/
 **/bin/
 **/obj/
+
+# Ignores any sample files by user
+**.lox
+**.exe
+**.out

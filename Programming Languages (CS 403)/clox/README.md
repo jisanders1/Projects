@@ -120,13 +120,13 @@ or the following if using Cygwin:
 ```
 This will launch the REPL (short for **_R_**eading a line of input, **_E_**valuating it, **_P_**rinting the result, then **_L_**ooping and repeating all four steps again) and allow a user to enter lines of code into the terminal and have their code executed. You can only enter a maximum of 1,024 characters per line. If you want to run code from a file, enter the following:
 ```
-clox <filename>.lox
+clox <file path>
 ```
 or if using Cygwin:
 ```
-./clox <filename>.lox
+./clox <file path>
 ```
-If there is an error (attempting to open a non-existent file or directory, running out of memory, etc.), the program will report it. 
+File path is the path from your current location to the location of the file. If there is an error (attempting to open a non-existent file or directory, running out of memory, etc.), the program will report it.
 
 Currently, the program evaluates both normal and block statements. Additionally, the program can handle control flow, such as if-else statements, while loops, and for loops, These can involve both global and local variables. For example, you can run the clox program with a file that contains the following:
 ```

@@ -2,3 +2,6 @@
 .vscode/
 .vs/
 .metadata/
+
+# Ignoring legacy version of Tree-Walk Lox Interpreter
+Jlox
