@@ -17,9 +17,9 @@ DEBUG_PRINT_CODE:
 
 DEBUG_TRACE_EXECUTION:
 
-Enables the printing of the call stack along with its values and each op code that resulted in that stack. 
+    Enables the printing of the call stack along with its values and each op code that resulted in that stack. 
 
-WARNING: This debug flag can be quite verbose. The values your program outputs WILL be nested within the all of the output.
+    WARNING: This debug flag can be quite verbose. The values your program outputs WILL be nested within the all of the output.
 ``` 
 In order to enable the debug flags, un-comment the following lines of the file ```common.h```. If you do not wish to generate these extra output (this extra output could make it difficult to see the output of the REPL especially), leave them commented.
 ```
