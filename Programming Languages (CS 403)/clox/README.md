@@ -64,7 +64,6 @@ For reference here is the content that each flag may output. There is one exampl
 0011    7 NIL_OP
 0012    | RETURN_OP
 21
-
 ```
 
 2. ```DEBUG_TRACE_EXECUTION``` with the ```operator/add.lox``` test case
@@ -232,7 +231,7 @@ Val Stack: [ <script> ][ nil ]
 
 In this case, the output value is more easy to spot, even with the debug flags on. However, in more complex programs, outputs can become hard to spot, especially with the ```DEBUG_TRACE_EXECUTION``` flag. Due to this, I would highley recommend you to disable the ```DEBUG_TRACE_EXECUTION``` flag for more clarity in outputs. The program should also handle reporting errors in statements or errors that are inside of statements. If you attempt to enter an expression and not an expression statement (ie, you are missing a semicolon) into the REPL, such as ```1 + 2```, the program outputs: ```[line 2] Error at end: Expect ';' after expression.```. Entering an expression statement and not assigning it to a variable will evaluate it, but the result will not be stored nor printed.
 
-## Progresion
+## Progression Notes
 You can find a copy of my code after each chapter in the ```Progression``` folder. To run these, you should unzip them to a location outside of this folder and complete the instructions from the [Compiling](https://github.com/jisanders1/Projects/tree/main/Programming%20Languages%20(CS%20403)/clox#compiling) and [Running](https://github.com/jisanders1/Projects/tree/main/Programming%20Languages%20(CS%20403)/clox#running) sections above. 
 
 Chapter 14 - Chunks of Bytecode:
